@@ -35,6 +35,7 @@ model User {
   costSnapshotsCreated     CostSnapshot[]
   wasteRecordsRecorded     WasteRecord[]
   absencesDecided          Absence[]
+  stockCountsCounted       StockCount[]
 
   @@unique([email])
   @@map("user")
@@ -146,6 +147,10 @@ model Organization {
   absences            Absence[]
   shifts              Shift[]
   shiftAssignments    ShiftAssignment[]
+
+  // Phase 3
+  stockCounts     StockCount[]
+  stockCountLines StockCountLine[]
 
   @@unique([slug])
   @@map("organization")
@@ -358,6 +363,7 @@ model Site {
   events            Event[]
   employeeProfiles  EmployeeProfile[]
   shifts            Shift[]
+  stockCounts       StockCount[]
 
   @@unique([organizationId, code])
   @@index([organizationId, isActive])
@@ -453,6 +459,7 @@ model Unit {
   dispatchLines          DispatchLine[]
   wasteRecords           WasteRecord[]
   salesDaily             SalesDaily[]
+  stockCountLines        StockCountLine[]
 
   @@map("unit")
 }
@@ -499,6 +506,7 @@ model Item {
   productionPlanLines    ProductionPlanLine[]
   orderLines             OrderLine[]
   dispatchLines          DispatchLine[]
+  stockCountLines        StockCountLine[]
 
   @@unique([organizationId, code])
   @@index([organizationId, type])
@@ -899,6 +907,7 @@ model Lot {
   costSnapshotLines CostSnapshotLine[]
   wasteRecords      WasteRecord[]
   dispatchLines     DispatchLine[]
+  stockCountLines   StockCountLine[]
 
   @@unique([organizationId, siteId, itemId, lotNumber])
   @@index([siteId, expiresOn])
@@ -1551,4 +1560,65 @@ model ShiftAssignment {
   @@index([employeeId, shiftId])
   @@index([organizationId])
   @@map("shift_assignment")
+}
+
+// ---------------------------------------------------------------------------
+// Domain — Phase 3
+//
+// Physical inventory. Posting a count writes one COUNT movement per non-zero
+// variance; `src/lib/stock-count.ts` builds those movements so the sign and
+// rounding rules live in one place. See docs/ERD.md.
+// ---------------------------------------------------------------------------
+
+enum StockCountStatus {
+  DRAFT
+  POSTED
+  CANCELLED
+}
+
+model StockCount {
+  id             String           @id @default(cuid(2))
+  organizationId String
+  organization   Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  siteId         String
+  site           Site             @relation(fields: [siteId], references: [id], onDelete: Restrict)
+  status         StockCountStatus @default(DRAFT)
+  countedAt      DateTime         @db.Date
+  postedAt       DateTime?
+  countedById    String?
+  countedBy      User?            @relation(fields: [countedById], references: [id], onDelete: SetNull)
+  note           String?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  lines StockCountLine[]
+
+  @@index([siteId, countedAt])
+  @@index([organizationId, countedAt])
+  @@map("stock_count")
+}
+
+model StockCountLine {
+  id               String       @id @default(cuid(2))
+  organizationId   String
+  organization     Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  stockCountId     String
+  stockCount       StockCount   @relation(fields: [stockCountId], references: [id], onDelete: Cascade)
+  itemId           String
+  item             Item         @relation(fields: [itemId], references: [id], onDelete: Restrict)
+  lotId            String?
+  lot              Lot?         @relation(fields: [lotId], references: [id], onDelete: SetNull)
+  expectedQuantity Decimal      @db.Decimal(14, 4)
+  countedQuantity  Decimal      @db.Decimal(14, 4)
+  variance         Decimal      @db.Decimal(14, 4)
+  unitId           String
+  unit             Unit         @relation(fields: [unitId], references: [id])
+  note             String?
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+
+  @@unique([stockCountId, lotId])
+  @@index([organizationId])
+  @@index([itemId])
+  @@map("stock_count_line")
 }

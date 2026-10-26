@@ -1,6 +1,6 @@
 # Entity–Relationship Diagram
 
-- Status: Phases 1 and 2 implemented in `prisma/schema.prisma`; Phase 3 designed only
+- Status: All three phases implemented in `prisma/schema.prisma`
 - Last updated: 2026-10-26
 - Companion decision: [ADR-0010](adr/0010-model-the-production-domain.md)
 
@@ -796,7 +796,8 @@ Physical inventory session.
 - Unique: `@@unique([stockCountId, lotId])`.
 - A `NULL` `lotId` means an item-level count, not a lot count; the application
   permits at most one such row per item and session.
-- Posting a count writes one `COUNT` movement per non-zero variance.
+- Posting a count writes one `COUNT` movement per non-zero variance;
+  `src/lib/stock-count.ts` builds those drafts and is unit-tested.
 
 ## Production
 
@@ -1444,10 +1445,9 @@ reasons — carries labels in the database.
 
 ## Implementation notes
 
-Phases 1 and 2 are implemented in `prisma/schema.prisma` and applied by
-`prisma/migrations/20261026192819_add_production_domain` and
-`prisma/migrations/20261026193339_add_planning_orders_and_team`. Phase 3
-(`StockCount`, `StockCountLine`) remains designed only.
+All three phases are implemented in `prisma/schema.prisma` and applied by the
+migrations in `prisma/migrations/`. Phase 3 (`StockCount`, `StockCountLine`)
+landed in `20261026193803_add_stock_counts`.
 
 1. Keep Better Auth models untouched apart from relation fields. Domain models
    live below the `// Domain — Phase 1` and `// Domain — Phase 2` markers.
@@ -1480,3 +1480,6 @@ Phases 1 and 2 are implemented in `prisma/schema.prisma` and applied by
    forbidden.
 6. Add composite indexes in the same migration as new tables; the recall and
    expiry queries are the ones that will grow.
+7. Posting an inventory session uses `src/lib/stock-count.ts`:
+   `computeVariance` and `countMovements` produce the signed `COUNT` movements
+   and skip zero variances. The service that persists them does not exist yet.
