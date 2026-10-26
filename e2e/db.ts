@@ -40,3 +40,27 @@ export async function userExists(email: string) {
 
   return result.rowCount === 1;
 }
+
+export async function deleteOrganizationBySlug(slug: string) {
+  await withClient((client) =>
+    client.query('DELETE FROM "organization" WHERE slug = $1', [slug]),
+  );
+}
+
+export async function organizationDefaults(organizationId: string) {
+  return withClient(async (client) => {
+    const settings = await client.query(
+      'SELECT 1 FROM "organization_setting" WHERE "organizationId" = $1',
+      [organizationId],
+    );
+    const lossReasons = await client.query(
+      'SELECT 1 FROM "loss_reason" WHERE "organizationId" = $1',
+      [organizationId],
+    );
+
+    return {
+      settings: settings.rowCount,
+      lossReasons: lossReasons.rowCount,
+    };
+  });
+}
