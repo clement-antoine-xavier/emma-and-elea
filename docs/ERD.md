@@ -1,6 +1,6 @@
 # Entity–Relationship Diagram
 
-- Status: Phase 1 implemented in `prisma/schema.prisma`; Phase 2 and 3 designed only
+- Status: Phases 1 and 2 implemented in `prisma/schema.prisma`; Phase 3 designed only
 - Last updated: 2026-10-26
 - Companion decision: [ADR-0010](adr/0010-model-the-production-domain.md)
 
@@ -864,7 +864,7 @@ batch costing attach to.
 | `organizationId` | `String` | no | | → `Organization`, cascade |
 | `siteId` | `String` | no | | → `Site` |
 | `recipeVersionId` | `String` | no | | → `RecipeVersion`; **pins the version** |
-| `productionPlanLineId` | `String?` | yes | | → `ProductionPlanLine`, unique; **Phase 2, not created yet** |
+| `productionPlanLineId` | `String?` | yes | | → `ProductionPlanLine`, unique |
 | `code` | `String` | no | | Batch number |
 | `status` | `BatchStatus` | no | `PLANNED` | |
 | `plannedQuantity` | `Decimal(14,4)` | no | | |
@@ -874,7 +874,7 @@ batch costing attach to.
 | `startedAt` | `DateTime?` | yes | | |
 | `completedAt` | `DateTime?` | yes | | |
 | `producedOn` | `DateTime?` | yes | | `@db.Date`, drives expiry and costing |
-| `operatorId` | `String?` | yes | | → `EmployeeProfile`, `SetNull`; **Phase 2, not created yet** |
+| `operatorId` | `String?` | yes | | → `EmployeeProfile`, `SetNull` |
 | `note` | `String?` | yes | | |
 
 - Unique: `@@unique([organizationId, code])`.
@@ -1444,16 +1444,18 @@ reasons — carries labels in the database.
 
 ## Implementation notes
 
-Phase 1 is implemented in `prisma/schema.prisma` and applied by
-`prisma/migrations/20261026192819_add_production_domain`. The rules that still
-matter when Phase 2 is added:
+Phases 1 and 2 are implemented in `prisma/schema.prisma` and applied by
+`prisma/migrations/20261026192819_add_production_domain` and
+`prisma/migrations/20261026193339_add_planning_orders_and_team`. Phase 3
+(`StockCount`, `StockCountLine`) remains designed only.
 
 1. Keep Better Auth models untouched apart from relation fields. Domain models
-   live below the `// Domain — Phase 1` marker. `npm run auth:generate` adds
-   missing fields and preserves existing ones, so the relation arrays on `User`
-   and `Organization` survive regeneration; it reports "your schema is already
-   up to date" on the current schema.
-2. The migration contains the raw-SQL objects Prisma cannot express:
+   live below the `// Domain — Phase 1` and `// Domain — Phase 2` markers.
+   `npm run auth:generate` adds missing fields and preserves existing ones, so
+   the relation arrays on `User`, `Member` and `Organization` survive
+   regeneration; on the current schema it reports "your schema is already up to
+   date".
+2. The Phase 1 migration contains the raw-SQL objects Prisma cannot express:
    - partial unique index for one published version per recipe (invariant 3);
    - `CHECK (quantity_remaining >= 0)` on `lot` (invariant 8);
    - `CHECK` on `cost_snapshot` and `waste_record` for invariants 17 and 19;
@@ -1463,12 +1465,18 @@ matter when Phase 2 is added:
      `cost_snapshot_line` (invariant 10). Deletes are left to the application
      because the tenant cascades must still be able to remove a whole
      organization.
-3. `Unit` and `Allergen` are seeded by the migration, not at application
+3. `Unit` and `Allergen` are seeded by the Phase 1 migration, not at application
    startup, so every environment has identical reference data.
-4. Still open: `OrganizationSetting` and the default `LossReason` rows must be
-   created when an organization is created, or when the first site is added.
-   Without them, costing and waste recording cannot start.
-5. Put unit conversion in one module (`src/lib/units.ts`) and forbid ad-hoc
-   `factorToBase` arithmetic elsewhere.
+4. Tenant bootstrap lives in `ensureOrganizationDefaults()`
+   (`src/lib/organization-defaults.ts`): it upserts `OrganizationSetting` and
+   inserts the eight default `LossReason` rows. It is idempotent and wired to a
+   **`hooks.after` endpoint hook** on `/organization/create`.
+   `databaseHooks.organization` does not work: the organization plugin writes
+   the row through the raw adapter and bypasses database hooks. Covered by
+   `e2e/organization.spec.ts`.
+5. Unit conversion lives in `src/lib/units.ts`; `assertBaseUnit` enforces that
+   an item stocks in the base unit of its kind, and `convertQuantity` refuses
+   cross-kind conversions. Ad-hoc `factorToBase` arithmetic elsewhere is
+   forbidden.
 6. Add composite indexes in the same migration as new tables; the recall and
    expiry queries are the ones that will grow.

@@ -34,6 +34,7 @@ model User {
   stockMovementsCreated    StockMovement[]
   costSnapshotsCreated     CostSnapshot[]
   wasteRecordsRecorded     WasteRecord[]
+  absencesDecided          Absence[]
 
   @@unique([email])
   @@map("user")
@@ -128,6 +129,24 @@ model Organization {
   wasteRecords           WasteRecord[]
   salesDaily             SalesDaily[]
 
+  // Phase 2
+  productionPlans     ProductionPlan[]
+  productionPlanLines ProductionPlanLine[]
+  productionTasks     ProductionTask[]
+  customers           Customer[]
+  orders              Order[]
+  orderLines          OrderLine[]
+  dispatches          Dispatch[]
+  dispatchLines       DispatchLine[]
+  events              Event[]
+  employeeProfiles    EmployeeProfile[]
+  skills              Skill[]
+  employeeSkills      EmployeeSkill[]
+  availability        Availability[]
+  absences            Absence[]
+  shifts              Shift[]
+  shiftAssignments    ShiftAssignment[]
+
   @@unique([slug])
   @@map("organization")
 }
@@ -140,6 +159,8 @@ model Member {
   user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   role           String       @default("member")
   createdAt      DateTime
+
+  employeeProfile EmployeeProfile?
 
   @@index([organizationId])
   @@index([userId])
@@ -331,6 +352,12 @@ model Site {
   costSnapshots     CostSnapshot[]
   wasteRecords      WasteRecord[]
   salesDaily        SalesDaily[]
+  productionPlans   ProductionPlan[]
+  orders            Order[]
+  dispatches        Dispatch[]
+  events            Event[]
+  employeeProfiles  EmployeeProfile[]
+  shifts            Shift[]
 
   @@unique([organizationId, code])
   @@index([organizationId, isActive])
@@ -421,6 +448,9 @@ model Unit {
   productionBatchInputs  ProductionBatchInput[]
   productionBatchOutputs ProductionBatchOutput[]
   productionBatches      ProductionBatch[]
+  productionPlanLines    ProductionPlanLine[]
+  orderLines             OrderLine[]
+  dispatchLines          DispatchLine[]
   wasteRecords           WasteRecord[]
   salesDaily             SalesDaily[]
 
@@ -466,6 +496,9 @@ model Item {
   costSnapshotLines      CostSnapshotLine[]
   wasteRecords           WasteRecord[]
   salesDaily             SalesDaily[]
+  productionPlanLines    ProductionPlanLine[]
+  orderLines             OrderLine[]
+  dispatchLines          DispatchLine[]
 
   @@unique([organizationId, code])
   @@index([organizationId, type])
@@ -657,7 +690,8 @@ model Recipe {
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
 
-  versions RecipeVersion[] @relation("RecipeVersions")
+  versions            RecipeVersion[]      @relation("RecipeVersions")
+  productionPlanLines ProductionPlanLine[]
 
   @@unique([organizationId, code])
   @@index([organizationId, outputItemId, isDefault])
@@ -864,6 +898,7 @@ model Lot {
   batchOutputs      ProductionBatchOutput[]
   costSnapshotLines CostSnapshotLine[]
   wasteRecords      WasteRecord[]
+  dispatchLines     DispatchLine[]
 
   @@unique([organizationId, siteId, itemId, lotNumber])
   @@index([siteId, expiresOn])
@@ -900,32 +935,37 @@ model StockMovement {
 }
 
 model ProductionBatch {
-  id              String        @id @default(cuid(2))
-  organizationId  String
-  organization    Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  siteId          String
-  site            Site          @relation(fields: [siteId], references: [id], onDelete: Restrict)
-  recipeVersionId String
-  recipeVersion   RecipeVersion @relation(fields: [recipeVersionId], references: [id], onDelete: Restrict)
-  code            String
-  status          BatchStatus   @default(PLANNED)
-  plannedQuantity Decimal       @db.Decimal(14, 4)
-  actualQuantity  Decimal?      @db.Decimal(14, 4)
-  unitId          String
-  unit            Unit          @relation(fields: [unitId], references: [id])
-  plannedStartAt  DateTime?
-  startedAt       DateTime?
-  completedAt     DateTime?
-  producedOn      DateTime?     @db.Date
-  note            String?
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
+  id                   String              @id @default(cuid(2))
+  organizationId       String
+  organization         Organization        @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  siteId               String
+  site                 Site                @relation(fields: [siteId], references: [id], onDelete: Restrict)
+  recipeVersionId      String
+  recipeVersion        RecipeVersion       @relation(fields: [recipeVersionId], references: [id], onDelete: Restrict)
+  productionPlanLineId String?             @unique
+  productionPlanLine   ProductionPlanLine? @relation(fields: [productionPlanLineId], references: [id], onDelete: SetNull)
+  operatorId           String?
+  operator             EmployeeProfile?    @relation(fields: [operatorId], references: [id], onDelete: SetNull)
+  code                 String
+  status               BatchStatus         @default(PLANNED)
+  plannedQuantity      Decimal             @db.Decimal(14, 4)
+  actualQuantity       Decimal?            @db.Decimal(14, 4)
+  unitId               String
+  unit                 Unit                @relation(fields: [unitId], references: [id])
+  plannedStartAt       DateTime?
+  startedAt            DateTime?
+  completedAt          DateTime?
+  producedOn           DateTime?           @db.Date
+  note                 String?
+  createdAt            DateTime            @default(now())
+  updatedAt            DateTime            @updatedAt
 
   inputs        ProductionBatchInput[]
   outputs       ProductionBatchOutput[]
   costSnapshots CostSnapshot[]
   lots          Lot[]
   wasteRecords  WasteRecord[]
+  tasks         ProductionTask[]
 
   @@unique([organizationId, code])
   @@index([siteId, producedOn])
@@ -1058,4 +1098,457 @@ model SalesDaily {
   @@unique([siteId, itemId, businessDate, channel])
   @@index([organizationId, businessDate])
   @@map("sales_daily")
+}
+
+// ---------------------------------------------------------------------------
+// Domain — Phase 2
+//
+// Planning, the commercial chain (customers, orders, lot-linked dispatches),
+// calendar events and the team. See docs/ERD.md.
+// ---------------------------------------------------------------------------
+
+enum PlanStatus {
+  DRAFT
+  CONFIRMED
+  CLOSED
+  CANCELLED
+}
+
+enum PlanSource {
+  FORECAST
+  ORDERS
+  MANUAL
+  MIXED
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  DONE
+  BLOCKED
+}
+
+enum CustomerType {
+  BUSINESS
+  INDIVIDUAL
+}
+
+enum OrderStatus {
+  DRAFT
+  CONFIRMED
+  IN_PRODUCTION
+  READY
+  DELIVERED
+  CANCELLED
+}
+
+enum DispatchStatus {
+  DRAFT
+  DISPATCHED
+  CANCELLED
+}
+
+enum EventKind {
+  LOCAL_EVENT
+  HOLIDAY
+  SCHOOL_BREAK
+  WEATHER
+  OTHER
+}
+
+enum SkillLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+  EXPERT
+}
+
+enum AbsenceKind {
+  VACATION
+  SICK
+  TRAINING
+  OTHER
+}
+
+enum AbsenceStatus {
+  REQUESTED
+  APPROVED
+  REJECTED
+}
+
+enum ShiftKind {
+  PRODUCTION
+  SALES
+  DELIVERY
+  CLEANING
+  OTHER
+}
+
+enum AssignmentStatus {
+  PLANNED
+  CONFIRMED
+  ABSENT
+}
+
+model ProductionPlan {
+  id             String       @id @default(cuid(2))
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  siteId         String
+  site           Site         @relation(fields: [siteId], references: [id], onDelete: Restrict)
+  plannedFor     DateTime     @db.Date
+  status         PlanStatus   @default(DRAFT)
+  source         PlanSource   @default(MANUAL)
+  note           String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  lines ProductionPlanLine[]
+
+  @@index([siteId, plannedFor])
+  @@index([organizationId, plannedFor])
+  @@map("production_plan")
+}
+
+model ProductionPlanLine {
+  id               String         @id @default(cuid(2))
+  organizationId   String
+  organization     Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  productionPlanId String
+  productionPlan   ProductionPlan @relation(fields: [productionPlanId], references: [id], onDelete: Cascade)
+  itemId           String
+  item             Item           @relation(fields: [itemId], references: [id], onDelete: Restrict)
+  recipeId         String?
+  recipe           Recipe?        @relation(fields: [recipeId], references: [id], onDelete: SetNull)
+  orderLineId      String?
+  orderLine        OrderLine?     @relation(fields: [orderLineId], references: [id], onDelete: SetNull)
+  plannedQuantity  Decimal        @db.Decimal(14, 4)
+  unitId           String
+  unit             Unit           @relation(fields: [unitId], references: [id])
+  note             String?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  batch ProductionBatch?
+
+  @@unique([productionPlanId, itemId, orderLineId])
+  @@index([organizationId])
+  @@index([itemId])
+  @@map("production_plan_line")
+}
+
+model ProductionTask {
+  id                 String           @id @default(cuid(2))
+  organizationId     String
+  organization       Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  productionBatchId  String?
+  productionBatch    ProductionBatch? @relation(fields: [productionBatchId], references: [id], onDelete: Cascade)
+  requiredSkillId    String?
+  requiredSkill      Skill?           @relation(fields: [requiredSkillId], references: [id], onDelete: SetNull)
+  assignedEmployeeId String?
+  assignedEmployee   EmployeeProfile? @relation(fields: [assignedEmployeeId], references: [id], onDelete: SetNull)
+  title              String
+  description        String?
+  status             TaskStatus       @default(TODO)
+  estimatedMinutes   Int?
+  plannedStartAt     DateTime?
+  plannedEndAt       DateTime?
+  position           Int              @default(0)
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+
+  @@index([organizationId, plannedStartAt])
+  @@index([assignedEmployeeId, status])
+  @@index([requiredSkillId])
+  @@map("production_task")
+}
+
+model Customer {
+  id             String       @id @default(cuid(2))
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  code           String?
+  name           String
+  type           CustomerType @default(BUSINESS)
+  contactName    String?
+  email          String?
+  phone          String?
+  addressLine1   String?
+  postalCode     String?
+  city           String?
+  country        String       @default("FR")
+  vatNumber      String?
+  note           String?
+  archivedAt     DateTime?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  orders     Order[]
+  dispatches Dispatch[]
+
+  @@unique([organizationId, code])
+  @@index([organizationId, name])
+  @@map("customer")
+}
+
+model Order {
+  id             String       @id @default(cuid(2))
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  siteId         String
+  site           Site         @relation(fields: [siteId], references: [id], onDelete: Restrict)
+  customerId     String
+  customer       Customer     @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  number         String
+  status         OrderStatus  @default(DRAFT)
+  requestedFor   DateTime     @db.Date
+  currency       String       @default("EUR") @db.VarChar(3)
+  totalAmount    Decimal      @default(0) @db.Decimal(12, 4)
+  note           String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  lines      OrderLine[]
+  dispatches Dispatch[]
+
+  @@unique([organizationId, number])
+  @@index([siteId, requestedFor, status])
+  @@index([customerId])
+  @@map("order")
+}
+
+model OrderLine {
+  id                String       @id @default(cuid(2))
+  organizationId    String
+  organization      Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  orderId           String
+  order             Order        @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  itemId            String
+  item              Item         @relation(fields: [itemId], references: [id], onDelete: Restrict)
+  quantity          Decimal      @db.Decimal(14, 4)
+  unitId            String
+  unit              Unit         @relation(fields: [unitId], references: [id])
+  unitPrice         Decimal      @db.Decimal(12, 4)
+  fulfilledQuantity Decimal      @default(0) @db.Decimal(14, 4)
+  note              String?
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+
+  planLines ProductionPlanLine[]
+
+  @@index([orderId])
+  @@index([organizationId])
+  @@map("order_line")
+}
+
+model Dispatch {
+  id             String         @id @default(cuid(2))
+  organizationId String
+  organization   Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  siteId         String
+  site           Site           @relation(fields: [siteId], references: [id], onDelete: Restrict)
+  customerId     String?
+  customer       Customer?      @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  orderId        String?
+  order          Order?         @relation(fields: [orderId], references: [id], onDelete: SetNull)
+  number         String
+  status         DispatchStatus @default(DRAFT)
+  dispatchedAt   DateTime?
+  carrier        String?
+  note           String?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  lines DispatchLine[]
+
+  @@unique([organizationId, number])
+  @@index([siteId, dispatchedAt])
+  @@index([customerId])
+  @@map("dispatch")
+}
+
+model DispatchLine {
+  id             String       @id @default(cuid(2))
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  dispatchId     String
+  dispatch       Dispatch     @relation(fields: [dispatchId], references: [id], onDelete: Cascade)
+  itemId         String
+  item           Item         @relation(fields: [itemId], references: [id], onDelete: Restrict)
+  lotId          String
+  lot            Lot          @relation(fields: [lotId], references: [id], onDelete: Restrict)
+  quantity       Decimal      @db.Decimal(14, 4)
+  unitId         String
+  unit           Unit         @relation(fields: [unitId], references: [id])
+  unitPrice      Decimal?     @db.Decimal(12, 4)
+  note           String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@index([lotId])
+  @@index([organizationId])
+  @@map("dispatch_line")
+}
+
+model Event {
+  id                String       @id @default(cuid(2))
+  organizationId    String
+  organization      Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  siteId            String?
+  site              Site?        @relation(fields: [siteId], references: [id], onDelete: SetNull)
+  name              String
+  kind              EventKind    @default(LOCAL_EVENT)
+  startsOn          DateTime     @db.Date
+  endsOn            DateTime     @db.Date
+  expectedUpliftPct Decimal?     @db.Decimal(5, 2)
+  note              String?
+  archivedAt        DateTime?
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+
+  @@index([organizationId, startsOn, endsOn])
+  @@map("event")
+}
+
+model EmployeeProfile {
+  id                  String       @id @default(cuid(2))
+  organizationId      String
+  organization        Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  memberId            String       @unique
+  member              Member       @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  siteId              String?
+  site                Site?        @relation(fields: [siteId], references: [id], onDelete: SetNull)
+  jobTitle            String?
+  weeklyContractHours Decimal?     @db.Decimal(5, 2)
+  hiredOn             DateTime?    @db.Date
+  color               String?
+  isActive            Boolean      @default(true)
+  archivedAt          DateTime?
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+
+  skills           EmployeeSkill[]
+  availability     Availability[]
+  absences         Absence[]
+  shiftAssignments ShiftAssignment[]
+  tasksAssigned    ProductionTask[]
+  operatedBatches  ProductionBatch[]
+
+  @@index([organizationId, isActive])
+  @@map("employee_profile")
+}
+
+model Skill {
+  id             String       @id @default(cuid(2))
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  code           String
+  name           String
+  description    String?
+  archivedAt     DateTime?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  employeeSkills EmployeeSkill[]
+  tasks          ProductionTask[]
+
+  @@unique([organizationId, code])
+  @@map("skill")
+}
+
+model EmployeeSkill {
+  id             String          @id @default(cuid(2))
+  organizationId String
+  organization   Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  employeeId     String
+  employee       EmployeeProfile @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  skillId        String
+  skill          Skill           @relation(fields: [skillId], references: [id], onDelete: Cascade)
+  level          SkillLevel      @default(INTERMEDIATE)
+  certifiedOn    DateTime?       @db.Date
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  @@unique([employeeId, skillId])
+  @@index([organizationId])
+  @@map("employee_skill")
+}
+
+model Availability {
+  id             String          @id @default(cuid(2))
+  organizationId String
+  organization   Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  employeeId     String
+  employee       EmployeeProfile @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  weekday        Int
+  startMinute    Int
+  endMinute      Int
+  validFrom      DateTime?       @db.Date
+  validTo        DateTime?       @db.Date
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  @@unique([employeeId, weekday, startMinute])
+  @@index([organizationId])
+  @@map("availability")
+}
+
+model Absence {
+  id             String          @id @default(cuid(2))
+  organizationId String
+  organization   Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  employeeId     String
+  employee       EmployeeProfile @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  kind           AbsenceKind     @default(OTHER)
+  startsAt       DateTime
+  endsAt         DateTime
+  status         AbsenceStatus   @default(REQUESTED)
+  decidedById    String?
+  decidedBy      User?           @relation(fields: [decidedById], references: [id], onDelete: SetNull)
+  note           String?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  @@index([employeeId, startsAt, endsAt])
+  @@index([organizationId])
+  @@map("absence")
+}
+
+model Shift {
+  id             String       @id @default(cuid(2))
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  siteId         String
+  site           Site         @relation(fields: [siteId], references: [id], onDelete: Restrict)
+  startsAt       DateTime
+  endsAt         DateTime
+  kind           ShiftKind    @default(PRODUCTION)
+  note           String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  assignments ShiftAssignment[]
+
+  @@index([siteId, startsAt])
+  @@index([organizationId, startsAt])
+  @@map("shift")
+}
+
+model ShiftAssignment {
+  id             String           @id @default(cuid(2))
+  organizationId String
+  organization   Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  shiftId        String
+  shift          Shift            @relation(fields: [shiftId], references: [id], onDelete: Cascade)
+  employeeId     String
+  employee       EmployeeProfile  @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  role           String?
+  status         AssignmentStatus @default(PLANNED)
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  @@unique([shiftId, employeeId])
+  @@index([employeeId, shiftId])
+  @@index([organizationId])
+  @@map("shift_assignment")
 }
