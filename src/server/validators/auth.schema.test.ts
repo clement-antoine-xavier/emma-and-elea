@@ -1,4 +1,4 @@
-import { createAuthSchema } from "./auth";
+import { createAuthSchema } from "./auth.schema";
 import en from "../../../messages/en.json";
 
 const t = (key: keyof typeof en.Auth.validation) => en.Auth.validation[key];

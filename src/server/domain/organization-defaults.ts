@@ -1,12 +1,6 @@
-import { prisma } from "./prisma";
-
 /**
- * Per-organization bootstrap. Costing and waste recording both need these
- * rows, so they are created with the organization rather than lazily on first
- * use. The function is idempotent and can be re-run to repair a tenant.
- *
- * Called from the Better Auth `organization.create.after` hook in
- * `src/lib/auth.ts`; see `docs/ERD.md`, implementation notes.
+ * Default rows created with every organization. Costing and waste recording
+ * need them, so they are bootstrapped rather than created lazily.
  */
 
 export interface DefaultLossReason {
@@ -83,31 +77,3 @@ export const DEFAULT_LOSS_REASONS: readonly DefaultLossReason[] = [
     sortOrder: 80,
   },
 ];
-
-/**
- * Creates the organization's settings row and its default loss reasons.
- * Safe to call more than once: settings are upserted and loss reasons are
- * inserted with `skipDuplicates` against `@@unique([organizationId, code])`.
- */
-export async function ensureOrganizationDefaults(
-  organizationId: string,
-): Promise<void> {
-  await prisma.$transaction([
-    prisma.organizationSetting.upsert({
-      where: { organizationId },
-      create: { organizationId },
-      update: {},
-    }),
-    prisma.lossReason.createMany({
-      data: DEFAULT_LOSS_REASONS.map((reason) => ({
-        organizationId,
-        code: reason.code,
-        labelFr: reason.labelFr,
-        labelEn: reason.labelEn,
-        category: reason.category,
-        sortOrder: reason.sortOrder,
-      })),
-      skipDuplicates: true,
-    }),
-  ]);
-}

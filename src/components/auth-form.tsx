@@ -18,7 +18,7 @@ import {
   createAuthSchema,
   type AuthFormValues,
   type AuthMode,
-} from '@/lib/validation/auth';
+} from '@/server/validators/auth.schema';
 
 type AuthError = {
   code?: string;

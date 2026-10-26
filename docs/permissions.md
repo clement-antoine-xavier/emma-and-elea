@@ -111,16 +111,22 @@ used by Better Auth's own organization endpoints and must stay in the matrix.
 
 ## Enforcement
 
-- Pages call `requireSession`, `requireOrganization`, `requirePermission` or
-  `requireAnyPermission` from `src/lib/access.ts`. Unknown roles fail closed.
-- Server actions re-check the permission and the target's organization; they
-  return a translation key instead of rendering a 404 mid-submit.
-- Tenant-scoped queries filter by the `organizationId` resolved from the
-  session, never from the request body.
+- Pages call `requireSession`, `requireOrganizationActor`,
+  `requirePermission` or `requireAnyPermission` from
+  `src/server/auth/actor.ts`. Unknown roles fail closed.
+- Services re-check the permission and the target's organization; Server
+  Actions only validate input, call a service, and map domain errors to
+  translation keys.
+- Tenant-scoped repositories always receive the `organizationId` resolved from
+  the session, never from the request body.
 - Cost-bearing queries select fields explicitly and omit cost columns unless
   the role has `cost:read`. The browser is never trusted to hide them.
 - Client-side checks (`can()`) only shape the UI. They are not the enforcement
   boundary.
+- ESLint forbids `src/app/**` from importing Prisma, Better Auth or
+  repositories, and forbids `src/components/**` from importing server layers.
+
+See [ADR-0012](adr/0012-layer-the-backend.md) for the layer boundaries.
 
 ## Onboarding and invitations
 

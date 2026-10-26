@@ -92,12 +92,26 @@ npm run auth:create-admin -- \
   --email admin@example.com \
   --password 'change-me' \
   --name "Admin" \
-  --role admin
+  --role support
 ```
+
+## Backend architecture
+
+The backend is layered: entry point → service → repository → Prisma.
+
+- `src/app/**`, `src/app/actions/**`: Server Components, Server Actions and Route Handlers. They resolve the actor, validate input, call one service, and map errors.
+- `src/server/services/`: authorization, tenant rules and use cases.
+- `src/server/repositories/`: every Prisma query and row-to-DTO mapping.
+- `src/server/auth/`: session actor resolution, Better Auth gateway and role wiring.
+- `src/server/validators/`: Zod schemas shared by Server Actions and forms.
+- `src/server/domain/`: pure domain calculations and expected errors.
+
+See [ADR-0012](docs/adr/0012-layer-the-backend.md) for the rules and the ESLint
+boundaries.
 
 ## Forms
 
-All forms use Zod schemas in `src/lib/validation/` with React Hook Form. The reusable Astryx field wrapper is `src/components/form-text-input.tsx`; server errors render in an Astryx `Banner`. Schemas receive a translator so validation messages follow the active locale.
+All forms use Zod schemas in `src/server/validators/` with React Hook Form. The reusable Astryx field wrapper is `src/components/form-text-input.tsx`; server errors render in an Astryx `Banner`. Schemas receive a translator so validation messages follow the active locale.
 
 ## Internationalization
 

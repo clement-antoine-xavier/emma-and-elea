@@ -117,6 +117,6 @@ application's `can()` helper.
 
 - [Permission matrix](../permissions.md)
 - [Roles and statements](../../src/lib/permissions.ts)
-- [Access helpers](../../src/lib/access.ts)
+- [Access helpers](../../src/server/auth/actor.ts)
 - [Auth configuration](../../src/lib/auth.ts)
 - [ADR-0004](0004-use-better-auth-with-admin-and-organization.md)

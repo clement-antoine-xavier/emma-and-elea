@@ -6,7 +6,10 @@ import {Button} from "@astryxdesign/core/Button";
 import {Stack} from "@astryxdesign/core/Stack";
 import {useTranslations} from "next-intl";
 import {useRouter} from "@/i18n/navigation";
-import {authClient} from "@/lib/auth-client";
+import {
+  acceptInvitationAction,
+  type InvitationActionError,
+} from "@/app/actions/invitation.actions";
 
 export function AcceptInvitationButton({
   invitationId,
@@ -15,21 +18,32 @@ export function AcceptInvitationButton({
 }) {
   const t = useTranslations("Invitation");
   const router = useRouter();
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<InvitationActionError | null>(null);
   const [isAccepting, setIsAccepting] = useState(false);
+
+  function errorMessage(code: InvitationActionError): string {
+    switch (code) {
+      case "expired":
+        return t("expired");
+      case "unavailable":
+        return t("cancelled");
+      case "wrongAccount":
+        return t("wrongAccountGeneric");
+      default:
+        return t("error");
+    }
+  }
 
   async function accept() {
     setError(null);
     setIsAccepting(true);
 
-    const result = await authClient.organization.acceptInvitation({
-      invitationId,
-    });
+    const result = await acceptInvitationAction({invitationId});
 
     setIsAccepting(false);
 
-    if (result.error) {
-      setError(result.error.message ?? t("error"));
+    if (!result.ok) {
+      setError(result.error);
       return;
     }
 
@@ -43,7 +57,7 @@ export function AcceptInvitationButton({
         <Banner
           status="error"
           title={t("error")}
-          description={error}
+          description={errorMessage(error)}
           isDismissable
           onDismiss={() => setError(null)}
         />

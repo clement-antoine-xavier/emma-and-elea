@@ -20,6 +20,7 @@ decision.
 | [0009](0009-use-next-intl-with-locale-prefixed-routing.md) | Use next-intl with locale-prefixed routing | Accepted | 2026-10-26 |
 | [0010](0010-model-the-production-domain.md) | Model the production domain around items, recipe versions and a stock ledger | Accepted | 2026-10-26 |
 | [0011](0011-model-organization-roles-and-permissions.md) | Model organization roles and permissions in code | Accepted | 2026-10-26 |
+| [0012](0012-layer-the-backend.md) | Layer the backend into services and repositories | Accepted | 2026-10-26 |
 
 ## Creating a new ADR
 

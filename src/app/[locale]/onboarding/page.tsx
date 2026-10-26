@@ -7,13 +7,13 @@ import {hasLocale} from "next-intl";
 import {getLocale, getTranslations} from "next-intl/server";
 import {redirect} from "@/i18n/navigation";
 import {routing} from "@/i18n/routing";
-import {getAccessContext, requireSession} from "@/lib/access";
+import {organizationService} from "@/server/services/container";
+import {requireSession} from "@/server/auth/actor";
 import {LocaleSwitcher} from "@/components/locale-switcher";
 import {OnboardingForm} from "@/components/onboarding-form";
 import {ThemeSwitcher} from "@/components/theme-switcher";
 
-// Session and search params are request data; keep the route blocking
-// until the dashboard is migrated to a streamed shell.
+// Session data keeps this route blocking until it is moved to a streamed shell.
 export const instant = false;
 
 type LocaleParams = {params: Promise<{locale: string}>};
@@ -33,11 +33,10 @@ export async function generateMetadata({
 }
 
 export default async function OnboardingPage() {
-  await requireSession();
+  const actor = await requireSession();
+  const {hasOrganization} = organizationService.getOnboardingState(actor);
 
-  const context = await getAccessContext();
-
-  if (context?.membership) {
+  if (hasOrganization) {
     redirect({href: "/dashboard", locale: await getLocale()});
   }
 

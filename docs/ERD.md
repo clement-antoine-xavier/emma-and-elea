@@ -1469,7 +1469,7 @@ landed in `20261026193803_add_stock_counts`.
 3. `Unit` and `Allergen` are seeded by the Phase 1 migration, not at application
    startup, so every environment has identical reference data.
 4. Tenant bootstrap lives in `ensureOrganizationDefaults()`
-   (`src/lib/organization-defaults.ts`): it upserts `OrganizationSetting` and
+   (`src/server/services/organization-bootstrap.service.ts`): it upserts `OrganizationSetting` and
    inserts the eight default `LossReason` rows. It is idempotent and wired to a
    **`hooks.after` endpoint hook** on `/organization/create`.
    `databaseHooks.organization` does not work: the organization plugin writes

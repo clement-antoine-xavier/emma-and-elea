@@ -81,7 +81,6 @@ export const ROLE_PERMISSIONS: Record<OrgRole, readonly Permission[]> = {
 
   production_manager: [
     "organization:read",
-    "member:read",
     "site:read",
     "equipment:read",
     "equipment:write",
@@ -120,7 +119,6 @@ export const ROLE_PERMISSIONS: Record<OrgRole, readonly Permission[]> = {
 
   stock_manager: [
     "organization:read",
-    "member:read",
     "site:read",
     "equipment:read",
     "catalog:read",

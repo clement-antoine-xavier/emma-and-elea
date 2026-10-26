@@ -1,12 +1,11 @@
 import type {ReactNode} from "react";
 import {AppShell} from "@astryxdesign/core/AppShell";
 import {getTranslations} from "next-intl/server";
-import {DashboardNav, type DashboardNavItem} from "@/components/dashboard-nav";
-import {can} from "@/lib/permissions";
-import {requireOrganization} from "@/lib/access";
+import {DashboardNav} from "@/components/dashboard-nav";
+import {requireOrganizationActor} from "@/server/auth/actor";
+import {dashboardService} from "@/server/services/container";
 
-// Session and search params are request data; keep the route blocking
-// until the dashboard is migrated to a streamed shell.
+// Session data keeps this route blocking until it is moved to a streamed shell.
 export const instant = false;
 
 export default async function DashboardLayout({
@@ -14,14 +13,9 @@ export default async function DashboardLayout({
 }: {
   children: ReactNode;
 }) {
-  const context = await requireOrganization();
+  const actor = await requireOrganizationActor();
   const tRoles = await getTranslations("Roles");
-
-  const navItems: DashboardNavItem[] = ["overview"];
-
-  if (can(context.role, "member:read")) {
-    navItems.push("team");
-  }
+  const {items} = dashboardService.getNavigation(actor);
 
   return (
     <AppShell
@@ -31,8 +25,8 @@ export default async function DashboardLayout({
       mobileNav={{breakpoint: "lg"}}
       topNav={
         <DashboardNav
-          items={navItems}
-          roleLabel={tRoles(`${context.role}.label`)}
+          items={items}
+          roleLabel={tRoles(`${actor.role}.label`)}
         />
       }
     >

@@ -374,7 +374,8 @@
       "lastOwner": "The last owner cannot be removed.",
       "generic": "Something went wrong. Please try again.",
       "alreadyMember": "This person is already a member.",
-      "alreadyInvited": "An invitation is already pending for this email."
+      "alreadyInvited": "An invitation is already pending for this email.",
+      "unauthenticated": "Your session has expired. Sign in again."
     },
     "validation": {
       "emailInvalid": "Enter a valid email address.",
@@ -394,6 +395,7 @@
     "expired": "This invitation has expired.",
     "cancelled": "This invitation is no longer available.",
     "wrongAccount": "This invitation was sent to {email}. Sign in with that address.",
-    "error": "Could not accept the invitation."
+    "error": "Could not accept the invitation.",
+    "wrongAccountGeneric": "Sign in with the email address that received the invitation."
   }
 }

@@ -7,13 +7,11 @@ import {notFound} from "next/navigation";
 import {hasLocale} from "next-intl";
 import {getTranslations} from "next-intl/server";
 import {routing} from "@/i18n/routing";
-import {requirePermission} from "@/lib/access";
-import {assignableRolesFor} from "@/lib/permissions";
-import {prisma} from "@/lib/prisma";
+import {requirePermission} from "@/server/auth/actor";
+import {teamService} from "@/server/services/container";
 import {TeamManager} from "@/components/team-manager";
 
-// Session and search params are request data; keep the route blocking
-// until the dashboard is migrated to a streamed shell.
+// Session data keeps this route blocking until it is moved to a streamed shell.
 export const instant = false;
 
 type LocaleParams = {params: Promise<{locale: string}>};
@@ -33,31 +31,9 @@ export async function generateMetadata({
 }
 
 export default async function TeamPage() {
-  const context = await requirePermission("member:read");
+  const actor = await requirePermission("member:read");
   const t = await getTranslations("Team");
-
-  const [members, invitations] = await Promise.all([
-    prisma.member.findMany({
-      where: {organizationId: context.organization.id},
-      orderBy: {createdAt: "asc"},
-      select: {
-        id: true,
-        userId: true,
-        role: true,
-        createdAt: true,
-        user: {select: {name: true, email: true}},
-      },
-    }),
-    prisma.invitation.findMany({
-      where: {
-        organizationId: context.organization.id,
-        status: "pending",
-        expiresAt: {gt: new Date()},
-      },
-      orderBy: {createdAt: "asc"},
-      select: {id: true, email: true, role: true, expiresAt: true},
-    }),
-  ]);
+  const view = await teamService.getTeamView(actor);
 
   return (
     <Section padding={6} minHeight="100%">
@@ -68,26 +44,26 @@ export default async function TeamPage() {
               {t("title")}
             </Heading>
             <Text type="large" color="secondary">
-              {t("intro", {organization: context.organization.name})}
+              {t("intro", {organization: actor.organization.name})}
             </Text>
           </Stack>
 
           <TeamManager
-            currentUserId={context.user.id}
-            actorRole={context.role}
-            assignableRoles={assignableRolesFor(context.role)}
-            members={members.map((member) => ({
+            currentUserId={view.currentUserId}
+            actorRole={view.actorRole}
+            assignableRoles={view.assignableRoles}
+            members={view.members.map((member) => ({
               id: member.id,
               userId: member.userId,
-              name: member.user.name,
-              email: member.user.email,
+              name: member.name,
+              email: member.email,
               role: member.role,
               joinedAt: member.createdAt.toISOString(),
             }))}
-            invitations={invitations.map((invitation) => ({
+            invitations={view.invitations.map((invitation) => ({
               id: invitation.id,
               email: invitation.email,
-              role: invitation.role ?? "staff",
+              role: invitation.role,
               expiresAt: invitation.expiresAt.toISOString(),
             }))}
           />

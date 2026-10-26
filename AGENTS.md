@@ -14,6 +14,20 @@ Emma & Elea — Next.js 16.4.3 App Router, React 19.3, TypeScript. UI is Astryx 
 
 <!-- END:project -->
 
+<!-- BEGIN:backend -->
+
+## Backend architecture
+
+Layered: entry point → service → repository → Prisma. See ADR-0012.
+
+- Entry points (`src/app/**`, `src/app/actions/**`) resolve the actor, validate input, call one service, and map errors. No Prisma or `auth.api` imports.
+- Services (`src/server/services/`) own authorization, tenant rules and orchestration. Return plain DTOs or throw `DomainError`.
+- Repositories (`src/server/repositories/`) own every Prisma query. No business rules.
+- Better Auth organization mutations go through `src/server/auth/better-auth.gateway.ts`; session and membership resolution through `src/server/auth/actor.ts`.
+- Validators live in `src/server/validators/` and are client-safe (pure Zod).
+- `src/lib/permissions.ts` is the shared role matrix; `src/server/domain/` holds pure domain calculators.
+- ESLint forbids Prisma/Better Auth imports in `src/app/**` and server-layer imports in `src/components/**`.
+
 <!-- BEGIN:commands -->
 
 ## Commands
@@ -66,7 +80,7 @@ Use Astryx before writing custom UI. Discover, then compose; don't hand-roll lay
 - Messages: `messages/en.json` and `messages/fr.json`. A Jest test asserts both catalogs have the same key paths; add keys to both.
 - Server Components: `getTranslations` from `next-intl/server`; Client Components: `useTranslations` from `next-intl`.
 - Navigation: import `Link`, `useRouter`, `usePathname`, and `getPathname` from `@/i18n/navigation`, never from `next/link` or `next/navigation`, so hrefs get the active locale.
-- Validation: schemas in `src/lib/validation/` stay free of `next-intl`; `createAuthSchema(mode, t)` receives a translator function from the component.
+- Validation: schemas in `src/server/validators/` stay free of `next-intl`; `createAuthSchema(mode, t)` receives a translator function from the component.
 - Pages live under `src/app/[locale]/`; `src/app/[locale]/layout.tsx` is the root layout and must keep `generateStaticParams`.
 - French copy is in-repo and unreviewed by a native speaker; treat edits to `messages/fr.json` as content changes.
 
@@ -78,7 +92,7 @@ Use Astryx before writing custom UI. Discover, then compose; don't hand-roll lay
 
 All data input uses Zod for validation and React Hook Form for state.
 
-- Schemas: `src/lib/validation/*.ts`; export inferred TypeScript types from them.
+- Schemas: `src/server/validators/*.ts`; export inferred TypeScript types from them.
 - Forms: `useForm` + `zodResolver`; wrap Astryx inputs with `Controller` (see `src/components/form-text-input.tsx`).
 - Wrap fields in a real `<form onSubmit={handleSubmit(onSubmit)}>` and use Astryx `FormLayout` inside.
 - Field errors map to Astryx `status={{type: 'error', message}}`; server errors use `setError('root', …)` and a `Banner`.
@@ -146,7 +160,7 @@ Better Auth **1.7.13** with the Prisma adapter, email/password auth, and the `ad
 - UI: `/sign-in` and `/sign-up` (`src/components/auth-form.tsx`); session status on the home page.
 - After changing plugins or auth config, run `npm run auth:generate`, then `npm run db:migrate`.
 - Create the first admin with `npm run auth:create-admin -- --email … --password … --name … --role support`.
-- Organization roles and permissions are defined in `src/lib/permissions.ts`; pages and server actions guard with `src/lib/access.ts`. See `docs/permissions.md` and ADR-0011.
+- Organization roles and permissions are defined in `src/lib/permissions.ts`; pages and server actions guard with `src/server/auth/actor.ts`. See `docs/permissions.md` and ADR-0011.
 - Load the matching skill before config, routes, sessions, plugins, or security work.
 
 - Server/client setup, sessions, plugins: `better-auth-best-practices`.

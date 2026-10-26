@@ -22,15 +22,15 @@ import {FormTextInput} from "@/components/form-text-input";
 import {
   inviteMemberSchema,
   type InviteMemberValues,
-} from "@/lib/validation/organization";
+} from "@/server/validators/team.schema";
 import {isOrgRole, type OrgRole} from "@/lib/permissions";
 import {
-  cancelInvitation,
-  inviteMember,
-  removeMember,
-  updateMemberRole,
+  cancelInvitationAction,
+  inviteMemberAction,
+  removeMemberAction,
+  updateMemberRoleAction,
   type TeamErrorKey,
-} from "@/app/[locale]/dashboard/team/actions";
+} from "@/app/actions/team.actions";
 
 export type TeamMember = {
   id: string;
@@ -118,6 +118,8 @@ export function TeamManager({
 
   const errorMessage = (error: TeamErrorKey) => {
     switch (error) {
+      case "unauthenticated":
+        return t("errors.unauthenticated");
       case "forbidden":
         return t("errors.forbidden");
       case "cannotManageOwner":
@@ -152,7 +154,7 @@ export function TeamManager({
     setServerError(null);
     setCreatedInvitation(null);
 
-    const result = await inviteMember(values);
+    const result = await inviteMemberAction(values);
 
     if (!result.ok) {
       setServerError(result.error);
@@ -174,7 +176,7 @@ export function TeamManager({
     setServerError(null);
     setBusyMemberId(member.id);
 
-    const result = await updateMemberRole({memberId: member.id, role});
+    const result = await updateMemberRoleAction({memberId: member.id, role});
 
     setBusyMemberId(null);
 
@@ -192,7 +194,7 @@ export function TeamManager({
     setServerError(null);
     setIsRemoving(true);
 
-    const result = await removeMember({memberId: memberToRemove.id});
+    const result = await removeMemberAction({memberId: memberToRemove.id});
 
     setIsRemoving(false);
 
@@ -215,7 +217,7 @@ export function TeamManager({
     setServerError(null);
     setBusyInvitationId(invitationId);
 
-    const result = await cancelInvitation({invitationId});
+    const result = await cancelInvitationAction({invitationId});
 
     setBusyInvitationId(null);
 

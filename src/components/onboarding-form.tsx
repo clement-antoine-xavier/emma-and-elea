@@ -11,13 +11,13 @@ import {Stack} from "@astryxdesign/core/Stack";
 import {Heading, Text} from "@astryxdesign/core/Text";
 import {useTranslations} from "next-intl";
 import {useRouter} from "@/i18n/navigation";
-import {authClient} from "@/lib/auth-client";
 import {FormTextInput} from "@/components/form-text-input";
+import {createOrganizationAction} from "@/app/actions/organization.actions";
+import {slugifyOrganizationName} from "@/lib/slug";
 import {
   createOrganizationSchema,
-  slugifyOrganizationName,
   type CreateOrganizationValues,
-} from "@/lib/validation/organization";
+} from "@/server/validators/organization.schema";
 
 export function OnboardingForm() {
   const router = useRouter();
@@ -62,20 +62,20 @@ export function OnboardingForm() {
   async function onSubmit(values: CreateOrganizationValues) {
     clearErrors("root");
 
-    const {error} = await authClient.organization.create({
+    const result = await createOrganizationAction({
       name: values.name,
       slug: values.slug,
     });
 
-    if (error) {
-      if (error.code === "ORGANIZATION_SLUG_ALREADY_TAKEN") {
+    if (!result.ok) {
+      if (result.error === "slugTaken") {
         setError("slug", {type: "server", message: t("errors.slugTaken")});
         return;
       }
 
       setError("root", {
         type: "server",
-        message: error.message ?? t("errors.generic"),
+        message: t("errors.generic"),
       });
       return;
     }

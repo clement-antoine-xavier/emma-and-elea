@@ -33,7 +33,7 @@ resolver integration.
 
 The implementation uses:
 
-- schemas in `src/lib/validation/auth.ts`
+- schemas in `src/server/validators/auth.schema.ts`
 - `useForm` with `zodResolver` from `@hookform/resolvers/zod`
 - `Controller` through the reusable `FormTextInput` wrapper
 - Astryx `status={{ type: "error", message }}` for field errors
@@ -80,7 +80,7 @@ The implementation uses:
 
 ## Links
 
-- [Auth schemas](../../src/lib/validation/auth.ts)
+- [Auth schemas](../../src/server/validators/auth.schema.ts)
 - [Auth form](../../src/components/auth-form.tsx)
 - [FormTextInput wrapper](../../src/components/form-text-input.tsx)
 - [Zod documentation](https://zod.dev)

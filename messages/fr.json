@@ -374,7 +374,8 @@
       "lastOwner": "Le dernier propriétaire ne peut pas être retiré.",
       "generic": "Une erreur est survenue. Veuillez réessayer.",
       "alreadyMember": "Cette personne est déjà membre.",
-      "alreadyInvited": "Une invitation est déjà en attente pour cet e-mail."
+      "alreadyInvited": "Une invitation est déjà en attente pour cet e-mail.",
+      "unauthenticated": "Votre session a expiré. Reconnectez-vous."
     },
     "validation": {
       "emailInvalid": "Saisissez une adresse e-mail valide.",
@@ -394,6 +395,7 @@
     "expired": "Cette invitation a expiré.",
     "cancelled": "Cette invitation n’est plus disponible.",
     "wrongAccount": "Cette invitation a été envoyée à {email}. Connectez-vous avec cette adresse.",
-    "error": "Impossible d’accepter l’invitation."
+    "error": "Impossible d’accepter l’invitation.",
+    "wrongAccountGeneric": "Connectez-vous avec l’adresse e-mail qui a reçu l’invitation."
   }
 }

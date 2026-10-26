@@ -10,8 +10,8 @@ import {
   defaultRoles,
 } from "better-auth/plugins/admin/access";
 import { organization } from "better-auth/plugins/organization";
-import { ensureOrganizationDefaults } from "./organization-defaults";
-import { ac, roles } from "./auth-permissions";
+import { organizationBootstrapService } from "@/server/services/organization-bootstrap.container";
+import { ac, roles } from "@/server/auth/permissions";
 import { prisma } from "./prisma";
 
 /**
@@ -30,7 +30,7 @@ const createOrganizationDefaults = createAuthMiddleware(async (ctx) => {
   if (!created?.id || created.error) return;
 
   try {
-    await ensureOrganizationDefaults(created.id);
+    await organizationBootstrapService.bootstrapOrganization(created.id);
   } catch (error) {
     // The organization row is already committed, so a failure must not turn
     // into a failed creation flow. The function is idempotent and can be
