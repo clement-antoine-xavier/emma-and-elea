@@ -1,52 +1,185 @@
 {
   "Metadata": {
-    "title": "Emma & Elea",
-    "description": "Des surfaces dorées et douces, avec une touche de bleu amical."
+    "title": "Emma & Éléa — Production, coûts et traçabilité des métiers de bouche",
+    "description": "Une seule application pour les recettes, la production, les stocks, les équipes, les coûts et la traçabilité. Produire juste, vendre mieux et préserver vos marges."
   },
-  "HomePage": {
-    "badge": "Thème Butter",
-    "title": "Chaleureux, crémeux, discrètement ludique.",
-    "intro": "Des surfaces dorées et douces avec une touche de bleu amical. Cette page sert uniquement à juger le thème : palette, typographie, surfaces et contrôles.",
-    "actions": {
-      "primary": "Action principale",
-      "secondary": "Secondaire",
-      "ghost": "Fantôme",
-      "destructive": "Destructif"
+  "LandingPage": {
+    "nav": {
+      "label": "Navigation Emma & Éléa",
+      "product": "Produit",
+      "benefits": "Bénéfices",
+      "reality": "Le quotidien",
+      "preferences": "Langue et thème"
     },
-    "cards": {
-      "default": {
-        "badge": "Par défaut",
-        "title": "Surface standard",
-        "body": "Les cartes, le texte et les contrôles héritent des jetons du thème."
-      },
-      "muted": {
-        "badge": "Atténué",
-        "title": "Surface discrète",
-        "body": "Les zones atténuées se placent légèrement derrière la surface principale."
-      },
-      "yellow": {
-        "badge": "Jaune",
-        "title": "Accent beurre",
-        "body": "Le ton chaud signature, utilisé avec parcimonie pour l'emphase."
-      },
-      "blue": {
-        "badge": "Bleu",
-        "title": "Accent amical",
-        "body": "Un bleu franc pour les actions, les liens et les états sélectionnés."
+    "hero": {
+      "badge": "Pour les métiers de bouche",
+      "title": "Produire juste. Vendre mieux.",
+      "intro": "Une seule application pour relier vos recettes, votre production, vos stocks, vos équipes, vos coûts et votre traçabilité — pour préserver vos marges, de la matière première au produit fini.",
+      "primaryCta": "Créer votre compte",
+      "secondaryCta": "Découvrir la solution",
+      "audiences": "Boulangeries · Pâtisseries · Boucheries · Charcuteries · Traiteurs",
+      "previewCaption": "Aperçu de l’application — données d’exemple.",
+      "preview": {
+        "badge": "Aperçu",
+        "cost": {
+          "title": "Coût de revient",
+          "recipe": "Baguette tradition",
+          "ingredient1": "Farine T65",
+          "value1": "0,32 €",
+          "ingredient2": "Beurre AOP",
+          "value2": "0,18 €",
+          "ingredient3": "Main-d’œuvre",
+          "value3": "0,74 €",
+          "totalLabel": "Coût total",
+          "totalValue": "1,84 €",
+          "margin": "Marge 68 %"
+        },
+        "production": {
+          "title": "Production du jour",
+          "date": "Mardi 27 octobre",
+          "item1": "Baguettes",
+          "qty1": "120",
+          "status1": "Planifié",
+          "item2": "Croissants",
+          "qty2": "48",
+          "status2": "En cours",
+          "item3": "Éclairs",
+          "qty3": "24",
+          "status3": "Terminé",
+          "footer1": "3 productions",
+          "footer2": "192 pièces"
+        },
+        "stock": {
+          "title": "Stocks & traçabilité",
+          "subtitle": "Alertes du jour",
+          "item1": "Farine T65",
+          "detail1": "Lot 2410 · DLC 12/11",
+          "alert1": "DLC proche",
+          "item2": "Crème 35 %",
+          "detail2": "Lot 2408 · DLC 09/11",
+          "alert2": "Prioritaire",
+          "item3": "Beurre AOP",
+          "detail3": "Lot 2411",
+          "alert3": "OK",
+          "footer1": "2 alertes",
+          "footer2": "18 références"
+        }
       }
     },
-    "typography": {
-      "title": "Typographie et couleurs d'état",
-      "heading": "Titre de niveau trois",
-      "body": "Le texte courant utilise la famille du thème avec une hauteur de ligne confortable. Les liens et les boutons en ligne reprennent l'accent.",
-      "supporting": "Le texte secondaire est un cran plus discret, pour les légendes et les métadonnées."
+    "reality": {
+      "eyebrow": "Le quotidien",
+      "title": "Une trop grande partie de l’atelier repose encore sur la mémoire.",
+      "intro": "Production quotidienne exigeante, produits frais à durée de vie courte, coûts qui augmentent, main-d’œuvre difficile à recruter et pression sur les prix. Une grande partie de l’organisation repose encore sur des tableurs, des cahiers et des notes manuscrites — et les décisions se prennent à l’intuition.",
+      "problems": {
+        "costs": {
+          "title": "La hausse des coûts réduit les marges",
+          "body": "Farine, beurre, viande, énergie, salaires : les prix bougent, mais savoir quel produit devient moins rentable est plus difficile."
+        },
+        "waste": {
+          "title": "Le gaspillage coûte deux fois",
+          "body": "Produire trop fait perdre matières, temps et marge. Produire trop peu fait perdre des ventes et déçoit les clients."
+        },
+        "team": {
+          "title": "L’organisation de l’équipe ralentit",
+          "body": "Plannings, absences et surcharges prennent du temps au détriment de la production et de la gestion."
+        },
+        "stock": {
+          "title": "Stocks et traçabilité échappent au contrôle",
+          "body": "Des centaines de références, des DLC courtes, des ruptures, des achats en urgence et des lots à suivre de la réception au produit fini."
+        },
+        "profitability": {
+          "title": "La rentabilité réelle reste invisible",
+          "body": "Le chiffre d’affaires est connu. Le coût réel et la marge de chaque baguette, pièce de boucherie ou plat traiteur le sont rarement."
+        },
+        "tools": {
+          "title": "Les outils numériques sont trop complexes",
+          "body": "Des logiciels pensés pour la caisse, la comptabilité ou la grande distribution ajoutent formation et saisie manuelle au lieu de faire gagner du temps."
+        }
+      }
     },
-    "statuses": {
-      "info": "Info",
-      "success": "Succès",
-      "warning": "Avertissement",
-      "error": "Erreur",
-      "neutral": "Neutre"
+    "product": {
+      "eyebrow": "La solution",
+      "title": "Un seul environnement, de la matière première au produit fini.",
+      "intro": "Emma & Éléa ne remplace pas votre savoir-faire : elle automatise la partie administrative et organisationnelle de la production. Vous passez d’une gestion réactive — « qu’est-ce qu’il manque aujourd’hui ? » — à une gestion anticipée : « que dois-je produire, avec quels ingrédients, avec quelle équipe, et à quelle marge ? ».",
+      "capabilities": {
+        "recipes": {
+          "title": "Recettes & coûts de revient",
+          "body": "Coût de revient automatique avec ingrédients, pertes, emballage et main-d’œuvre. Les marges se mettent à jour quand un prix d’achat change."
+        },
+        "production": {
+          "title": "Production & prévisions",
+          "body": "Quantités suggérées à partir de l’historique des ventes, des commandes, de la saisonnalité, des jours de la semaine et des événements locaux."
+        },
+        "stock": {
+          "title": "Stocks & traçabilité",
+          "body": "Stock en temps réel, besoins en ingrédients, lots, DLC, alertes de réapprovisionnement et documents prêts en cas de contrôle."
+        },
+        "team": {
+          "title": "Équipes & plannings",
+          "body": "Compétences, disponibilités et charge de travail au même endroit, avec les bonnes tâches aux bonnes personnes et les conflits visibles."
+        },
+        "margins": {
+          "title": "Marges & rentabilité",
+          "body": "Comparez les produits par rentabilité, volume et taux de perte, et décidez d’ajuster un prix, une recette ou un fournisseur."
+        },
+        "simple": {
+          "title": "Simple par conception",
+          "body": "Rapide en atelier sur ordinateur, tablette ou mobile, avec une intégration progressive à la caisse, aux balances et aux imprimantes d’étiquettes."
+        }
+      }
+    },
+    "benefits": {
+      "eyebrow": "Les bénéfices",
+      "title": "Moins d’incertitude. Plus de marge.",
+      "intro": "Des gains concrets, au rythme de l’atelier.",
+      "items": {
+        "produce": {
+          "title": "Produire juste",
+          "body": "Réduire les invendus grâce à une meilleure prévision des quantités."
+        },
+        "margins": {
+          "title": "Protéger les marges",
+          "body": "Connaître le coût réel et la rentabilité de chaque produit."
+        },
+        "time": {
+          "title": "Gagner du temps",
+          "body": "Automatiser les calculs, les plannings, les alertes et les besoins en matières premières."
+        },
+        "team": {
+          "title": "Mieux organiser l’équipe",
+          "body": "Répartir la charge de travail et limiter les erreurs d’organisation."
+        },
+        "losses": {
+          "title": "Réduire les pertes",
+          "body": "Suivre les DLC, les stocks et les invendus."
+        },
+        "compliance": {
+          "title": "Faciliter la conformité",
+          "body": "Centraliser la traçabilité et les informations de production."
+        }
+      }
+    },
+    "finalCta": {
+      "eyebrow": "Commencez par vos recettes",
+      "title": "Prêt à produire juste ?",
+      "intro": "Commencez par vos recettes et vos coûts de revient. Le reste suit : production, stocks, équipes et traçabilité, au même endroit.",
+      "primaryCta": "Créer votre compte",
+      "secondaryCta": "Découvrir la solution",
+      "audiences": "Pensé pour les boulangeries, pâtisseries, boucheries, charcuteries et traiteurs."
+    },
+    "footer": {
+      "tagline": "Produire juste, vendre mieux et préserver vos marges.",
+      "productTitle": "Explorer",
+      "product": "Produit",
+      "benefits": "Bénéfices",
+      "reality": "Le quotidien",
+      "accountTitle": "Compte",
+      "signIn": "Accéder à votre compte",
+      "signUp": "Créer un compte",
+      "audienceTitle": "Pour qui",
+      "audience": "Boulangeries, pâtisseries, boucheries, charcuteries, traiteurs et métiers de l’alimentation artisanale.",
+      "copyright": "© 2026 Emma & Éléa",
+      "madeFor": "Conçu pour les métiers de bouche."
     }
   },
   "Auth": {
@@ -61,7 +194,7 @@
       "submit": "Se connecter",
       "altPrompt": "Nouveau ici ? ",
       "altLink": "Créer un compte",
-      "metadataTitle": "Connexion · Emma & Elea"
+      "metadataTitle": "Connexion · Emma & Éléa"
     },
     "signUp": {
       "title": "Créez votre compte",
@@ -69,7 +202,7 @@
       "submit": "Créer un compte",
       "altPrompt": "Vous avez déjà un compte ? ",
       "altLink": "Se connecter",
-      "metadataTitle": "Créer un compte · Emma & Elea"
+      "metadataTitle": "Créer un compte · Emma & Éléa"
     },
     "status": {
       "checking": "Vérification de la session…",

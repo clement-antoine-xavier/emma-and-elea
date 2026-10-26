@@ -1,52 +1,185 @@
 {
   "Metadata": {
-    "title": "Emma & Elea",
-    "description": "Warm, creamy, quietly playful surfaces with a friendly blue accent."
+    "title": "Emma & Éléa — Production, costs and traceability for artisan food businesses",
+    "description": "One app for recipes, production, stock, teams, costs and traceability. Produce just right, sell better and protect your margins."
   },
-  "HomePage": {
-    "badge": "Butter theme",
-    "title": "Warm, creamy, quietly playful.",
-    "intro": "Soft golden surfaces with a friendly blue accent. This page exists only to judge the theme: palette, typography, surfaces, and controls.",
-    "actions": {
-      "primary": "Primary action",
-      "secondary": "Secondary",
-      "ghost": "Ghost",
-      "destructive": "Destructive"
+  "LandingPage": {
+    "nav": {
+      "label": "Emma & Éléa navigation",
+      "product": "Product",
+      "benefits": "Benefits",
+      "reality": "The reality",
+      "preferences": "Language & theme"
     },
-    "cards": {
-      "default": {
-        "badge": "Default",
-        "title": "Standard surface",
-        "body": "Cards, text, and controls inherit the theme's tokens."
-      },
-      "muted": {
-        "badge": "Muted",
-        "title": "Quiet surface",
-        "body": "De-emphasized areas sit slightly behind the main surface."
-      },
-      "yellow": {
-        "badge": "Yellow",
-        "title": "Butter accent",
-        "body": "The signature warm tone, used sparingly for emphasis."
-      },
-      "blue": {
-        "badge": "Blue",
-        "title": "Friendly accent",
-        "body": "A clear blue for actions, links, and selected states."
+    "hero": {
+      "badge": "For artisan food businesses",
+      "title": "Produce just right. Sell better.",
+      "intro": "One app that connects your recipes, production, stock, teams, costs and traceability — so you can protect your margins from raw material to finished product.",
+      "primaryCta": "Create your account",
+      "secondaryCta": "See how it works",
+      "audiences": "Bakeries · Pastry shops · Butcher shops · Delicatessens · Caterers",
+      "previewCaption": "Product preview — sample data.",
+      "preview": {
+        "badge": "Preview",
+        "cost": {
+          "title": "Cost price",
+          "recipe": "Traditional baguette",
+          "ingredient1": "T65 flour",
+          "value1": "€0.32",
+          "ingredient2": "AOP butter",
+          "value2": "€0.18",
+          "ingredient3": "Labour",
+          "value3": "€0.74",
+          "totalLabel": "Total cost",
+          "totalValue": "€1.84",
+          "margin": "68% margin"
+        },
+        "production": {
+          "title": "Today’s production",
+          "date": "Tuesday, 27 October",
+          "item1": "Baguettes",
+          "qty1": "120",
+          "status1": "Planned",
+          "item2": "Croissants",
+          "qty2": "48",
+          "status2": "In progress",
+          "item3": "Éclairs",
+          "qty3": "24",
+          "status3": "Done",
+          "footer1": "3 productions",
+          "footer2": "192 items"
+        },
+        "stock": {
+          "title": "Stock & traceability",
+          "subtitle": "Today’s alerts",
+          "item1": "T65 flour",
+          "detail1": "Lot 2410 · best before 12/11",
+          "alert1": "Use soon",
+          "item2": "35% cream",
+          "detail2": "Lot 2408 · best before 09/11",
+          "alert2": "Priority",
+          "item3": "AOP butter",
+          "detail3": "Lot 2411",
+          "alert3": "OK",
+          "footer1": "2 alerts",
+          "footer2": "18 references"
+        }
       }
     },
-    "typography": {
-      "title": "Typography and status colors",
-      "heading": "Heading three",
-      "body": "Body text is set in the theme's body family with comfortable line height. Inline links and buttons pick up the accent.",
-      "supporting": "Supporting text is one step quieter, for captions and metadata."
+    "reality": {
+      "eyebrow": "The daily reality",
+      "title": "Too much of the workshop still runs on memory.",
+      "intro": "Demanding daily production, fresh products with short shelf lives, rising costs, hard-to-recruit staff and price pressure. Much of the organisation still lives in spreadsheets, notebooks and handwritten notes — so decisions get made on intuition.",
+      "problems": {
+        "costs": {
+          "title": "Rising costs erode margins",
+          "body": "Flour, butter, meat, energy, wages: prices move, but which product is becoming less profitable is harder to see."
+        },
+        "waste": {
+          "title": "Food waste costs twice",
+          "body": "Producing too much loses materials, time and margin. Producing too little loses sales and disappoints customers."
+        },
+        "team": {
+          "title": "Team organisation slows you down",
+          "body": "Schedules, absences and workload shifts take time away from production and from running the business."
+        },
+        "stock": {
+          "title": "Stock and traceability escape control",
+          "body": "Hundreds of references, short shelf lives, stock-outs, emergency purchases and batches to track from receipt to finished product."
+        },
+        "profitability": {
+          "title": "Real profitability stays invisible",
+          "body": "Turnover is known. The real cost and margin of each baguette, cut of meat or caterer’s dish often is not."
+        },
+        "tools": {
+          "title": "Digital tools are too complex",
+          "body": "Software built for checkout, accounting or large-scale retail adds training and manual entry instead of saving time."
+        }
+      }
     },
-    "statuses": {
-      "info": "Info",
-      "success": "Success",
-      "warning": "Warning",
-      "error": "Error",
-      "neutral": "Neutral"
+    "product": {
+      "eyebrow": "The solution",
+      "title": "One workspace, from raw material to finished product.",
+      "intro": "Emma & Éléa does not replace your know-how. It automates the administrative and organisational side of production, so you can move from “what are we missing today?” to “what should I produce, with which ingredients, with which team, and at what margin?”",
+      "capabilities": {
+        "recipes": {
+          "title": "Recipes & cost prices",
+          "body": "Automatic cost prices including ingredients, losses, packaging and labour. Margins update when a purchase price changes."
+        },
+        "production": {
+          "title": "Production & forecasting",
+          "body": "Suggested quantities based on sales history, orders, seasonality, days of the week and local events."
+        },
+        "stock": {
+          "title": "Stock & traceability",
+          "body": "Real-time stock, ingredient requirements, batches, expiry dates, replenishment alerts and inspection-ready records."
+        },
+        "team": {
+          "title": "Teams & schedules",
+          "body": "Skills, availability and workload in one place, with tasks assigned to the right people and conflicts made visible."
+        },
+        "margins": {
+          "title": "Margins & profitability",
+          "body": "Compare products by profitability, volume and loss rate, and decide whether to adjust a price, a recipe or a supplier."
+        },
+        "simple": {
+          "title": "Simple by design",
+          "body": "Fast in the workshop on computer, tablet or mobile, with progressive integration into checkout, scales and label printers."
+        }
+      }
+    },
+    "benefits": {
+      "eyebrow": "The benefits",
+      "title": "Less guesswork. More margin.",
+      "intro": "Concrete gains, at the pace of the workshop.",
+      "items": {
+        "produce": {
+          "title": "Produce just right",
+          "body": "Reduce unsold items through better quantity forecasting."
+        },
+        "margins": {
+          "title": "Protect margins",
+          "body": "Know the real cost and profitability of every product."
+        },
+        "time": {
+          "title": "Save time",
+          "body": "Automate calculations, schedules, alerts and raw material requirements."
+        },
+        "team": {
+          "title": "Organise the team better",
+          "body": "Distribute workload and limit organisational errors."
+        },
+        "losses": {
+          "title": "Reduce losses",
+          "body": "Track use-by dates, stock and unsold items."
+        },
+        "compliance": {
+          "title": "Make compliance easier",
+          "body": "Centralise traceability and production information."
+        }
+      }
+    },
+    "finalCta": {
+      "eyebrow": "Start with your recipes",
+      "title": "Ready to produce just right?",
+      "intro": "Start with your recipes and cost prices. The rest follows: production, stock, teams and traceability, in one place.",
+      "primaryCta": "Create your account",
+      "secondaryCta": "Explore the product",
+      "audiences": "Built for bakeries, pastry shops, butcher shops, delicatessens and caterers."
+    },
+    "footer": {
+      "tagline": "Produce just right, sell better and protect your margins.",
+      "productTitle": "Explore",
+      "product": "Product",
+      "benefits": "Benefits",
+      "reality": "The reality",
+      "accountTitle": "Account",
+      "signIn": "Access your account",
+      "signUp": "Create an account",
+      "audienceTitle": "Who it’s for",
+      "audience": "Bakeries, pastry shops, butcher shops, delicatessens, caterers and artisan food businesses.",
+      "copyright": "© 2026 Emma & Éléa",
+      "madeFor": "Made for artisan food businesses."
     }
   },
   "Auth": {
@@ -61,7 +194,7 @@
       "submit": "Sign in",
       "altPrompt": "New here? ",
       "altLink": "Create an account",
-      "metadataTitle": "Sign in · Emma & Elea"
+      "metadataTitle": "Sign in · Emma & Éléa"
     },
     "signUp": {
       "title": "Create your account",
@@ -69,7 +202,7 @@
       "submit": "Create account",
       "altPrompt": "Already have an account? ",
       "altLink": "Sign in",
-      "metadataTitle": "Create account · Emma & Elea"
+      "metadataTitle": "Create account · Emma & Éléa"
     },
     "status": {
       "checking": "Checking session…",
