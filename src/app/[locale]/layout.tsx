@@ -4,7 +4,9 @@ import {Geist, Geist_Mono} from 'next/font/google';
 import {notFound} from 'next/navigation';
 import {NextIntlClientProvider, hasLocale} from 'next-intl';
 import {getTranslations} from 'next-intl/server';
+import {defaultThemeSlug} from '@/astryx-themes';
 import {routing} from '@/i18n/routing';
+import {themeModeInitScript} from '@/lib/theme-mode';
 import '../globals.css';
 import {Providers} from '../providers';
 
@@ -55,7 +57,15 @@ export default async function LocaleLayout({
     <html
       lang={locale}
       className={`${geistSans.variable} ${geistMono.variable}`}
+      data-astryx-theme={defaultThemeSlug}
+      suppressHydrationWarning
     >
+      <head>
+        <script
+          dangerouslySetInnerHTML={{__html: themeModeInitScript}}
+          suppressHydrationWarning
+        />
+      </head>
       <body>
         <NextIntlClientProvider>
           <Providers>{children}</Providers>

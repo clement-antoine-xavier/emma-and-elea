@@ -64,7 +64,7 @@ test("serves a French locale with translated copy", async ({ page }) => {
     page.getByText("Saisissez une adresse e-mail valide.").first(),
   ).toBeVisible();
 
-  await page.getByRole("link", { name: "English" }).click();
+  await page.getByRole("radio", { name: "English" }).click();
   await expect(page).toHaveURL(/\/en\/sign-up$/);
   await expect(
     page.getByRole("heading", { name: "Create your account" }),

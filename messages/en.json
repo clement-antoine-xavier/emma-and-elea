@@ -98,5 +98,11 @@
     "label": "Language",
     "en": "English",
     "fr": "Français"
+  },
+  "ThemeSwitcher": {
+    "label": "Theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
   }
 }

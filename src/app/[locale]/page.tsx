@@ -9,6 +9,7 @@ import {Heading, Text} from '@astryxdesign/core/Text';
 import {useTranslations} from 'next-intl';
 import {AuthStatus} from '@/components/auth-status';
 import {LocaleSwitcher} from '@/components/locale-switcher';
+import {ThemeSwitcher} from '@/components/theme-switcher';
 
 export default function Home() {
   const t = useTranslations('HomePage');
@@ -17,6 +18,7 @@ export default function Home() {
     <Center minHeight="100vh" padding={8}>
       <Stack gap={6} width="100%" maxWidth={960}>
         <HStack gap={4} align="center" justify="end" wrap="wrap">
+          <ThemeSwitcher />
           <LocaleSwitcher />
           <AuthStatus />
         </HStack>

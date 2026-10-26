@@ -1,34 +1,41 @@
 'use client';
 
-import {HStack} from '@astryxdesign/core/HStack';
-import {Text} from '@astryxdesign/core/Text';
+import {
+  SegmentedControl,
+  SegmentedControlItem,
+} from '@astryxdesign/core/SegmentedControl';
 import {useLocale, useTranslations} from 'next-intl';
-import {Link, usePathname} from '@/i18n/navigation';
-import {routing} from '@/i18n/routing';
+import {usePathname, useRouter} from '@/i18n/navigation';
+import {routing, type Locale} from '@/i18n/routing';
 
 export function LocaleSwitcher() {
   const t = useTranslations('LocaleSwitcher');
   const activeLocale = useLocale();
   const pathname = usePathname();
+  const router = useRouter();
 
   return (
-    <HStack gap={2} align="center" wrap="wrap">
-      <Text type="supporting" color="secondary">
-        {t('label')}
-      </Text>
-      {routing.locales.map((locale) =>
-        locale === activeLocale ? (
-          <Text key={locale} type="supporting" weight="medium">
-            {t(locale)}
-          </Text>
-        ) : (
-          <Link key={locale} href={pathname} locale={locale}>
-            <Text type="supporting" color="accent">
-              {t(locale)}
-            </Text>
-          </Link>
-        ),
-      )}
-    </HStack>
+    <SegmentedControl
+      label={t('label')}
+      size="sm"
+      value={activeLocale}
+      onChange={(value) => {
+        if (
+          value === activeLocale ||
+          !routing.locales.includes(value as Locale)
+        ) {
+          return;
+        }
+
+        router.replace(pathname, {
+          locale: value as Locale,
+          scroll: false,
+        });
+      }}
+    >
+      {routing.locales.map((locale) => (
+        <SegmentedControlItem key={locale} value={locale} label={t(locale)} />
+      ))}
+    </SegmentedControl>
   );
 }
