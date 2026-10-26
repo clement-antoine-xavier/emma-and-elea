@@ -134,7 +134,7 @@ docker compose down
 
 ## CI
 
-- `.github/workflows/next.js.yml` — starts a real PostgreSQL 18.6 service, applies migrations, then runs `npx tsc --noEmit`, `npm run lint`, Jest, `npm run build`, and Playwright E2E on pushes and pull requests to `main`.
+- `.github/workflows/next.js.yml` — starts a real PostgreSQL 18.6 service, applies migrations, then runs `npm run typecheck`, `npm run lint`, Jest, `npm run build`, and Playwright E2E on pushes and pull requests to `main`.
 - `.github/workflows/docker.yml` — builds the Docker `runner` target and pushes `ghcr.io/clement-antoine-xavier/emma-and-elea` on pushes to `main` and tags matching `v*`.
 
 Image tags are `main`, `latest`, `sha-<short>`, and semver tags from `v*` releases. Images target `linux/amd64`. The two workflows run independently; the Docker build runs `next build` but not ESLint. Third-party actions are pinned to exact release tags (`vX.Y.Z`); update them deliberately.
@@ -142,7 +142,7 @@ Image tags are `main`, `latest`, `sha-<short>`, and semver tags from `v*` releas
 ## Verification
 
 ```bash
-npx tsc --noEmit
+npm run typecheck
 npm run lint
 npm test
 npm run test:e2e

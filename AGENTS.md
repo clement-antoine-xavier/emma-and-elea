@@ -21,9 +21,9 @@ Emma & Elea — Next.js 16.4.3 App Router, React 19.3, TypeScript. UI is Astryx 
 - `npm run build` — production build.
 - `npm start` — run the build.
 - `npm run lint` — ESLint.
+- `npm run typecheck` — generate Next.js route types and typecheck.
 - `npm test` — Jest unit/component tests.
 - `npm run test:e2e` — Playwright E2E tests (requires PostgreSQL).
-- `npx tsc --noEmit` — typecheck.
 - `npm run astryx -- <command>` — Astryx CLI.
 - `npx skills list` — list installed skills.
 - `npm run db:migrate` — create and apply a Prisma migration.
@@ -85,7 +85,7 @@ All data input uses Zod for validation and React Hook Form for state.
 
 ## CI
 
-- `.github/workflows/next.js.yml` starts a real PostgreSQL 18.6 service, runs `npm run db:deploy`, then runs `npx tsc --noEmit`, `npm run lint`, `npm test`, `npm run build`, and Playwright E2E on pushes and pull requests to `main` with Node 26.12.1.
+- `.github/workflows/next.js.yml` starts a real PostgreSQL 18.6 service, runs `npm run db:deploy`, then runs `npm run typecheck`, `npm run lint`, `npm test`, `npm run build`, and Playwright E2E on pushes and pull requests to `main` with Node 26.12.1.
 - `.github/workflows/docker.yml` builds the Docker `runner` target and pushes `ghcr.io/clement-antoine-xavier/emma-and-elea` on `main` and `v*` tags.
 - The workflows are independent; Docker does not wait for Next.js checks. The image is `linux/amd64` only, and the `migrator` target is not published.
 - The Docker builder uses placeholder `DATABASE_URL` / `BETTER_AUTH_SECRET` values; CI uses a throwaway PostgreSQL service. Never put real secrets in workflow files.
@@ -152,7 +152,7 @@ Next.js 16.4.3 has breaking changes — APIs, conventions, and file structure ma
 
 ## Verification
 
-- `npx tsc --noEmit`
+- `npm run typecheck`
 - `npm run lint`
 - `npm test`
 - `npm run test:e2e` (requires PostgreSQL)
