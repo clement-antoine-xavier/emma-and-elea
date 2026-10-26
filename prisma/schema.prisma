@@ -27,6 +27,14 @@ model User {
   members       Member[]
   invitations   Invitation[]
 
+  // Domain relations (docs/ERD.md). Relation fields only; no domain data lives
+  // on this model, so `npm run auth:generate` can regenerate it safely.
+  recipeVersionsCreated    RecipeVersion[]
+  purchaseReceiptsReceived PurchaseReceipt[]
+  stockMovementsCreated    StockMovement[]
+  costSnapshotsCreated     CostSnapshot[]
+  wasteRecordsRecorded     WasteRecord[]
+
   @@unique([email])
   @@map("user")
 }
@@ -91,6 +99,35 @@ model Organization {
   members     Member[]
   invitations Invitation[]
 
+  // Domain relations (docs/ERD.md). Relation fields only; no domain data lives
+  // on this model, so `npm run auth:generate` can regenerate it safely.
+  settings               OrganizationSetting?
+  sites                  Site[]
+  energyTariffs          EnergyTariff[]
+  labourRates            LabourRate[]
+  itemCategories         ItemCategory[]
+  items                  Item[]
+  itemAllergens          ItemAllergen[]
+  suppliers              Supplier[]
+  supplierItems          SupplierItem[]
+  purchaseReceipts       PurchaseReceipt[]
+  purchaseReceiptLines   PurchaseReceiptLine[]
+  recipes                Recipe[]
+  recipeVersions         RecipeVersion[]
+  recipeLines            RecipeLine[]
+  recipeOperations       RecipeOperation[]
+  equipment              Equipment[]
+  costSnapshots          CostSnapshot[]
+  costSnapshotLines      CostSnapshotLine[]
+  lots                   Lot[]
+  stockMovements         StockMovement[]
+  productionBatches      ProductionBatch[]
+  productionBatchInputs  ProductionBatchInput[]
+  productionBatchOutputs ProductionBatchOutput[]
+  lossReasons            LossReason[]
+  wasteRecords           WasteRecord[]
+  salesDaily             SalesDaily[]
+
   @@unique([slug])
   @@map("organization")
 }
@@ -124,4 +161,901 @@ model Invitation {
   @@index([organizationId])
   @@index([email])
   @@map("invitation")
+}
+
+// ---------------------------------------------------------------------------
+// Domain — Phase 1
+//
+// See docs/ERD.md for the full model and docs/adr/0010-model-the-production-domain.md
+// for the rationale. Phase 2 and 3 tables are intentionally absent:
+// ProductionPlan, ProductionTask, Customer, Order, Dispatch, Event, team tables
+// and stock counts.
+//
+// Two Phase 2 relations are therefore not declared yet and will arrive with
+// those tables: ProductionBatch.productionPlanLineId and
+// ProductionBatch.operatorId.
+// ---------------------------------------------------------------------------
+
+enum SiteKind {
+  WORKSHOP
+  SHOP
+  WAREHOUSE
+  LAB
+}
+
+enum EnergyKind {
+  ELECTRICITY
+  GAS
+}
+
+enum UnitKind {
+  MASS
+  VOLUME
+  COUNT
+  LENGTH
+}
+
+enum ItemType {
+  RAW_MATERIAL
+  PACKAGING
+  SEMI_FINISHED
+  FINISHED_PRODUCT
+}
+
+enum SalesChannel {
+  RETAIL
+  WHOLESALE
+  BOTH
+  NONE
+}
+
+enum AllergenPresence {
+  CONTAINS
+  MAY_CONTAIN
+}
+
+enum ReceiptStatus {
+  DRAFT
+  POSTED
+  CANCELLED
+}
+
+enum RecipeVersionStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum CostScope {
+  RECIPE_VERSION
+  PRODUCTION_BATCH
+}
+
+enum CostLineKind {
+  MATERIAL
+  PACKAGING
+  LABOUR
+  ENERGY
+  OVERHEAD
+}
+
+enum LotStatus {
+  AVAILABLE
+  QUARANTINE
+  CONSUMED
+  EXPIRED
+  DISCARDED
+}
+
+enum StockMovementType {
+  RECEIPT
+  CONSUMPTION
+  PRODUCTION_OUTPUT
+  DISPATCH
+  WASTE
+  TRANSFER
+  ADJUSTMENT
+  COUNT
+}
+
+enum StockReferenceType {
+  PURCHASE_RECEIPT
+  PRODUCTION_BATCH
+  DISPATCH
+  WASTE_RECORD
+  STOCK_COUNT
+  MANUAL
+}
+
+enum BatchStatus {
+  PLANNED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum LossCategory {
+  OVERPRODUCTION
+  EXPIRED
+  BREAKAGE
+  QUALITY
+  TRIMMING
+  STAFF_MEAL
+  DONATION
+  OTHER
+}
+
+enum SalesSource {
+  MANUAL
+  IMPORT
+  POS
+}
+
+enum EquipmentKind {
+  OVEN
+  MIXER
+  FRIDGE
+  FREEZER
+  PROOFER
+  FRYER
+  SCALE
+  LABELLER
+  OTHER
+}
+
+model Site {
+  id             String       @id @default(cuid(2))
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  code           String
+  name           String
+  kind           SiteKind     @default(WORKSHOP)
+  addressLine1   String?
+  addressLine2   String?
+  postalCode     String?
+  city           String?
+  country        String       @default("FR")
+  timezone       String       @default("Europe/Paris")
+  isActive       Boolean      @default(true)
+  archivedAt     DateTime?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  energyTariffs     EnergyTariff[]
+  labourRates       LabourRate[]
+  purchaseReceipts  PurchaseReceipt[]
+  equipment         Equipment[]
+  lots              Lot[]
+  stockMovements    StockMovement[]
+  productionBatches ProductionBatch[]
+  costSnapshots     CostSnapshot[]
+  wasteRecords      WasteRecord[]
+  salesDaily        SalesDaily[]
+
+  @@unique([organizationId, code])
+  @@index([organizationId, isActive])
+  @@map("site")
+}
+
+model OrganizationSetting {
+  id                   String       @id @default(cuid(2))
+  organizationId       String       @unique
+  organization         Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  currency             String       @default("EUR") @db.VarChar(3)
+  overheadPct          Decimal      @default(10) @db.Decimal(5, 2)
+  defaultLabourRateId  String?
+  defaultLabourRate    LabourRate?  @relation(fields: [defaultLabourRateId], references: [id], onDelete: SetNull)
+  forecastHistoryDays  Int          @default(56)
+  forecastSafetyPct    Decimal      @default(5) @db.Decimal(5, 2)
+  defaultShelfLifeDays Int?
+  lotNumberPattern     String       @default("{site}-{yyMMdd}-{seq}")
+  pricesIncludeVat     Boolean      @default(true)
+  createdAt            DateTime     @default(now())
+  updatedAt            DateTime     @updatedAt
+
+  @@map("organization_setting")
+}
+
+model EnergyTariff {
+  id             String       @id @default(cuid(2))
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  siteId         String
+  site           Site         @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  energyKind     EnergyKind   @default(ELECTRICITY)
+  pricePerKwh    Decimal      @db.Decimal(12, 4)
+  currency       String       @default("EUR") @db.VarChar(3)
+  validFrom      DateTime     @db.Date
+  validTo        DateTime?    @db.Date
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@unique([siteId, energyKind, validFrom])
+  @@index([organizationId])
+  @@map("energy_tariff")
+}
+
+model LabourRate {
+  id             String       @id @default(cuid(2))
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  siteId         String?
+  site           Site?        @relation(fields: [siteId], references: [id], onDelete: SetNull)
+  label          String
+  hourlyCost     Decimal      @db.Decimal(12, 4)
+  currency       String       @default("EUR") @db.VarChar(3)
+  validFrom      DateTime     @db.Date
+  validTo        DateTime?    @db.Date
+  archivedAt     DateTime?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  settings         OrganizationSetting[]
+  recipeOperations RecipeOperation[]
+
+  @@index([organizationId, siteId, validFrom])
+  @@map("labour_rate")
+}
+
+model Unit {
+  id           String   @id @default(cuid(2))
+  code         String   @unique
+  labelEn      String
+  labelFr      String
+  pluralFr     String
+  kind         UnitKind
+  factorToBase Decimal  @db.Decimal(18, 8)
+  isBase       Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  stockItems             Item[]                  @relation("ItemStockUnit")
+  saleItems              Item[]                  @relation("ItemSaleUnit")
+  supplierItems          SupplierItem[]
+  purchaseReceiptLines   PurchaseReceiptLine[]
+  recipeVersions         RecipeVersion[]
+  recipeLines            RecipeLine[]
+  costSnapshots          CostSnapshot[]
+  costSnapshotLines      CostSnapshotLine[]
+  stockMovements         StockMovement[]
+  productionBatchInputs  ProductionBatchInput[]
+  productionBatchOutputs ProductionBatchOutput[]
+  productionBatches      ProductionBatch[]
+  wasteRecords           WasteRecord[]
+  salesDaily             SalesDaily[]
+
+  @@map("unit")
+}
+
+model Item {
+  id               String        @id @default(cuid(2))
+  organizationId   String
+  organization     Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  categoryId       String?
+  category         ItemCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  code             String
+  name             String
+  description      String?
+  type             ItemType
+  stockUnitId      String
+  stockUnit        Unit          @relation("ItemStockUnit", fields: [stockUnitId], references: [id])
+  saleUnitId       String?
+  saleUnit         Unit?         @relation("ItemSaleUnit", fields: [saleUnitId], references: [id], onDelete: SetNull)
+  salePrice        Decimal?      @db.Decimal(12, 4)
+  vatRate          Decimal       @default(5.50) @db.Decimal(5, 2)
+  shelfLifeDays    Int?
+  minStockQuantity Decimal?      @db.Decimal(14, 4)
+  parLevelQuantity Decimal?      @db.Decimal(14, 4)
+  defaultChannel   SalesChannel  @default(RETAIL)
+  isPurchasable    Boolean       @default(false)
+  isProduced       Boolean       @default(false)
+  isSellable       Boolean       @default(false)
+  archivedAt       DateTime?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  itemAllergens          ItemAllergen[]
+  supplierItems          SupplierItem[]
+  recipes                Recipe[]
+  recipeLines            RecipeLine[]
+  purchaseReceiptLines   PurchaseReceiptLine[]
+  lots                   Lot[]
+  stockMovements         StockMovement[]
+  productionBatchInputs  ProductionBatchInput[]
+  productionBatchOutputs ProductionBatchOutput[]
+  costSnapshotLines      CostSnapshotLine[]
+  wasteRecords           WasteRecord[]
+  salesDaily             SalesDaily[]
+
+  @@unique([organizationId, code])
+  @@index([organizationId, type])
+  @@index([organizationId, categoryId])
+  @@map("item")
+}
+
+model ItemCategory {
+  id             String         @id @default(cuid(2))
+  organizationId String
+  organization   Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  parentId       String?
+  parent         ItemCategory?  @relation("CategoryParent", fields: [parentId], references: [id], onDelete: SetNull)
+  children       ItemCategory[] @relation("CategoryParent")
+  name           String
+  sortOrder      Int            @default(0)
+  archivedAt     DateTime?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  items Item[]
+
+  @@unique([organizationId, parentId, name])
+  @@index([organizationId])
+  @@map("item_category")
+}
+
+model Allergen {
+  id        String   @id @default(cuid(2))
+  code      String   @unique
+  labelEn   String
+  labelFr   String
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  itemAllergens ItemAllergen[]
+
+  @@map("allergen")
+}
+
+model ItemAllergen {
+  id             String           @id @default(cuid(2))
+  organizationId String
+  organization   Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  itemId         String
+  item           Item             @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  allergenId     String
+  allergen       Allergen         @relation(fields: [allergenId], references: [id], onDelete: Restrict)
+  presence       AllergenPresence @default(CONTAINS)
+  note           String?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  @@unique([itemId, allergenId, presence])
+  @@index([organizationId])
+  @@index([allergenId])
+  @@map("item_allergen")
+}
+
+model Supplier {
+  id                  String       @id @default(cuid(2))
+  organizationId      String
+  organization        Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  code                String
+  name                String
+  contactName         String?
+  email               String?
+  phone               String?
+  addressLine1        String?
+  postalCode          String?
+  city                String?
+  country             String       @default("FR")
+  defaultLeadTimeDays Int?
+  note                String?
+  archivedAt          DateTime?
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+
+  items    SupplierItem[]
+  receipts PurchaseReceipt[]
+
+  @@unique([organizationId, code])
+  @@map("supplier")
+}
+
+model SupplierItem {
+  id               String       @id @default(cuid(2))
+  organizationId   String
+  organization     Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  supplierId       String
+  supplier         Supplier     @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+  itemId           String
+  item             Item         @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  supplierRef      String?
+  packQuantity     Decimal      @db.Decimal(14, 4)
+  packUnitId       String
+  packUnit         Unit         @relation(fields: [packUnitId], references: [id])
+  price            Decimal      @db.Decimal(12, 4)
+  currency         String       @default("EUR") @db.VarChar(3)
+  leadTimeDays     Int?
+  minOrderQuantity Decimal?     @db.Decimal(14, 4)
+  isPreferred      Boolean      @default(false)
+  validFrom        DateTime     @db.Date
+  validTo          DateTime?    @db.Date
+  archivedAt       DateTime?
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+
+  receiptLines PurchaseReceiptLine[]
+
+  @@unique([supplierId, itemId, validFrom])
+  @@index([organizationId, itemId, isPreferred])
+  @@map("supplier_item")
+}
+
+model PurchaseReceipt {
+  id                String        @id @default(cuid(2))
+  organizationId    String
+  organization      Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  siteId            String
+  site              Site          @relation(fields: [siteId], references: [id], onDelete: Restrict)
+  supplierId        String
+  supplier          Supplier      @relation(fields: [supplierId], references: [id], onDelete: Restrict)
+  number            String
+  supplierReference String?
+  status            ReceiptStatus @default(DRAFT)
+  receivedAt        DateTime?
+  currency          String        @default("EUR") @db.VarChar(3)
+  totalAmount       Decimal       @default(0) @db.Decimal(12, 4)
+  note              String?
+  receivedById      String?
+  receivedBy        User?         @relation(fields: [receivedById], references: [id], onDelete: SetNull)
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  lines PurchaseReceiptLine[]
+
+  @@unique([organizationId, number])
+  @@index([siteId, receivedAt])
+  @@index([supplierId])
+  @@map("purchase_receipt")
+}
+
+model PurchaseReceiptLine {
+  id                String          @id @default(cuid(2))
+  organizationId    String
+  organization      Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  purchaseReceiptId String
+  purchaseReceipt   PurchaseReceipt @relation(fields: [purchaseReceiptId], references: [id], onDelete: Cascade)
+  itemId            String
+  item              Item            @relation(fields: [itemId], references: [id], onDelete: Restrict)
+  supplierItemId    String?
+  supplierItem      SupplierItem?   @relation(fields: [supplierItemId], references: [id], onDelete: SetNull)
+  quantity          Decimal         @db.Decimal(14, 4)
+  unitId            String
+  unit              Unit            @relation(fields: [unitId], references: [id])
+  unitPrice         Decimal         @db.Decimal(12, 4)
+  lineTotal         Decimal         @db.Decimal(12, 4)
+  lotNumber         String?
+  supplierLotNumber String?
+  expiresOn         DateTime?       @db.Date
+  bestBeforeOn      DateTime?       @db.Date
+  note              String?
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  lot Lot?
+
+  @@index([purchaseReceiptId])
+  @@index([itemId])
+  @@index([organizationId])
+  @@map("purchase_receipt_line")
+}
+
+model Recipe {
+  id               String         @id @default(cuid(2))
+  organizationId   String
+  organization     Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  outputItemId     String
+  outputItem       Item           @relation(fields: [outputItemId], references: [id], onDelete: Restrict)
+  currentVersionId String?        @unique
+  currentVersion   RecipeVersion? @relation("RecipeCurrentVersion", fields: [currentVersionId], references: [id], onDelete: SetNull)
+  code             String
+  name             String
+  description      String?
+  isDefault        Boolean        @default(true)
+  archivedAt       DateTime?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  versions RecipeVersion[] @relation("RecipeVersions")
+
+  @@unique([organizationId, code])
+  @@index([organizationId, outputItemId, isDefault])
+  @@map("recipe")
+}
+
+model RecipeVersion {
+  id             String              @id @default(cuid(2))
+  organizationId String
+  organization   Organization        @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  recipeId       String
+  recipe         Recipe              @relation("RecipeVersions", fields: [recipeId], references: [id], onDelete: Cascade)
+  currentOf      Recipe?             @relation("RecipeCurrentVersion")
+  versionNumber  Int
+  status         RecipeVersionStatus @default(DRAFT)
+  yieldQuantity  Decimal             @db.Decimal(14, 4)
+  yieldUnitId    String
+  yieldUnit      Unit                @relation(fields: [yieldUnitId], references: [id])
+  portionCount   Int?
+  prepMinutes    Int?
+  cookMinutes    Int?
+  instructions   String?
+  changeNote     String?
+  publishedAt    DateTime?
+  createdById    String?
+  createdBy      User?               @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+
+  lines             RecipeLine[]
+  operations        RecipeOperation[]
+  costSnapshots     CostSnapshot[]
+  productionBatches ProductionBatch[]
+
+  @@unique([recipeId, versionNumber])
+  @@index([organizationId, status])
+  @@map("recipe_version")
+}
+
+model RecipeLine {
+  id              String        @id @default(cuid(2))
+  organizationId  String
+  organization    Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  recipeVersionId String
+  recipeVersion   RecipeVersion @relation(fields: [recipeVersionId], references: [id], onDelete: Cascade)
+  itemId          String
+  item            Item          @relation(fields: [itemId], references: [id], onDelete: Restrict)
+  quantity        Decimal       @db.Decimal(14, 4)
+  unitId          String
+  unit            Unit          @relation(fields: [unitId], references: [id])
+  lossPct         Decimal       @default(0) @db.Decimal(5, 2)
+  isOptional      Boolean       @default(false)
+  position        Int           @default(0)
+  note            String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@unique([recipeVersionId, position])
+  @@index([itemId])
+  @@index([organizationId])
+  @@map("recipe_line")
+}
+
+model RecipeOperation {
+  id                String        @id @default(cuid(2))
+  organizationId    String
+  organization      Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  recipeVersionId   String
+  recipeVersion     RecipeVersion @relation(fields: [recipeVersionId], references: [id], onDelete: Cascade)
+  equipmentId       String?
+  equipment         Equipment?    @relation(fields: [equipmentId], references: [id], onDelete: SetNull)
+  labourRateId      String?
+  labourRate        LabourRate?   @relation(fields: [labourRateId], references: [id], onDelete: SetNull)
+  position          Int           @default(0)
+  name              String
+  description       String?
+  durationMinutes   Int
+  activeMinutes     Int?
+  temperatureC      Decimal?      @db.Decimal(5, 2)
+  estimatedQuantity Decimal?      @db.Decimal(14, 4)
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  costSnapshotLines CostSnapshotLine[]
+
+  @@unique([recipeVersionId, position])
+  @@index([organizationId])
+  @@map("recipe_operation")
+}
+
+model Equipment {
+  id             String        @id @default(cuid(2))
+  organizationId String
+  organization   Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  siteId         String?
+  site           Site?         @relation(fields: [siteId], references: [id], onDelete: SetNull)
+  name           String
+  kind           EquipmentKind @default(OTHER)
+  powerKw        Decimal?      @db.Decimal(8, 3)
+  note           String?
+  archivedAt     DateTime?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  operations RecipeOperation[]
+
+  @@index([organizationId, siteId])
+  @@map("equipment")
+}
+
+model CostSnapshot {
+  id                String           @id @default(cuid(2))
+  organizationId    String
+  organization      Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  siteId            String?
+  site              Site?            @relation(fields: [siteId], references: [id], onDelete: SetNull)
+  scope             CostScope
+  recipeVersionId   String?
+  recipeVersion     RecipeVersion?   @relation(fields: [recipeVersionId], references: [id], onDelete: Cascade)
+  productionBatchId String?
+  productionBatch   ProductionBatch? @relation(fields: [productionBatchId], references: [id], onDelete: Cascade)
+  computedAt        DateTime         @default(now())
+  currency          String           @default("EUR") @db.VarChar(3)
+  materialCost      Decimal          @db.Decimal(12, 4)
+  packagingCost     Decimal          @db.Decimal(12, 4)
+  labourCost        Decimal          @db.Decimal(12, 4)
+  energyCost        Decimal          @db.Decimal(12, 4)
+  overheadCost      Decimal          @db.Decimal(12, 4)
+  totalCost         Decimal          @db.Decimal(12, 4)
+  yieldQuantity     Decimal          @db.Decimal(14, 4)
+  yieldUnitId       String
+  yieldUnit         Unit             @relation(fields: [yieldUnitId], references: [id])
+  costPerUnit       Decimal          @db.Decimal(12, 4)
+  salePrice         Decimal?         @db.Decimal(12, 4)
+  marginPct         Decimal?         @db.Decimal(5, 2)
+  inputHash         String?
+  createdById       String?
+  createdBy         User?            @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt         DateTime         @default(now())
+
+  lines CostSnapshotLine[]
+
+  @@index([organizationId, recipeVersionId, computedAt])
+  @@index([productionBatchId])
+  @@map("cost_snapshot")
+}
+
+model CostSnapshotLine {
+  id                String           @id @default(cuid(2))
+  organizationId    String
+  organization      Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  costSnapshotId    String
+  costSnapshot      CostSnapshot     @relation(fields: [costSnapshotId], references: [id], onDelete: Cascade)
+  kind              CostLineKind
+  itemId            String?
+  item              Item?            @relation(fields: [itemId], references: [id], onDelete: SetNull)
+  lotId             String?
+  lot               Lot?             @relation(fields: [lotId], references: [id], onDelete: SetNull)
+  recipeOperationId String?
+  recipeOperation   RecipeOperation? @relation(fields: [recipeOperationId], references: [id], onDelete: SetNull)
+  label             String
+  quantity          Decimal?         @db.Decimal(14, 4)
+  unitId            String?
+  unit              Unit?            @relation(fields: [unitId], references: [id], onDelete: SetNull)
+  unitCost          Decimal?         @db.Decimal(12, 4)
+  amount            Decimal          @db.Decimal(12, 4)
+  position          Int              @default(0)
+  createdAt         DateTime         @default(now())
+
+  @@index([costSnapshotId, kind, position])
+  @@index([organizationId])
+  @@map("cost_snapshot_line")
+}
+
+model Lot {
+  id                    String               @id @default(cuid(2))
+  organizationId        String
+  organization          Organization         @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  siteId                String
+  site                  Site                 @relation(fields: [siteId], references: [id], onDelete: Restrict)
+  itemId                String
+  item                  Item                 @relation(fields: [itemId], references: [id], onDelete: Restrict)
+  purchaseReceiptLineId String?              @unique
+  purchaseReceiptLine   PurchaseReceiptLine? @relation(fields: [purchaseReceiptLineId], references: [id], onDelete: SetNull)
+  productionBatchId     String?
+  productionBatch       ProductionBatch?     @relation(fields: [productionBatchId], references: [id], onDelete: SetNull)
+  lotNumber             String
+  supplierLotNumber     String?
+  receivedAt            DateTime
+  producedOn            DateTime?            @db.Date
+  expiresOn             DateTime?            @db.Date
+  bestBeforeOn          DateTime?            @db.Date
+  quantityReceived      Decimal              @db.Decimal(14, 4)
+  quantityRemaining     Decimal              @db.Decimal(14, 4)
+  unitCost              Decimal              @db.Decimal(12, 4)
+  currency              String               @default("EUR") @db.VarChar(3)
+  status                LotStatus            @default(AVAILABLE)
+  note                  String?
+  createdAt             DateTime             @default(now())
+  updatedAt             DateTime             @updatedAt
+
+  stockMovements    StockMovement[]
+  batchInputs       ProductionBatchInput[]
+  batchOutputs      ProductionBatchOutput[]
+  costSnapshotLines CostSnapshotLine[]
+  wasteRecords      WasteRecord[]
+
+  @@unique([organizationId, siteId, itemId, lotNumber])
+  @@index([siteId, expiresOn])
+  @@index([organizationId, itemId, status])
+  @@map("lot")
+}
+
+model StockMovement {
+  id             String              @id @default(cuid(2))
+  organizationId String
+  organization   Organization        @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  siteId         String
+  site           Site                @relation(fields: [siteId], references: [id], onDelete: Restrict)
+  itemId         String
+  item           Item                @relation(fields: [itemId], references: [id], onDelete: Restrict)
+  lotId          String?
+  lot            Lot?                @relation(fields: [lotId], references: [id], onDelete: SetNull)
+  type           StockMovementType
+  quantity       Decimal             @db.Decimal(14, 4)
+  unitId         String
+  unit           Unit                @relation(fields: [unitId], references: [id])
+  occurredAt     DateTime            @default(now())
+  referenceType  StockReferenceType?
+  referenceId    String?
+  reason         String?
+  createdById    String?
+  createdBy      User?               @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt      DateTime            @default(now())
+
+  @@index([organizationId, itemId, occurredAt])
+  @@index([lotId, occurredAt])
+  @@index([referenceType, referenceId])
+  @@map("stock_movement")
+}
+
+model ProductionBatch {
+  id              String        @id @default(cuid(2))
+  organizationId  String
+  organization    Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  siteId          String
+  site            Site          @relation(fields: [siteId], references: [id], onDelete: Restrict)
+  recipeVersionId String
+  recipeVersion   RecipeVersion @relation(fields: [recipeVersionId], references: [id], onDelete: Restrict)
+  code            String
+  status          BatchStatus   @default(PLANNED)
+  plannedQuantity Decimal       @db.Decimal(14, 4)
+  actualQuantity  Decimal?      @db.Decimal(14, 4)
+  unitId          String
+  unit            Unit          @relation(fields: [unitId], references: [id])
+  plannedStartAt  DateTime?
+  startedAt       DateTime?
+  completedAt     DateTime?
+  producedOn      DateTime?     @db.Date
+  note            String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  inputs        ProductionBatchInput[]
+  outputs       ProductionBatchOutput[]
+  costSnapshots CostSnapshot[]
+  lots          Lot[]
+  wasteRecords  WasteRecord[]
+
+  @@unique([organizationId, code])
+  @@index([siteId, producedOn])
+  @@index([recipeVersionId])
+  @@map("production_batch")
+}
+
+model ProductionBatchInput {
+  id                  String          @id @default(cuid(2))
+  organizationId      String
+  organization        Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  productionBatchId   String
+  productionBatch     ProductionBatch @relation(fields: [productionBatchId], references: [id], onDelete: Cascade)
+  lotId               String
+  lot                 Lot             @relation(fields: [lotId], references: [id], onDelete: Restrict)
+  itemId              String
+  item                Item            @relation(fields: [itemId], references: [id], onDelete: Restrict)
+  quantity            Decimal         @db.Decimal(14, 4)
+  theoreticalQuantity Decimal?        @db.Decimal(14, 4)
+  unitId              String
+  unit                Unit            @relation(fields: [unitId], references: [id])
+  unitCost            Decimal         @db.Decimal(12, 4)
+  note                String?
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+
+  @@unique([productionBatchId, lotId])
+  @@index([lotId])
+  @@index([organizationId])
+  @@map("production_batch_input")
+}
+
+model ProductionBatchOutput {
+  id                String          @id @default(cuid(2))
+  organizationId    String
+  organization      Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  productionBatchId String
+  productionBatch   ProductionBatch @relation(fields: [productionBatchId], references: [id], onDelete: Cascade)
+  itemId            String
+  item              Item            @relation(fields: [itemId], references: [id], onDelete: Restrict)
+  lotId             String?
+  lot               Lot?            @relation(fields: [lotId], references: [id], onDelete: SetNull)
+  quantity          Decimal         @db.Decimal(14, 4)
+  unitId            String
+  unit              Unit            @relation(fields: [unitId], references: [id])
+  isPrimary         Boolean         @default(false)
+  costPerUnit       Decimal?        @db.Decimal(12, 4)
+  note              String?
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  @@unique([productionBatchId, lotId])
+  @@index([lotId])
+  @@index([organizationId])
+  @@map("production_batch_output")
+}
+
+model LossReason {
+  id             String       @id @default(cuid(2))
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  code           String
+  labelFr        String
+  labelEn        String?
+  category       LossCategory @default(OTHER)
+  isActive       Boolean      @default(true)
+  sortOrder      Int          @default(0)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  wasteRecords WasteRecord[]
+
+  @@unique([organizationId, code])
+  @@map("loss_reason")
+}
+
+model WasteRecord {
+  id                String           @id @default(cuid(2))
+  organizationId    String
+  organization      Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  siteId            String
+  site              Site             @relation(fields: [siteId], references: [id], onDelete: Restrict)
+  itemId            String
+  item              Item             @relation(fields: [itemId], references: [id], onDelete: Restrict)
+  lotId             String?
+  lot               Lot?             @relation(fields: [lotId], references: [id], onDelete: SetNull)
+  productionBatchId String?
+  productionBatch   ProductionBatch? @relation(fields: [productionBatchId], references: [id], onDelete: SetNull)
+  lossReasonId      String
+  lossReason        LossReason       @relation(fields: [lossReasonId], references: [id], onDelete: Restrict)
+  quantity          Decimal          @db.Decimal(14, 4)
+  unitId            String
+  unit              Unit             @relation(fields: [unitId], references: [id])
+  costImpact        Decimal          @db.Decimal(12, 4)
+  currency          String           @default("EUR") @db.VarChar(3)
+  recordedAt        DateTime         @default(now())
+  recordedById      String?
+  recordedBy        User?            @relation(fields: [recordedById], references: [id], onDelete: SetNull)
+  note              String?
+  archivedAt        DateTime?
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+
+  @@index([siteId, recordedAt])
+  @@index([organizationId, lossReasonId, recordedAt])
+  @@index([lotId])
+  @@map("waste_record")
+}
+
+model SalesDaily {
+  id             String       @id @default(cuid(2))
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  siteId         String
+  site           Site         @relation(fields: [siteId], references: [id], onDelete: Restrict)
+  itemId         String
+  item           Item         @relation(fields: [itemId], references: [id], onDelete: Restrict)
+  businessDate   DateTime     @db.Date
+  channel        SalesChannel @default(RETAIL)
+  quantitySold   Decimal      @db.Decimal(14, 4)
+  unitId         String
+  unit           Unit         @relation(fields: [unitId], references: [id])
+  revenue        Decimal      @default(0) @db.Decimal(12, 4)
+  currency       String       @default("EUR") @db.VarChar(3)
+  source         SalesSource  @default(MANUAL)
+  note           String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@unique([siteId, itemId, businessDate, channel])
+  @@index([organizationId, businessDate])
+  @@map("sales_daily")
 }

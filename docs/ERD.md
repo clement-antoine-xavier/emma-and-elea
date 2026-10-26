@@ -1,6 +1,6 @@
 # Entity–Relationship Diagram
 
-- Status: Design — not yet implemented
+- Status: Phase 1 implemented in `prisma/schema.prisma`; Phase 2 and 3 designed only
 - Last updated: 2026-10-26
 - Companion decision: [ADR-0010](adr/0010-model-the-production-domain.md)
 
@@ -754,8 +754,9 @@ Append-only ledger. Signed quantity in the item's stock unit.
 - `(referenceType, referenceId)` is a soft reference, because the target table
   varies. Integrity is enforced by the application and by the `CHECK` that both
   columns are null or both set.
-- The table is append-only: no `UPDATE`, no `DELETE`. A correction is a new
-  movement of the opposite sign with a `reason`.
+- The table is append-only: `UPDATE` is rejected by a database trigger, and the
+  application exposes no delete path. A correction is a new movement of the
+  opposite sign with a `reason`.
 - Posting rules: a `RECEIPT` is positive; `CONSUMPTION`, `WASTE` and `DISPATCH`
   are negative; `PRODUCTION_OUTPUT` is positive; `ADJUSTMENT` and `COUNT` may
   be either.
@@ -863,7 +864,7 @@ batch costing attach to.
 | `organizationId` | `String` | no | | → `Organization`, cascade |
 | `siteId` | `String` | no | | → `Site` |
 | `recipeVersionId` | `String` | no | | → `RecipeVersion`; **pins the version** |
-| `productionPlanLineId` | `String?` | yes | | → `ProductionPlanLine`, unique |
+| `productionPlanLineId` | `String?` | yes | | → `ProductionPlanLine`, unique; **Phase 2, not created yet** |
 | `code` | `String` | no | | Batch number |
 | `status` | `BatchStatus` | no | `PLANNED` | |
 | `plannedQuantity` | `Decimal(14,4)` | no | | |
@@ -873,7 +874,7 @@ batch costing attach to.
 | `startedAt` | `DateTime?` | yes | | |
 | `completedAt` | `DateTime?` | yes | | |
 | `producedOn` | `DateTime?` | yes | | `@db.Date`, drives expiry and costing |
-| `operatorId` | `String?` | yes | | → `EmployeeProfile`, `SetNull` |
+| `operatorId` | `String?` | yes | | → `EmployeeProfile`, `SetNull`; **Phase 2, not created yet** |
 | `note` | `String?` | yes | | |
 
 - Unique: `@@unique([organizationId, code])`.
@@ -1355,7 +1356,7 @@ future trigger could promote.
 | 7 | `Lot.quantityRemaining` equals the sum of its `StockMovement.quantity`. | DB (reconciliation query) + app |
 | 8 | `Lot.quantityRemaining` never goes below zero. | DB (`CHECK`) + app |
 | 9 | Every change to a lot quantity has a matching `StockMovement` in the same transaction. | app |
-| 10 | `StockMovement` rows are never updated or deleted. | DB (revoke) + app |
+| 10 | `StockMovement` rows are never updated or deleted. | DB (`BEFORE UPDATE` trigger) + app for deletes |
 | 11 | A `ProductionBatchInput.quantity` may not exceed the consumed lot's remaining quantity. | app |
 | 12 | A completed batch has at least one input and exactly one `isPrimary` output. | app |
 | 13 | A batch's output lot quantity equals `ProductionBatchOutput.quantity`. | app |
@@ -1443,23 +1444,31 @@ reasons — carries labels in the database.
 
 ## Implementation notes
 
-When Phase 1 is implemented:
+Phase 1 is implemented in `prisma/schema.prisma` and applied by
+`prisma/migrations/20261026192819_add_production_domain`. The rules that still
+matter when Phase 2 is added:
 
-1. Keep Better Auth models untouched in `prisma/schema.prisma`; add domain
-   models below a `// Domain` marker. `npm run auth:generate` rewrites only its
-   own block.
-2. Add the raw-SQL objects the Prisma schema cannot express:
+1. Keep Better Auth models untouched apart from relation fields. Domain models
+   live below the `// Domain — Phase 1` marker. `npm run auth:generate` adds
+   missing fields and preserves existing ones, so the relation arrays on `User`
+   and `Organization` survive regeneration; it reports "your schema is already
+   up to date" on the current schema.
+2. The migration contains the raw-SQL objects Prisma cannot express:
    - partial unique index for one published version per recipe (invariant 3);
    - `CHECK (quantity_remaining >= 0)` on `lot` (invariant 8);
    - `CHECK` on `cost_snapshot` and `waste_record` for invariants 17 and 19;
    - partial unique index on `unit (kind) WHERE is_base` (invariant 26);
-   - partial unique index on root `item_category` names (invariant 27).
-3. Seed `Unit` and `Allergen` in the migration, not in application startup, so
-   every environment has identical reference data.
-4. Create `OrganizationSetting` and the default `LossReason` rows when an
-   organization is created; without them, costing and waste recording cannot
-   start.
+   - partial unique index on root `item_category` names (invariant 27);
+   - `BEFORE UPDATE` triggers on `stock_movement`, `cost_snapshot` and
+     `cost_snapshot_line` (invariant 10). Deletes are left to the application
+     because the tenant cascades must still be able to remove a whole
+     organization.
+3. `Unit` and `Allergen` are seeded by the migration, not at application
+   startup, so every environment has identical reference data.
+4. Still open: `OrganizationSetting` and the default `LossReason` rows must be
+   created when an organization is created, or when the first site is added.
+   Without them, costing and waste recording cannot start.
 5. Put unit conversion in one module (`src/lib/units.ts`) and forbid ad-hoc
    `factorToBase` arithmetic elsewhere.
-6. Add composite indexes in the same migration as the tables; the recall and
+6. Add composite indexes in the same migration as new tables; the recall and
    expiry queries are the ones that will grow.
