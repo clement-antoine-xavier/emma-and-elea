@@ -4,6 +4,7 @@ import {
   deleteUserByEmail,
   userExists,
 } from "./db";
+import {gotoHydrated} from "./helpers";
 
 const unique = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 const email = `e2e-${unique}@example.com`;
@@ -21,8 +22,7 @@ test("signs up, creates a workspace, signs out, and signs back in", async ({
 }) => {
   await deleteUserByEmail(email);
 
-  await page.goto("/en/sign-up");
-  await page.waitForTimeout(300);
+  await gotoHydrated(page, "/en/sign-up");
   await page.getByLabel("Name").fill(name);
   await page.getByLabel("Email").fill(email);
   await page.getByLabel("Password").fill(password);
@@ -44,8 +44,7 @@ test("signs up, creates a workspace, signs out, and signs back in", async ({
   await page.getByRole("button", { name: "Sign out" }).click();
   await expect(page).toHaveURL(/\/en\/sign-in$/);
 
-  await page.goto("/en/sign-in");
-  await page.waitForTimeout(300);
+  await gotoHydrated(page, "/en/sign-in");
   await page.getByLabel("Email").fill(email);
   await page.getByLabel("Password").fill(password);
   await page.getByRole("button", { name: "Sign in" }).click();
@@ -57,8 +56,7 @@ test("signs up, creates a workspace, signs out, and signs back in", async ({
 });
 
 test("shows client-side validation errors", async ({ page }) => {
-  await page.goto("/en/sign-up");
-  await page.waitForTimeout(300);
+  await gotoHydrated(page, "/en/sign-up");
   await page.getByRole("button", { name: "Create account" }).click();
 
   await expect(page.getByText("Enter your name.").first()).toBeVisible();
@@ -71,7 +69,7 @@ test("shows client-side validation errors", async ({ page }) => {
 });
 
 test("serves a French locale with translated copy", async ({ page }) => {
-  await page.goto("/fr/sign-up");
+  await gotoHydrated(page, "/fr/sign-up");
 
   await expect(page.locator("html")).toHaveAttribute("lang", "fr");
   await expect(

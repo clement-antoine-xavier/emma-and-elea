@@ -4,6 +4,7 @@ import {
   deleteUserByEmail,
   pendingInvitationId,
 } from "./db";
+import {gotoHydrated} from "./helpers";
 
 const unique = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 const ownerEmail = `e2e-owner-${unique}@example.com`;
@@ -21,8 +22,7 @@ test("an owner invites staff, and staff cannot reach team management", async ({
   page,
 }) => {
   // Owner signs up and creates the workspace.
-  await page.goto("/en/sign-up");
-  await page.waitForTimeout(300);
+  await gotoHydrated(page, "/en/sign-up");
   await page.getByLabel("Name").fill("Owner");
   await page.getByLabel("Email").fill(ownerEmail);
   await page.getByLabel("Password").fill(password);
@@ -52,15 +52,14 @@ test("an owner invites staff, and staff cannot reach team management", async ({
   await expect(page).toHaveURL(/\/en\/sign-in$/);
 
   // Staff signs up, then accepts the invitation.
-  await page.goto("/en/sign-up");
-  await page.waitForTimeout(300);
+  await gotoHydrated(page, "/en/sign-up");
   await page.getByLabel("Name").fill("Staff");
   await page.getByLabel("Email").fill(staffEmail);
   await page.getByLabel("Password").fill(password);
   await page.getByRole("button", { name: "Create account" }).click();
   await expect(page).toHaveURL(/\/en\/onboarding$/);
 
-  await page.goto(`/en/accept-invitation/${invitationId}`);
+  await gotoHydrated(page, `/en/accept-invitation/${invitationId}`);
   await expect(
     page.getByRole("heading", { name: /Join Permission Bakery/ }),
   ).toBeVisible();
