@@ -8,6 +8,7 @@ Next.js 16 App Router app with Astryx UI, Prisma ORM 7, and Better Auth.
 - Astryx 0.7.4 (Butter theme)
 - Prisma ORM 7.10.1 + PostgreSQL 18
 - Better Auth 1.7.13 (email/password, admin, organization)
+- next-intl 4.14.9 (English and French, locale-prefixed routes)
 - Zod 4 + React Hook Form 7 for forms
 
 Architecture decisions are recorded in [`docs/adr/`](docs/adr/README.md) using MADR.
@@ -43,7 +44,8 @@ Run the app:
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000), then create an account at `/sign-up`.
+Open [http://localhost:3000](http://localhost:3000). It redirects to `/en` or
+`/fr`, then create an account at `/en/sign-up`.
 
 ## Environment
 
@@ -74,7 +76,7 @@ The Prisma client is generated into `src/generated/prisma` (gitignored). It is r
 - Server config: `src/lib/auth.ts`
 - Browser client: `src/lib/auth-client.ts`
 - API route: `src/app/api/auth/[...all]/route.ts`
-- Pages: `/sign-in`, `/sign-up`
+- Pages: `/en/sign-in`, `/en/sign-up` (and the `/fr` equivalents)
 
 After changing Better Auth plugins or config, refresh the Prisma models and migrate:
 
@@ -95,7 +97,23 @@ npm run auth:create-admin -- \
 
 ## Forms
 
-All forms use Zod schemas in `src/lib/validation/` with React Hook Form. The reusable Astryx field wrapper is `src/components/form-text-input.tsx`; server errors render in an Astryx `Banner`.
+All forms use Zod schemas in `src/lib/validation/` with React Hook Form. The reusable Astryx field wrapper is `src/components/form-text-input.tsx`; server errors render in an Astryx `Banner`. Schemas receive a translator so validation messages follow the active locale.
+
+## Internationalization
+
+`next-intl` provides translations, locale negotiation, and formatting. URLs are
+locale-prefixed (`/en`, `/fr`); `/` redirects to the negotiated locale.
+
+- Routing: `src/i18n/routing.ts` — supported locales and the default locale
+- Request config: `src/i18n/request.ts` — reads the locale from `next/root-params`
+- Proxy: `src/proxy.ts` — locale negotiation, redirects, and alternate links
+- Navigation helpers: `src/i18n/navigation.ts` — locale-aware `Link` and `useRouter`
+- Messages: `messages/en.json`, `messages/fr.json`
+- Pages: `src/app/[locale]/`
+
+Add a language by extending `routing.locales` and adding `messages/<locale>.json`.
+Both catalogs must share the same keys; `npm test` fails otherwise. French copy
+is maintained in-repo and should be reviewed by a French speaker.
 
 ## Testing
 

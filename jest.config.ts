@@ -20,4 +20,16 @@ const config: Config = {
   modulePathIgnorePatterns: ["<rootDir>/.next/"],
 };
 
-export default createJestConfig(config);
+// `next-intl`, `use-intl`, and their FormatJS dependencies ship ESM only, so
+// Jest has to transform them.
+// https://next-intl.dev/docs/environments/testing#jest
+const esmPackages = ['next-intl', 'use-intl', '@formatjs', 'intl-messageformat'];
+
+const jestConfig = async () => ({
+  ...(await createJestConfig(config)()),
+  transformIgnorePatterns: [
+    `node_modules/(?!(${esmPackages.join('|')})/)`,
+  ],
+});
+
+export default jestConfig;

@@ -1,9 +1,9 @@
 'use client';
 
 import type {ReactNode} from 'react';
-import Link from 'next/link';
 import {LinkProvider} from '@astryxdesign/core/Link';
 import {Theme} from '@astryxdesign/core/theme';
+import {Link} from '@/i18n/navigation';
 import {defaultThemeSlug, themes} from '../astryx-themes';
 
 export function Providers({children}: {children: ReactNode}) {

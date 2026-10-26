@@ -17,6 +17,7 @@ decision.
 | [0006](0006-containerize-with-docker-and-a-migration-service.md) | Containerize with Docker and a migration service | Accepted | 2026-10-26 |
 | [0007](0007-test-with-jest-and-playwright-against-postgresql.md) | Test with Jest and Playwright against PostgreSQL | Accepted | 2026-10-26 |
 | [0008](0008-use-github-actions-and-ghcr.md) | Use GitHub Actions and GHCR | Accepted | 2026-10-26 |
+| [0009](0009-use-next-intl-with-locale-prefixed-routing.md) | Use next-intl with locale-prefixed routing | Accepted | 2026-10-26 |
 
 ## Creating a new ADR
 

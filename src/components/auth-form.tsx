@@ -1,7 +1,6 @@
 "use client";
 
 import {useMemo} from 'react';
-import {useRouter} from 'next/navigation';
 import {zodResolver} from '@hookform/resolvers/zod';
 import {useForm, type UseFormSetError} from 'react-hook-form';
 import {Banner} from '@astryxdesign/core/Banner';
@@ -11,56 +10,73 @@ import {FormLayout} from '@astryxdesign/core/FormLayout';
 import {Link} from '@astryxdesign/core/Link';
 import {Stack} from '@astryxdesign/core/Stack';
 import {Heading, Text} from '@astryxdesign/core/Text';
+import {useTranslations} from 'next-intl';
+import {useRouter} from '@/i18n/navigation';
 import {authClient} from '@/lib/auth-client';
 import {FormTextInput} from '@/components/form-text-input';
 import {
   createAuthSchema,
   type AuthFormValues,
+  type AuthMode,
 } from '@/lib/validation/auth';
-
-type AuthMode = 'sign-in' | 'sign-up';
 
 type AuthError = {
   code?: string;
   message?: string;
 };
 
+type AuthErrorKey =
+  | 'userExists'
+  | 'passwordTooShort'
+  | 'invalidCredentials'
+  | 'generic';
+
 function applyAuthError(
   error: AuthError,
   setError: UseFormSetError<AuthFormValues>,
+  t: (key: AuthErrorKey) => string,
 ) {
   switch (error.code) {
     case 'USER_ALREADY_EXISTS':
     case 'USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL':
       setError('email', {
         type: 'server',
-        message: 'An account with this email already exists.',
+        message: t('userExists'),
       });
       return;
     case 'PASSWORD_TOO_SHORT':
       setError('password', {
         type: 'server',
-        message: 'Use at least 8 characters.',
+        message: t('passwordTooShort'),
       });
       return;
     case 'INVALID_EMAIL_OR_PASSWORD':
       setError('root', {
         type: 'server',
-        message: 'Invalid email or password.',
+        message: t('invalidCredentials'),
       });
       return;
     default:
       setError('root', {
         type: 'server',
-        message: error.message ?? 'Something went wrong. Please try again.',
+        message: error.message ?? t('generic'),
       });
   }
 }
 
 export function AuthForm({mode}: {mode: AuthMode}) {
   const router = useRouter();
+  const tFields = useTranslations('Auth.fields');
+  const tErrors = useTranslations('Auth.errors');
+  const tValidation = useTranslations('Auth.validation');
+  const tMode = useTranslations(
+    mode === 'sign-up' ? 'Auth.signUp' : 'Auth.signIn',
+  );
   const isSignUp = mode === 'sign-up';
-  const schema = useMemo(() => createAuthSchema(mode), [mode]);
+  const schema = useMemo(
+    () => createAuthSchema(mode, (key) => tValidation(key)),
+    [mode, tValidation],
+  );
 
   const {
     control,
@@ -91,7 +107,7 @@ export function AuthForm({mode}: {mode: AuthMode}) {
         });
 
     if (result.error) {
-      applyAuthError(result.error, setError);
+      applyAuthError(result.error, setError, (key) => tErrors(key));
       return;
     }
 
@@ -104,20 +120,14 @@ export function AuthForm({mode}: {mode: AuthMode}) {
       <form onSubmit={handleSubmit(onSubmit)} noValidate>
         <Stack gap={5}>
           <Stack gap={1}>
-            <Heading level={1}>
-              {isSignUp ? 'Create your account' : 'Welcome back'}
-            </Heading>
-            <Text type="supporting">
-              {isSignUp
-                ? 'Start with an email and a password.'
-                : 'Sign in to continue.'}
-            </Text>
+            <Heading level={1}>{tMode('title')}</Heading>
+            <Text type="supporting">{tMode('subtitle')}</Text>
           </Stack>
 
           {errors.root?.message ? (
             <Banner
               status="error"
-              title="Could not continue"
+              title={tErrors('bannerTitle')}
               description={errors.root.message}
             />
           ) : null}
@@ -127,7 +137,7 @@ export function AuthForm({mode}: {mode: AuthMode}) {
               <FormTextInput
                 control={control}
                 name="name"
-                label="Name"
+                label={tFields('name')}
                 autoComplete="name"
                 isRequired
               />
@@ -135,7 +145,7 @@ export function AuthForm({mode}: {mode: AuthMode}) {
             <FormTextInput
               control={control}
               name="email"
-              label="Email"
+              label={tFields('email')}
               type="email"
               autoComplete="email"
               isRequired
@@ -143,7 +153,7 @@ export function AuthForm({mode}: {mode: AuthMode}) {
             <FormTextInput
               control={control}
               name="password"
-              label="Password"
+              label={tFields('password')}
               type="password"
               autoComplete={isSignUp ? 'new-password' : 'current-password'}
               isRequired
@@ -152,16 +162,16 @@ export function AuthForm({mode}: {mode: AuthMode}) {
 
           <Button
             variant="primary"
-            label={isSignUp ? 'Create account' : 'Sign in'}
+            label={tMode('submit')}
             type="submit"
             width="100%"
             isLoading={isSubmitting}
           />
 
           <Text type="supporting">
-            {isSignUp ? 'Already have an account? ' : 'New here? '}
+            {tMode('altPrompt')}
             <Link href={isSignUp ? '/sign-in' : '/sign-up'}>
-              {isSignUp ? 'Sign in' : 'Create an account'}
+              {tMode('altLink')}
             </Link>
           </Text>
         </Stack>

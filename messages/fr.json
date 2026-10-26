@@ -1,0 +1,102 @@
+{
+  "Metadata": {
+    "title": "Emma & Elea",
+    "description": "Des surfaces dorées et douces, avec une touche de bleu amical."
+  },
+  "HomePage": {
+    "badge": "Thème Butter",
+    "title": "Chaleureux, crémeux, discrètement ludique.",
+    "intro": "Des surfaces dorées et douces avec une touche de bleu amical. Cette page sert uniquement à juger le thème : palette, typographie, surfaces et contrôles.",
+    "actions": {
+      "primary": "Action principale",
+      "secondary": "Secondaire",
+      "ghost": "Fantôme",
+      "destructive": "Destructif"
+    },
+    "cards": {
+      "default": {
+        "badge": "Par défaut",
+        "title": "Surface standard",
+        "body": "Les cartes, le texte et les contrôles héritent des jetons du thème."
+      },
+      "muted": {
+        "badge": "Atténué",
+        "title": "Surface discrète",
+        "body": "Les zones atténuées se placent légèrement derrière la surface principale."
+      },
+      "yellow": {
+        "badge": "Jaune",
+        "title": "Accent beurre",
+        "body": "Le ton chaud signature, utilisé avec parcimonie pour l'emphase."
+      },
+      "blue": {
+        "badge": "Bleu",
+        "title": "Accent amical",
+        "body": "Un bleu franc pour les actions, les liens et les états sélectionnés."
+      }
+    },
+    "typography": {
+      "title": "Typographie et couleurs d'état",
+      "heading": "Titre de niveau trois",
+      "body": "Le texte courant utilise la famille du thème avec une hauteur de ligne confortable. Les liens et les boutons en ligne reprennent l'accent.",
+      "supporting": "Le texte secondaire est un cran plus discret, pour les légendes et les métadonnées."
+    },
+    "statuses": {
+      "info": "Info",
+      "success": "Succès",
+      "warning": "Avertissement",
+      "error": "Erreur",
+      "neutral": "Neutre"
+    }
+  },
+  "Auth": {
+    "fields": {
+      "name": "Nom",
+      "email": "E-mail",
+      "password": "Mot de passe"
+    },
+    "signIn": {
+      "title": "Content de vous revoir",
+      "subtitle": "Connectez-vous pour continuer.",
+      "submit": "Se connecter",
+      "altPrompt": "Nouveau ici ? ",
+      "altLink": "Créer un compte",
+      "metadataTitle": "Connexion · Emma & Elea"
+    },
+    "signUp": {
+      "title": "Créez votre compte",
+      "subtitle": "Commencez avec un e-mail et un mot de passe.",
+      "submit": "Créer un compte",
+      "altPrompt": "Vous avez déjà un compte ? ",
+      "altLink": "Se connecter",
+      "metadataTitle": "Créer un compte · Emma & Elea"
+    },
+    "status": {
+      "checking": "Vérification de la session…",
+      "signedInAs": "Connecté en tant que {name}",
+      "signOut": "Se déconnecter",
+      "signIn": "Se connecter",
+      "createAccount": "Créer un compte"
+    },
+    "errors": {
+      "bannerTitle": "Impossible de continuer",
+      "userExists": "Un compte existe déjà avec cet e-mail.",
+      "passwordTooShort": "Utilisez au moins 8 caractères.",
+      "invalidCredentials": "E-mail ou mot de passe invalide.",
+      "generic": "Une erreur est survenue. Veuillez réessayer."
+    },
+    "validation": {
+      "nameRequired": "Saisissez votre nom.",
+      "nameTooLong": "Le nom est trop long.",
+      "emailInvalid": "Saisissez une adresse e-mail valide.",
+      "passwordRequired": "Saisissez votre mot de passe.",
+      "passwordTooShort": "Utilisez au moins 8 caractères.",
+      "passwordTooLong": "Le mot de passe est trop long."
+    }
+  },
+  "LocaleSwitcher": {
+    "label": "Langue",
+    "en": "English",
+    "fr": "Français"
+  }
+}

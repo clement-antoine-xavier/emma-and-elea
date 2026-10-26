@@ -54,6 +54,24 @@ Use Astryx before writing custom UI. Discover, then compose; don't hand-roll lay
 
 <!-- END:astryx -->
 
+<!-- BEGIN:i18n -->
+
+## Internationalization
+
+`next-intl` 4.14.9 with locale-prefixed routes (`/en`, `/fr`).
+
+- Routing config: `src/i18n/routing.ts` (`locales`, `defaultLocale`). Add a locale there and in `messages/`.
+- Request config: `src/i18n/request.ts` reads the locale from `next/root-params` (not `cookies()`), which keeps `cacheComponents` static rendering intact.
+- Proxy: `src/proxy.ts` (`createMiddleware`) redirects `/` and unprefixed paths to a locale. Next.js 16 calls this Proxy, not Middleware.
+- Messages: `messages/en.json` and `messages/fr.json`. A Jest test asserts both catalogs have the same key paths; add keys to both.
+- Server Components: `getTranslations` from `next-intl/server`; Client Components: `useTranslations` from `next-intl`.
+- Navigation: import `Link`, `useRouter`, `usePathname`, and `getPathname` from `@/i18n/navigation`, never from `next/link` or `next/navigation`, so hrefs get the active locale.
+- Validation: schemas in `src/lib/validation/` stay free of `next-intl`; `createAuthSchema(mode, t)` receives a translator function from the component.
+- Pages live under `src/app/[locale]/`; `src/app/[locale]/layout.tsx` is the root layout and must keep `generateStaticParams`.
+- French copy is in-repo and unreviewed by a native speaker; treat edits to `messages/fr.json` as content changes.
+
+<!-- END:i18n -->
+
 <!-- BEGIN:forms -->
 
 ## Forms

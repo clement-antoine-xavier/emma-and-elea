@@ -1,24 +1,39 @@
 import { z } from "zod";
 
-const emailSchema = z
-  .string()
-  .trim()
-  .pipe(z.email("Enter a valid email address."));
+export const authValidationKeys = [
+  "nameRequired",
+  "nameTooLong",
+  "emailInvalid",
+  "passwordRequired",
+  "passwordTooShort",
+  "passwordTooLong",
+] as const;
 
-const nameSchema = z
-  .string()
-  .trim()
-  .min(2, "Enter your name.")
-  .max(80, "Name is too long.");
+export type AuthValidationKey = (typeof authValidationKeys)[number];
 
-const signInPasswordSchema = z.string().min(1, "Enter your password.");
+export type TranslateAuthValidation = (key: AuthValidationKey) => string;
 
-const signUpPasswordSchema = z
-  .string()
-  .min(8, "Use at least 8 characters.")
-  .max(128, "Password is too long.");
+export type AuthMode = "sign-in" | "sign-up";
 
-export function createAuthSchema(mode: "sign-in" | "sign-up") {
+export function createAuthSchema(
+  mode: AuthMode,
+  t: TranslateAuthValidation,
+) {
+  const emailSchema = z.string().trim().pipe(z.email(t("emailInvalid")));
+
+  const nameSchema = z
+    .string()
+    .trim()
+    .min(2, t("nameRequired"))
+    .max(80, t("nameTooLong"));
+
+  const signInPasswordSchema = z.string().min(1, t("passwordRequired"));
+
+  const signUpPasswordSchema = z
+    .string()
+    .min(8, t("passwordTooShort"))
+    .max(128, t("passwordTooLong"));
+
   return z.object({
     name: mode === "sign-up" ? nameSchema : z.string().optional(),
     email: emailSchema,
@@ -27,9 +42,4 @@ export function createAuthSchema(mode: "sign-in" | "sign-up") {
   });
 }
 
-export const signInSchema = createAuthSchema("sign-in");
-export const signUpSchema = createAuthSchema("sign-up");
-
 export type AuthFormValues = z.infer<ReturnType<typeof createAuthSchema>>;
-export type SignInValues = z.infer<typeof signInSchema>;
-export type SignUpValues = z.infer<typeof signUpSchema>;

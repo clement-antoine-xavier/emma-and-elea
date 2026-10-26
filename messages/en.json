@@ -1,0 +1,102 @@
+{
+  "Metadata": {
+    "title": "Emma & Elea",
+    "description": "Warm, creamy, quietly playful surfaces with a friendly blue accent."
+  },
+  "HomePage": {
+    "badge": "Butter theme",
+    "title": "Warm, creamy, quietly playful.",
+    "intro": "Soft golden surfaces with a friendly blue accent. This page exists only to judge the theme: palette, typography, surfaces, and controls.",
+    "actions": {
+      "primary": "Primary action",
+      "secondary": "Secondary",
+      "ghost": "Ghost",
+      "destructive": "Destructive"
+    },
+    "cards": {
+      "default": {
+        "badge": "Default",
+        "title": "Standard surface",
+        "body": "Cards, text, and controls inherit the theme's tokens."
+      },
+      "muted": {
+        "badge": "Muted",
+        "title": "Quiet surface",
+        "body": "De-emphasized areas sit slightly behind the main surface."
+      },
+      "yellow": {
+        "badge": "Yellow",
+        "title": "Butter accent",
+        "body": "The signature warm tone, used sparingly for emphasis."
+      },
+      "blue": {
+        "badge": "Blue",
+        "title": "Friendly accent",
+        "body": "A clear blue for actions, links, and selected states."
+      }
+    },
+    "typography": {
+      "title": "Typography and status colors",
+      "heading": "Heading three",
+      "body": "Body text is set in the theme's body family with comfortable line height. Inline links and buttons pick up the accent.",
+      "supporting": "Supporting text is one step quieter, for captions and metadata."
+    },
+    "statuses": {
+      "info": "Info",
+      "success": "Success",
+      "warning": "Warning",
+      "error": "Error",
+      "neutral": "Neutral"
+    }
+  },
+  "Auth": {
+    "fields": {
+      "name": "Name",
+      "email": "Email",
+      "password": "Password"
+    },
+    "signIn": {
+      "title": "Welcome back",
+      "subtitle": "Sign in to continue.",
+      "submit": "Sign in",
+      "altPrompt": "New here? ",
+      "altLink": "Create an account",
+      "metadataTitle": "Sign in · Emma & Elea"
+    },
+    "signUp": {
+      "title": "Create your account",
+      "subtitle": "Start with an email and a password.",
+      "submit": "Create account",
+      "altPrompt": "Already have an account? ",
+      "altLink": "Sign in",
+      "metadataTitle": "Create account · Emma & Elea"
+    },
+    "status": {
+      "checking": "Checking session…",
+      "signedInAs": "Signed in as {name}",
+      "signOut": "Sign out",
+      "signIn": "Sign in",
+      "createAccount": "Create account"
+    },
+    "errors": {
+      "bannerTitle": "Could not continue",
+      "userExists": "An account with this email already exists.",
+      "passwordTooShort": "Use at least 8 characters.",
+      "invalidCredentials": "Invalid email or password.",
+      "generic": "Something went wrong. Please try again."
+    },
+    "validation": {
+      "nameRequired": "Enter your name.",
+      "nameTooLong": "Name is too long.",
+      "emailInvalid": "Enter a valid email address.",
+      "passwordRequired": "Enter your password.",
+      "passwordTooShort": "Use at least 8 characters.",
+      "passwordTooLong": "Password is too long."
+    }
+  },
+  "LocaleSwitcher": {
+    "label": "Language",
+    "en": "English",
+    "fr": "Français"
+  }
+}
