@@ -10,6 +10,7 @@ Emma & Elea — Next.js 16.4.3 App Router, React 19.3, TypeScript. UI is Astryx 
 - Providers: `src/app/providers.tsx` wires `Theme` and `LinkProvider`.
 - Skills: installed in `.agents/skills/`; load the matching skill before framework-specific work.
 - Data/auth: Prisma 7.10.1 with PostgreSQL, Better Auth 1.7.13 with the admin and organization plugins. Local Postgres runs in Docker (see `docker-compose.yml`).
+- Architecture decisions: `docs/adr/` (MADR); add an ADR for significant architectural changes.
 
 <!-- END:project -->
 

@@ -10,6 +10,8 @@ Next.js 16 App Router app with Astryx UI, Prisma ORM 7, and Better Auth.
 - Better Auth 1.7.13 (email/password, admin, organization)
 - Zod 4 + React Hook Form 7 for forms
 
+Architecture decisions are recorded in [`docs/adr/`](docs/adr/README.md) using MADR.
+
 ## Prerequisites
 
 - Node.js 26+
