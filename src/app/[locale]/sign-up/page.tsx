@@ -1,16 +1,25 @@
-import type {Metadata} from 'next';
-import {Center} from '@astryxdesign/core/Center';
-import {HStack} from '@astryxdesign/core/HStack';
-import {Stack} from '@astryxdesign/core/Stack';
-import {notFound} from 'next/navigation';
-import {hasLocale} from 'next-intl';
-import {getTranslations} from 'next-intl/server';
-import {AuthForm} from '@/components/auth-form';
-import {LocaleSwitcher} from '@/components/locale-switcher';
-import {ThemeSwitcher} from '@/components/theme-switcher';
-import {routing} from '@/i18n/routing';
+import type {Metadata} from "next";
+import {Center} from "@astryxdesign/core/Center";
+import {HStack} from "@astryxdesign/core/HStack";
+import {Stack} from "@astryxdesign/core/Stack";
+import {notFound} from "next/navigation";
+import {hasLocale} from "next-intl";
+import {getTranslations} from "next-intl/server";
+import {AuthForm} from "@/components/auth-form";
+import {LocaleSwitcher} from "@/components/locale-switcher";
+import {ThemeSwitcher} from "@/components/theme-switcher";
+import {routing} from "@/i18n/routing";
+import {safeNextPath} from "@/lib/navigation";
+
+// Session and search params are request data; keep the route blocking
+// until the dashboard is migrated to a streamed shell.
+export const instant = false;
 
 type LocaleParams = {params: Promise<{locale: string}>};
+
+type SignUpPageProps = LocaleParams & {
+  searchParams: Promise<{next?: string | string[]}>;
+};
 
 export async function generateMetadata({
   params,
@@ -21,12 +30,14 @@ export async function generateMetadata({
     notFound();
   }
 
-  const t = await getTranslations({locale, namespace: 'Auth.signUp'});
+  const t = await getTranslations({locale, namespace: "Auth.signUp"});
 
-  return {title: t('metadataTitle')};
+  return {title: t("metadataTitle")};
 }
 
-export default function SignUpPage() {
+export default async function SignUpPage({searchParams}: SignUpPageProps) {
+  const {next} = await searchParams;
+
   return (
     <Center minHeight="100vh" padding={8}>
       <Stack gap={4} width="100%" maxWidth={440}>
@@ -34,7 +45,7 @@ export default function SignUpPage() {
           <ThemeSwitcher />
           <LocaleSwitcher />
         </HStack>
-        <AuthForm mode="sign-up" />
+        <AuthForm mode="sign-up" next={safeNextPath(next)} />
       </Stack>
     </Center>
   );

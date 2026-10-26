@@ -31,6 +31,7 @@ export function AuthStatus() {
       <Text type="supporting">
         {t('signedInAs', {name: session.user.name || session.user.email})}
       </Text>
+      <Link href="/dashboard">{t('dashboard')}</Link>
       <Button
         variant="secondary"
         label={t('signOut')}

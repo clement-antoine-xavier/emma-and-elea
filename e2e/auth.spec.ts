@@ -1,43 +1,64 @@
 import { expect, test } from "@playwright/test";
-import { deleteUserByEmail, userExists } from "./db";
+import {
+  deleteOrganizationBySlug,
+  deleteUserByEmail,
+  userExists,
+} from "./db";
 
-const email = `e2e-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@example.com`;
+const unique = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+const email = `e2e-${unique}@example.com`;
 const password = "password12345";
 const name = "E2E User";
+const slug = `e2e-auth-${unique}`;
 
 test.afterAll(async () => {
+  await deleteOrganizationBySlug(slug);
   await deleteUserByEmail(email);
 });
 
-test("signs up, persists to Postgres, signs out, and signs back in", async ({
+test("signs up, creates a workspace, signs out, and signs back in", async ({
   page,
 }) => {
   await deleteUserByEmail(email);
 
   await page.goto("/en/sign-up");
+  await page.waitForTimeout(300);
   await page.getByLabel("Name").fill(name);
   await page.getByLabel("Email").fill(email);
   await page.getByLabel("Password").fill(password);
   await page.getByRole("button", { name: "Create account" }).click();
 
-  await expect(page).toHaveURL(/\/en$/);
-  await expect(page.getByText(`Signed in as ${name}`)).toBeVisible();
+  await expect(page).toHaveURL(/\/en\/onboarding$/);
   await expect.poll(() => userExists(email)).toBe(true);
 
+  await page.getByLabel("Business name").fill("E2E Bakery");
+  await page.getByLabel("Workspace address").fill(slug);
+  await page.getByRole("button", { name: "Create workspace" }).click();
+
+  await expect(page).toHaveURL(/\/en\/dashboard$/);
+  await expect(
+    page.getByRole("heading", { name: `Hello, ${name}` }),
+  ).toBeVisible();
+  await expect(page.getByText("Owner").first()).toBeVisible();
+
   await page.getByRole("button", { name: "Sign out" }).click();
-  await expect(page.getByRole("link", { name: "Sign in" })).toBeVisible();
+  await expect(page).toHaveURL(/\/en\/sign-in$/);
 
   await page.goto("/en/sign-in");
+  await page.waitForTimeout(300);
   await page.getByLabel("Email").fill(email);
   await page.getByLabel("Password").fill(password);
   await page.getByRole("button", { name: "Sign in" }).click();
 
-  await expect(page).toHaveURL(/\/en$/);
-  await expect(page.getByText(`Signed in as ${name}`)).toBeVisible();
+  await expect(page).toHaveURL(/\/en\/dashboard$/);
+  await expect(
+    page.getByRole("heading", { name: `Hello, ${name}` }),
+  ).toBeVisible();
 });
 
 test("shows client-side validation errors", async ({ page }) => {
   await page.goto("/en/sign-up");
+  await page.waitForTimeout(300);
   await page.getByRole("button", { name: "Create account" }).click();
 
   await expect(page.getByText("Enter your name.").first()).toBeVisible();

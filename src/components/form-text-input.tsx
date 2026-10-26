@@ -11,6 +11,8 @@ type FormTextInputProps<T extends FieldValues> = {
   type?: "text" | "email" | "password";
   autoComplete?: string;
   isRequired?: boolean;
+  description?: string;
+  onValueChange?: (value: string) => void;
 };
 
 export function FormTextInput<T extends FieldValues>({
@@ -20,6 +22,8 @@ export function FormTextInput<T extends FieldValues>({
   type = "text",
   autoComplete,
   isRequired,
+  description,
+  onValueChange,
 }: FormTextInputProps<T>) {
   return (
     <Controller
@@ -30,10 +34,14 @@ export function FormTextInput<T extends FieldValues>({
           label={label}
           type={type}
           value={typeof field.value === "string" ? field.value : ""}
-          onChange={(value) => field.onChange(value)}
+          onChange={(value) => {
+            field.onChange(value);
+            onValueChange?.(value);
+          }}
           htmlName={name}
           autoComplete={autoComplete}
           isRequired={isRequired}
+          description={description}
           status={
             fieldState.error
               ? { type: "error", message: fieldState.error.message }

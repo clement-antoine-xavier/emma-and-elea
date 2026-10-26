@@ -3,8 +3,15 @@ import { createAuthMiddleware } from "better-auth/api";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { nextCookies } from "better-auth/next-js";
 import { admin } from "better-auth/plugins/admin";
+import type {AccessControl} from "better-auth/plugins/access";
+import {
+  adminAc,
+  defaultAc,
+  defaultRoles,
+} from "better-auth/plugins/admin/access";
 import { organization } from "better-auth/plugins/organization";
 import { ensureOrganizationDefaults } from "./organization-defaults";
+import { ac, roles } from "./auth-permissions";
 import { prisma } from "./prisma";
 
 /**
@@ -51,5 +58,25 @@ export const auth = betterAuth({
       joins: true,
     },
   },
-  plugins: [admin(), organization(), nextCookies()],
+  plugins: [
+    admin({
+      // Platform staff are separate from organization roles. "admin" is kept
+      // as a legacy alias for installs created before ADR-0011.
+      ac: defaultAc as unknown as AccessControl,
+      roles: {...defaultRoles, support: adminAc},
+      adminRoles: ["support", "admin"],
+      defaultRole: "user",
+    }),
+    organization({
+      ac,
+      roles,
+      creatorRole: "owner",
+      invitationExpiresIn: 60 * 60 * 24 * 7,
+      cancelPendingInvitationsOnReInvite: true,
+      // Invitations are shared as links until an email provider is chosen.
+      // Owners can revisit deletion once a soft-delete flow exists.
+      disableOrganizationDeletion: true,
+    }),
+    nextCookies(),
+  ],
 });

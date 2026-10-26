@@ -47,6 +47,21 @@ export async function deleteOrganizationBySlug(slug: string) {
   );
 }
 
+export async function pendingInvitationId(
+  email: string,
+): Promise<string | null> {
+  return withClient(async (client) => {
+    const result = await client.query(
+      `SELECT id FROM "invitation"
+       WHERE email = $1 AND status = 'pending'
+       ORDER BY "createdAt" DESC LIMIT 1`,
+      [email],
+    );
+
+    return result.rows[0]?.id ?? null;
+  });
+}
+
 export async function organizationDefaults(organizationId: string) {
   return withClient(async (client) => {
     const settings = await client.query(

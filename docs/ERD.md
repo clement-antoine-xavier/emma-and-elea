@@ -1213,6 +1213,7 @@ Staff data, kept out of Better Auth's `user` and `member` tables so
 | `archivedAt` | `DateTime?` | yes | | |
 
 - One profile per member; authorization and the org role stay on `Member`.
+  The role matrix is documented in [permissions.md](permissions.md) and ADR-0011.
 
 ### `Skill` · `skill` · Phase 2
 

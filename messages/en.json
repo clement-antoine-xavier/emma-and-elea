@@ -209,7 +209,8 @@
       "signedInAs": "Signed in as {name}",
       "signOut": "Sign out",
       "signIn": "Sign in",
-      "createAccount": "Create account"
+      "createAccount": "Create account",
+      "dashboard": "Workspace"
     },
     "errors": {
       "bannerTitle": "Could not continue",
@@ -237,5 +238,162 @@
     "light": "Light",
     "dark": "Dark",
     "system": "System"
+  },
+  "Roles": {
+    "owner": {
+      "label": "Owner",
+      "description": "Full control, including people, costs and organization settings."
+    },
+    "admin": {
+      "label": "Admin",
+      "description": "Runs the business and manages everyone except owners."
+    },
+    "production_manager": {
+      "label": "Production manager",
+      "description": "Runs recipes, production, planning and the team, with cost visibility."
+    },
+    "stock_manager": {
+      "label": "Stock & purchasing",
+      "description": "Manages the catalog, suppliers, receipts, stock and waste."
+    },
+    "sales": {
+      "label": "Sales",
+      "description": "Handles customers, orders, dispatches and daily sales."
+    },
+    "staff": {
+      "label": "Staff",
+      "description": "Sees their own work and records production, waste and counts."
+    },
+    "accountant": {
+      "label": "Accountant",
+      "description": "Read-only finance access. Not available yet."
+    },
+    "auditor": {
+      "label": "Auditor",
+      "description": "Read-only traceability access. Not available yet."
+    }
+  },
+  "Onboarding": {
+    "metadataTitle": "Create your workspace · Emma & Éléa",
+    "title": "Create your workspace",
+    "subtitle": "Tell us the name of your business. You can invite your team next.",
+    "fields": {
+      "name": "Business name",
+      "slug": "Workspace address",
+      "slugHint": "Lowercase letters, numbers and hyphens."
+    },
+    "submit": "Create workspace",
+    "errors": {
+      "bannerTitle": "Could not create the workspace",
+      "slugTaken": "This workspace address is already taken. Try another one.",
+      "generic": "Something went wrong. Please try again."
+    },
+    "validation": {
+      "nameRequired": "Enter your business name.",
+      "nameTooLong": "The business name is too long.",
+      "slugInvalid": "Use lowercase letters, numbers and single hyphens.",
+      "slugTooLong": "The workspace address is too long.",
+      "emailInvalid": "Enter a valid email address.",
+      "roleInvalid": "Choose a valid role."
+    }
+  },
+  "Dashboard": {
+    "metadataTitle": "Workspace · Emma & Éléa",
+    "brand": "Emma & Éléa",
+    "nav": {
+      "label": "Workspace navigation",
+      "overview": "Overview",
+      "team": "Team"
+    },
+    "overview": {
+      "eyebrow": "Workspace",
+      "title": "Hello, {name}",
+      "intro": "You are working in {organization} as {role}.",
+      "roleTitle": "Your role",
+      "accessTitle": "What you can access",
+      "accessIntro": "Screens and actions are filtered by your role. The server enforces the same rules.",
+      "manage": "Manage",
+      "view": "View",
+      "areas": {
+        "catalog": "Items and catalog",
+        "recipes": "Recipes",
+        "costs": "Costs and margins",
+        "production": "Production",
+        "stock": "Stock and traceability",
+        "sales": "Customers and sales",
+        "team": "Team and scheduling",
+        "reports": "Reports"
+      },
+      "supportNote": "Platform support access. Impersonate a tenant to see its data.",
+      "organizationTitle": "Workspace",
+      "organizationBody": "Everyone in this workspace sees all sites. Your role decides what you can change."
+    }
+  },
+  "Team": {
+    "metadataTitle": "Team · Emma & Éléa",
+    "title": "Team",
+    "intro": "Members of {organization} and their roles.",
+    "membersTitle": "Members",
+    "membersEmpty": "No members yet.",
+    "columns": {
+      "name": "Name",
+      "email": "Email",
+      "role": "Role",
+      "joined": "Joined"
+    },
+    "you": "You",
+    "invite": {
+      "title": "Invite a member",
+      "intro": "Share the invitation link with your colleague. No email is sent yet.",
+      "email": "Email",
+      "role": "Role",
+      "submit": "Create invitation",
+      "successTitle": "Invitation created",
+      "successBody": "Send this link to {email}. It expires on {date}.",
+      "copy": "Copy link",
+      "copied": "Link copied",
+      "pendingTitle": "Pending invitations",
+      "pendingEmpty": "No pending invitations.",
+      "expires": "Expires {date}",
+      "cancel": "Cancel"
+    },
+    "actions": {
+      "changeRole": "Change role",
+      "remove": "Remove",
+      "removeTitle": "Remove {name}?",
+      "removeBody": "They lose access to this workspace immediately. Their history stays in the records.",
+      "removeConfirm": "Remove member",
+      "cancel": "Cancel"
+    },
+    "errors": {
+      "bannerTitle": "Could not update the team",
+      "forbidden": "You are not allowed to do that.",
+      "cannotManageOwner": "Only an owner can manage another owner.",
+      "cannotChangeOwnRole": "You cannot change your own role.",
+      "invalidRole": "Choose a valid role.",
+      "lastOwner": "The last owner cannot be removed.",
+      "generic": "Something went wrong. Please try again.",
+      "alreadyMember": "This person is already a member.",
+      "alreadyInvited": "An invitation is already pending for this email."
+    },
+    "validation": {
+      "emailInvalid": "Enter a valid email address.",
+      "roleInvalid": "Choose a valid role."
+    }
+  },
+  "Invitation": {
+    "metadataTitle": "Invitation · Emma & Éléa",
+    "title": "Join {organization}",
+    "intro": "{inviter} invited {email} to join {organization} as {role}.",
+    "accept": "Accept invitation",
+    "decline": "Not now",
+    "signInPrompt": "Sign in or create an account with {email} to accept.",
+    "signIn": "Sign in",
+    "signUp": "Create account",
+    "accepted": "Invitation accepted.",
+    "expired": "This invitation has expired.",
+    "cancelled": "This invitation is no longer available.",
+    "wrongAccount": "This invitation was sent to {email}. Sign in with that address.",
+    "error": "Could not accept the invitation."
   }
 }

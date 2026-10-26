@@ -209,7 +209,8 @@
       "signedInAs": "Connecté en tant que {name}",
       "signOut": "Se déconnecter",
       "signIn": "Se connecter",
-      "createAccount": "Créer un compte"
+      "createAccount": "Créer un compte",
+      "dashboard": "Espace"
     },
     "errors": {
       "bannerTitle": "Impossible de continuer",
@@ -237,5 +238,162 @@
     "light": "Clair",
     "dark": "Sombre",
     "system": "Système"
+  },
+  "Roles": {
+    "owner": {
+      "label": "Propriétaire",
+      "description": "Contrôle total, y compris l’équipe, les coûts et les réglages de l’organisation."
+    },
+    "admin": {
+      "label": "Gérant",
+      "description": "Pilote l’activité et gère tous les membres sauf les propriétaires."
+    },
+    "production_manager": {
+      "label": "Responsable production",
+      "description": "Gère les recettes, la production, la planification et l’équipe, avec accès aux coûts."
+    },
+    "stock_manager": {
+      "label": "Responsable stock et achats",
+      "description": "Gère le catalogue, les fournisseurs, les réceptions, le stock et les pertes."
+    },
+    "sales": {
+      "label": "Commercial",
+      "description": "Gère les clients, les commandes, les expéditions et les ventes quotidiennes."
+    },
+    "staff": {
+      "label": "Équipier",
+      "description": "Voit son propre travail et saisit la production, les pertes et les inventaires."
+    },
+    "accountant": {
+      "label": "Comptable",
+      "description": "Accès financier en lecture seule. Pas encore disponible."
+    },
+    "auditor": {
+      "label": "Contrôleur",
+      "description": "Accès traçabilité en lecture seule. Pas encore disponible."
+    }
+  },
+  "Onboarding": {
+    "metadataTitle": "Créez votre espace · Emma & Éléa",
+    "title": "Créez votre espace",
+    "subtitle": "Indiquez le nom de votre entreprise. Vous pourrez inviter votre équipe ensuite.",
+    "fields": {
+      "name": "Nom de l’entreprise",
+      "slug": "Adresse de l’espace",
+      "slugHint": "Lettres minuscules, chiffres et tirets."
+    },
+    "submit": "Créer l’espace",
+    "errors": {
+      "bannerTitle": "Impossible de créer l’espace",
+      "slugTaken": "Cette adresse d’espace est déjà utilisée. Essayez-en une autre.",
+      "generic": "Une erreur est survenue. Veuillez réessayer."
+    },
+    "validation": {
+      "nameRequired": "Saisissez le nom de votre entreprise.",
+      "nameTooLong": "Le nom de l’entreprise est trop long.",
+      "slugInvalid": "Utilisez des lettres minuscules, des chiffres et des tirets simples.",
+      "slugTooLong": "L’adresse de l’espace est trop longue.",
+      "emailInvalid": "Saisissez une adresse e-mail valide.",
+      "roleInvalid": "Choisissez un rôle valide."
+    }
+  },
+  "Dashboard": {
+    "metadataTitle": "Espace · Emma & Éléa",
+    "brand": "Emma & Éléa",
+    "nav": {
+      "label": "Navigation de l’espace",
+      "overview": "Vue d’ensemble",
+      "team": "Équipe"
+    },
+    "overview": {
+      "eyebrow": "Espace de travail",
+      "title": "Bonjour, {name}",
+      "intro": "Vous travaillez dans {organization} en tant que {role}.",
+      "roleTitle": "Votre rôle",
+      "accessTitle": "Ce à quoi vous avez accès",
+      "accessIntro": "Les écrans et les actions sont filtrés selon votre rôle. Le serveur applique les mêmes règles.",
+      "manage": "Gérer",
+      "view": "Consulter",
+      "areas": {
+        "catalog": "Articles et catalogue",
+        "recipes": "Recettes",
+        "costs": "Coûts et marges",
+        "production": "Production",
+        "stock": "Stock et traçabilité",
+        "sales": "Clients et ventes",
+        "team": "Équipe et planning",
+        "reports": "Rapports"
+      },
+      "supportNote": "Accès support plateforme. Prenez l’identité d’un client pour voir ses données.",
+      "organizationTitle": "Espace de travail",
+      "organizationBody": "Tout le monde dans cet espace voit tous les sites. Votre rôle détermine ce que vous pouvez modifier."
+    }
+  },
+  "Team": {
+    "metadataTitle": "Équipe · Emma & Éléa",
+    "title": "Équipe",
+    "intro": "Membres de {organization} et leurs rôles.",
+    "membersTitle": "Membres",
+    "membersEmpty": "Aucun membre pour le moment.",
+    "columns": {
+      "name": "Nom",
+      "email": "E-mail",
+      "role": "Rôle",
+      "joined": "Arrivée"
+    },
+    "you": "Vous",
+    "invite": {
+      "title": "Inviter un membre",
+      "intro": "Partagez le lien d’invitation avec votre collègue. Aucun e-mail n’est envoyé pour l’instant.",
+      "email": "E-mail",
+      "role": "Rôle",
+      "submit": "Créer l’invitation",
+      "successTitle": "Invitation créée",
+      "successBody": "Envoyez ce lien à {email}. Il expire le {date}.",
+      "copy": "Copier le lien",
+      "copied": "Lien copié",
+      "pendingTitle": "Invitations en attente",
+      "pendingEmpty": "Aucune invitation en attente.",
+      "expires": "Expire le {date}",
+      "cancel": "Annuler"
+    },
+    "actions": {
+      "changeRole": "Changer le rôle",
+      "remove": "Retirer",
+      "removeTitle": "Retirer {name} ?",
+      "removeBody": "Cette personne perd immédiatement l’accès à cet espace. Son historique reste dans les registres.",
+      "removeConfirm": "Retirer le membre",
+      "cancel": "Annuler"
+    },
+    "errors": {
+      "bannerTitle": "Impossible de mettre à jour l’équipe",
+      "forbidden": "Vous n’avez pas l’autorisation de faire cela.",
+      "cannotManageOwner": "Seul un propriétaire peut gérer un autre propriétaire.",
+      "cannotChangeOwnRole": "Vous ne pouvez pas changer votre propre rôle.",
+      "invalidRole": "Choisissez un rôle valide.",
+      "lastOwner": "Le dernier propriétaire ne peut pas être retiré.",
+      "generic": "Une erreur est survenue. Veuillez réessayer.",
+      "alreadyMember": "Cette personne est déjà membre.",
+      "alreadyInvited": "Une invitation est déjà en attente pour cet e-mail."
+    },
+    "validation": {
+      "emailInvalid": "Saisissez une adresse e-mail valide.",
+      "roleInvalid": "Choisissez un rôle valide."
+    }
+  },
+  "Invitation": {
+    "metadataTitle": "Invitation · Emma & Éléa",
+    "title": "Rejoindre {organization}",
+    "intro": "{inviter} a invité {email} à rejoindre {organization} en tant que {role}.",
+    "accept": "Accepter l’invitation",
+    "decline": "Plus tard",
+    "signInPrompt": "Connectez-vous ou créez un compte avec {email} pour accepter.",
+    "signIn": "Se connecter",
+    "signUp": "Créer un compte",
+    "accepted": "Invitation acceptée.",
+    "expired": "Cette invitation a expiré.",
+    "cancelled": "Cette invitation n’est plus disponible.",
+    "wrongAccount": "Cette invitation a été envoyée à {email}. Connectez-vous avec cette adresse.",
+    "error": "Impossible d’accepter l’invitation."
   }
 }

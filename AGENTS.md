@@ -145,7 +145,8 @@ Better Auth **1.7.13** with the Prisma adapter, email/password auth, and the `ad
 - Route handler: `src/app/api/auth/[...all]/route.ts`.
 - UI: `/sign-in` and `/sign-up` (`src/components/auth-form.tsx`); session status on the home page.
 - After changing plugins or auth config, run `npm run auth:generate`, then `npm run db:migrate`.
-- Create the first admin with `npm run auth:create-admin -- --email … --password … --name … --role admin`.
+- Create the first admin with `npm run auth:create-admin -- --email … --password … --name … --role support`.
+- Organization roles and permissions are defined in `src/lib/permissions.ts`; pages and server actions guard with `src/lib/access.ts`. See `docs/permissions.md` and ADR-0011.
 - Load the matching skill before config, routes, sessions, plugins, or security work.
 
 - Server/client setup, sessions, plugins: `better-auth-best-practices`.

@@ -64,7 +64,7 @@ function applyAuthError(
   }
 }
 
-export function AuthForm({mode}: {mode: AuthMode}) {
+export function AuthForm({mode, next}: {mode: AuthMode; next?: string}) {
   const router = useRouter();
   const tFields = useTranslations('Auth.fields');
   const tErrors = useTranslations('Auth.errors');
@@ -111,7 +111,7 @@ export function AuthForm({mode}: {mode: AuthMode}) {
       return;
     }
 
-    router.push('/');
+    router.push(next ?? (isSignUp ? "/onboarding" : "/dashboard"));
     router.refresh();
   }
 
