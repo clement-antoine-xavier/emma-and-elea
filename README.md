@@ -95,6 +95,21 @@ npm run auth:create-admin -- \
 
 All forms use Zod schemas in `src/lib/validation/` with React Hook Form. The reusable Astryx field wrapper is `src/components/form-text-input.tsx`; server errors render in an Astryx `Banner`.
 
+## Testing
+
+```bash
+npm test          # Jest unit and component tests
+npm run test:e2e  # Playwright E2E against PostgreSQL
+```
+
+Install the Playwright browser once:
+
+```bash
+npx playwright install chromium
+```
+
+E2E tests use the `DATABASE_URL` from `.env`, run against the dev server at `http://localhost:3000`, create unique `e2e-*@example.com` users, verify them in PostgreSQL, and delete them afterward.
+
 ## Docker
 
 Build and run the app, migrations, and PostgreSQL together:
@@ -119,7 +134,7 @@ docker compose down
 
 ## CI
 
-- `.github/workflows/next.js.yml` — starts a real PostgreSQL 18.6 service, applies migrations, then runs `npx tsc --noEmit`, `npm run lint`, and `npm run build` on pushes and pull requests to `main`.
+- `.github/workflows/next.js.yml` — starts a real PostgreSQL 18.6 service, applies migrations, then runs `npx tsc --noEmit`, `npm run lint`, Jest, `npm run build`, and Playwright E2E on pushes and pull requests to `main`.
 - `.github/workflows/docker.yml` — builds the Docker `runner` target and pushes `ghcr.io/clement-antoine-xavier/emma-and-elea` on pushes to `main` and tags matching `v*`.
 
 Image tags are `main`, `latest`, `sha-<short>`, and semver tags from `v*` releases. Images target `linux/amd64`. The two workflows run independently; the Docker build runs `next build` but not ESLint. Third-party actions are pinned to exact release tags (`vX.Y.Z`); update them deliberately.
@@ -129,6 +144,8 @@ Image tags are `main`, `latest`, `sha-<short>`, and semver tags from `v*` releas
 ```bash
 npx tsc --noEmit
 npm run lint
+npm test
+npm run test:e2e
 npm run astryx -- doctor
 docker compose config
 ```

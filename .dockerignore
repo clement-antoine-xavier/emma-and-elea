@@ -32,6 +32,12 @@ skills-lock.json
 .turbo/
 *.tsbuildinfo
 
+# Test artifacts
+coverage/
+playwright-report/
+test-results/
+blob-report/
+
 # Editor and OS files
 .vscode/
 .idea/
