@@ -6,13 +6,17 @@ import {Divider} from '@astryxdesign/core/Divider';
 import {HStack} from '@astryxdesign/core/HStack';
 import {Stack} from '@astryxdesign/core/Stack';
 import {Heading, Text} from '@astryxdesign/core/Text';
+import {AuthStatus} from '@/components/auth-status';
 
 export default function Home() {
   return (
     <Center minHeight="100vh" padding={8}>
       <Stack gap={6} width="100%" maxWidth={960}>
         <Stack gap={3} maxWidth={680} align="start">
-          <Badge variant="yellow" label="Butter theme" />
+          <HStack gap={3} align="center" wrap="wrap">
+            <Badge variant="yellow" label="Butter theme" />
+            <AuthStatus />
+          </HStack>
           <Heading level={1} type="display-1">
             Warm, creamy, quietly playful.
           </Heading>
