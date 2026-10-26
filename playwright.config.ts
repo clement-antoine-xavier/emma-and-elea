@@ -10,6 +10,9 @@ export default defineConfig({
   forbidOnly: isCI,
   retries: isCI ? 2 : 0,
   workers: isCI ? 1 : undefined,
+  // Keep the reporter and stop the run before the job timeout.
+  globalTimeout: 15 * 60 * 1000,
+  expect: {timeout: isCI ? 10_000 : 5_000},
   reporter: isCI
     ? [["github"], ["html", { open: "never" }]]
     : "list",
@@ -26,7 +29,11 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: "npm run dev",
+    // CI already ran `npm run build`; use the production server so the first
+    // sign-up does not wait for Next.js to compile routes on demand.
+    command: isCI ? "npm run start:standalone" : "npm run dev",
+    // Production rate limiting would reject the suite's several sign-ups.
+    env: isCI ? {E2E_DISABLE_AUTH_RATE_LIMIT: "true"} : {},
     url: "http://localhost:3000",
     reuseExistingServer: !isCI,
     timeout: 120_000,

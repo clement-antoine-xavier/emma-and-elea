@@ -106,7 +106,7 @@ All data input uses Zod for validation and React Hook Form for state.
 ## Testing
 
 - Jest + React Testing Library for unit/component tests: `npm test` (or `npm run test:watch`).
-- Playwright for E2E: `npm run test:e2e` (or `npm run test:e2e:ui`).
+- Playwright for E2E: `npm run test:e2e` (or `npm run test:e2e:ui`). Locally it uses the dev server; CI builds once and runs the standalone server with auth rate limiting disabled for the suite.
 - E2E uses the real PostgreSQL at `DATABASE_URL`. `e2e/global-setup.ts` deletes stale `e2e-%@example.com` users; tests create unique users and delete them afterward.
 - Keep the Playwright `baseURL` at `http://localhost:3000` to match `BETTER_AUTH_URL`.
 - Astryx is ESM; mock `@astryxdesign/core/*` in Jest component tests instead of importing the real package.
@@ -119,7 +119,7 @@ All data input uses Zod for validation and React Hook Form for state.
 ## CI
 
 - `.github/workflows/next.js.yml` starts a real PostgreSQL 18.6 service, runs `npm run db:deploy`, then runs `npm run typecheck`, `npm run lint`, `npm test`, `npm run build`, and Playwright E2E on pushes and pull requests to `main` with Node 26.12.1.
-- `.github/workflows/docker.yml` builds the Docker `runner` target and pushes `ghcr.io/clement-antoine-xavier/emma-and-elea` on `main` and `v*` tags.
+- `.github/workflows/docker.yml` builds the Docker `runner` target and pushes `ghcr.io/clement-antoine-xavier/emma-and-elea` on `main` and `v*` tags, with GHA layer cache, max provenance and an SBOM attestation.
 - The workflows are independent; Docker does not wait for Next.js checks. The image is `linux/amd64` only, and the `migrator` target is not published.
 - The Docker builder uses placeholder `DATABASE_URL` / `BETTER_AUTH_SECRET` values; CI uses a throwaway PostgreSQL service. Never put real secrets in workflow files.
 - Third-party actions are pinned to exact release tags (`vX.Y.Z`). Update them deliberately after reviewing the release.

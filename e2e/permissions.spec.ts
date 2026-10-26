@@ -73,7 +73,11 @@ test("an owner invites staff, and staff cannot reach team management", async ({
   await expect(page.getByRole("link", { name: "Team" })).toHaveCount(0);
   await expect(page.getByText("Costs and margins")).toHaveCount(0);
 
-  // Direct navigation to a guarded route is refused by the server.
-  const response = await page.goto("/en/dashboard/team");
-  expect(response?.status()).toBe(404);
+  // Direct navigation to a guarded route is refused by the server. Cache
+  // Components may stream the shell before notFound(), so assert the 404 page
+  // rather than the HTTP status.
+  await page.goto("/en/dashboard/team");
+  await expect(
+    page.getByText("This page could not be found."),
+  ).toBeVisible();
 });

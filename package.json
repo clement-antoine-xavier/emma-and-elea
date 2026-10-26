@@ -21,7 +21,8 @@
     "db:deploy": "prisma migrate deploy",
     "db:studio": "prisma studio",
     "auth:generate": "auth generate --config src/lib/auth.ts --output prisma/schema.prisma --yes",
-    "auth:create-admin": "auth create-admin --config src/lib/auth.ts"
+    "auth:create-admin": "auth create-admin --config src/lib/auth.ts",
+    "start:standalone": "mkdir -p .next/standalone/.next/static .next/standalone/public && cp -R .next/static/. .next/standalone/.next/static/ && cp -R public/. .next/standalone/public/ && node .next/standalone/server.js"
   },
   "dependencies": {
     "@astryxdesign/core": "^0.7.4",

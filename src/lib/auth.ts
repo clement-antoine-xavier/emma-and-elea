@@ -53,6 +53,11 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
   },
+  // Better Auth enables rate limiting in production. The E2E suite creates
+  // several accounts in one run, so Playwright turns it off for its own server.
+  rateLimit: {
+    enabled: process.env.E2E_DISABLE_AUTH_RATE_LIMIT !== "true",
+  },
   advanced: {
     database: {
       joins: true,
