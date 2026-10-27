@@ -22,21 +22,21 @@ test("an owner invites staff, and staff cannot reach team management", async ({
   page,
 }) => {
   // Owner signs up and creates the workspace.
-  await gotoHydrated(page, "/en/sign-up");
+  await gotoHydrated(page, "/sign-up");
   await page.getByLabel("Name").fill("Owner");
   await page.getByLabel("Email").fill(ownerEmail);
   await page.getByLabel("Password").fill(password);
   await page.getByRole("button", { name: "Create account" }).click();
 
-  await expect(page).toHaveURL(/\/en\/onboarding$/);
+  await expect(page).toHaveURL(/\/onboarding$/);
   await page.getByLabel("Business name").fill("Permission Bakery");
   await page.getByLabel("Workspace address").fill(slug);
   await page.getByRole("button", { name: "Create workspace" }).click();
-  await expect(page).toHaveURL(/\/en\/dashboard$/);
+  await expect(page).toHaveURL(/\/dashboard$/);
 
   // The owner sees the Team tab and invites a staff member.
   await page.getByRole("link", { name: "Team" }).click();
-  await expect(page).toHaveURL(/\/en\/dashboard\/team$/);
+  await expect(page).toHaveURL(/\/dashboard\/team$/);
   await page.getByRole("textbox", { name: /Email/ }).fill(staffEmail);
   await page.getByRole("button", { name: "Create invitation" }).click();
   await expect(page.getByText("Invitation created")).toBeVisible();
@@ -49,23 +49,23 @@ test("an owner invites staff, and staff cannot reach team management", async ({
   expect(invitationId).toBeTruthy();
 
   await page.getByRole("button", { name: "Sign out" }).click();
-  await expect(page).toHaveURL(/\/en\/sign-in$/);
+  await expect(page).toHaveURL(/\/sign-in$/);
 
   // Staff signs up, then accepts the invitation.
-  await gotoHydrated(page, "/en/sign-up");
+  await gotoHydrated(page, "/sign-up");
   await page.getByLabel("Name").fill("Staff");
   await page.getByLabel("Email").fill(staffEmail);
   await page.getByLabel("Password").fill(password);
   await page.getByRole("button", { name: "Create account" }).click();
-  await expect(page).toHaveURL(/\/en\/onboarding$/);
+  await expect(page).toHaveURL(/\/onboarding$/);
 
-  await gotoHydrated(page, `/en/accept-invitation/${invitationId}`);
+  await gotoHydrated(page, `/accept-invitation/${invitationId}`);
   await expect(
     page.getByRole("heading", { name: /Join Permission Bakery/ }),
   ).toBeVisible();
   await page.getByRole("button", { name: "Accept invitation" }).click();
 
-  await expect(page).toHaveURL(/\/en\/dashboard$/);
+  await expect(page).toHaveURL(/\/dashboard$/);
   await expect(
     page.getByRole("heading", { name: "Hello, Staff" }),
   ).toBeVisible();
@@ -76,7 +76,7 @@ test("an owner invites staff, and staff cannot reach team management", async ({
   // Direct navigation to a guarded route is refused by the server. Cache
   // Components may stream the shell before notFound(), so assert the 404 page
   // rather than the HTTP status.
-  await page.goto("/en/dashboard/team");
+  await page.goto("/dashboard/team");
   await expect(
     page.getByText("This page could not be found."),
   ).toBeVisible();

@@ -3,10 +3,7 @@ import {Center} from "@astryxdesign/core/Center";
 import {Section} from "@astryxdesign/core/Section";
 import {Stack} from "@astryxdesign/core/Stack";
 import {Heading, Text} from "@astryxdesign/core/Text";
-import {notFound} from "next/navigation";
-import {hasLocale} from "next-intl";
 import {getTranslations} from "next-intl/server";
-import {routing} from "@/i18n/routing";
 import {requirePermission} from "@/server/auth/actor";
 import {teamService} from "@/server/services/container";
 import {TeamManager} from "@/components/team-manager";
@@ -14,18 +11,8 @@ import {TeamManager} from "@/components/team-manager";
 // Session data keeps this route blocking until it is moved to a streamed shell.
 export const instant = false;
 
-type LocaleParams = {params: Promise<{locale: string}>};
-
-export async function generateMetadata({
-  params,
-}: LocaleParams): Promise<Metadata> {
-  const {locale} = await params;
-
-  if (!hasLocale(routing.locales, locale)) {
-    notFound();
-  }
-
-  const t = await getTranslations({locale, namespace: "Team"});
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("Team");
 
   return {title: t("metadataTitle")};
 }

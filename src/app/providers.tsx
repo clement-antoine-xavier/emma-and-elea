@@ -3,8 +3,8 @@
 import {useEffect, type ReactNode} from 'react';
 import {LinkProvider} from '@astryxdesign/core/Link';
 import {Theme} from '@astryxdesign/core/theme';
+import Link from 'next/link';
 import {ThemeModeProvider, useThemeMode} from '@/components/theme-mode-provider';
-import {Link} from '@/i18n/navigation';
 import {defaultThemeSlug, themes} from '../astryx-themes';
 
 function ThemedApp({children}: {children: ReactNode}) {

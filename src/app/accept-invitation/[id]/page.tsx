@@ -6,11 +6,9 @@ import {Center} from "@astryxdesign/core/Center";
 import {HStack} from "@astryxdesign/core/HStack";
 import {Stack} from "@astryxdesign/core/Stack";
 import {Heading, Text} from "@astryxdesign/core/Text";
+import Link from "next/link";
 import {notFound} from "next/navigation";
-import {hasLocale} from "next-intl";
 import {getTranslations} from "next-intl/server";
-import {routing} from "@/i18n/routing";
-import {Link} from "@/i18n/navigation";
 import {getActorContext} from "@/server/auth/actor";
 import {invitationService} from "@/server/services/container";
 import {isOrgRole} from "@/lib/permissions";
@@ -20,23 +18,17 @@ import {AuthStatus} from "@/components/auth-status";
 // Session data keeps this route blocking until it is moved to a streamed shell.
 export const instant = false;
 
-type LocaleParams = {params: Promise<{locale: string; id: string}>};
+type AcceptInvitationParams = {params: Promise<{id: string}>};
 
-export async function generateMetadata({
-  params,
-}: LocaleParams): Promise<Metadata> {
-  const {locale} = await params;
-
-  if (!hasLocale(routing.locales, locale)) {
-    notFound();
-  }
-
-  const t = await getTranslations({locale, namespace: "Invitation"});
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("Invitation");
 
   return {title: t("metadataTitle")};
 }
 
-export default async function AcceptInvitationPage({params}: LocaleParams) {
+export default async function AcceptInvitationPage({
+  params,
+}: AcceptInvitationParams) {
   const {id} = await params;
   const t = await getTranslations("Invitation");
   const tRoles = await getTranslations("Roles");

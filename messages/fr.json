@@ -303,7 +303,8 @@
     "nav": {
       "label": "Navigation de l’espace",
       "overview": "Vue d’ensemble",
-      "team": "Équipe"
+      "team": "Équipe",
+      "account": "Compte"
     },
     "overview": {
       "eyebrow": "Espace de travail",

@@ -1,8 +1,6 @@
 import {cache} from "react";
 import {headers} from "next/headers";
-import {notFound} from "next/navigation";
-import {getLocale} from "next-intl/server";
-import {redirect} from "@/i18n/navigation";
+import {notFound, redirect} from "next/navigation";
 import {auth} from "@/lib/auth";
 import {
   can,
@@ -54,7 +52,7 @@ export async function requireSession(): Promise<Actor> {
   const actor = await getActorContext();
 
   if (!actor) {
-    return redirect({href: "/sign-in", locale: await getLocale()});
+    return redirect("/sign-in");
   }
 
   return actor;
@@ -69,7 +67,7 @@ export async function requireOrganizationActor(): Promise<OrganizationActor> {
   const actor = await requireSession();
 
   if (!actor.membershipId) {
-    return redirect({href: "/onboarding", locale: await getLocale()});
+    return redirect("/onboarding");
   }
   if (!actor.role || !actor.organizationId || !actor.organization) {
     notFound();

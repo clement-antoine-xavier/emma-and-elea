@@ -72,16 +72,18 @@ Use Astryx before writing custom UI. Discover, then compose; don't hand-roll lay
 
 ## Internationalization
 
-`next-intl` 4.14.9 with locale-prefixed routes (`/en`, `/fr`).
+`next-intl` 4.14.9 without locale-based routing. URLs carry no locale prefix.
 
 - Routing config: `src/i18n/routing.ts` (`locales`, `defaultLocale`). Add a locale there and in `messages/`.
-- Request config: `src/i18n/request.ts` reads the locale from `next/root-params` (not `cookies()`), which keeps `cacheComponents` static rendering intact.
-- Proxy: `src/proxy.ts` (`createMiddleware`) redirects `/` and unprefixed paths to a locale. Next.js 16 calls this Proxy, not Middleware.
+- Locale: `src/i18n/locale.ts` defines the `NEXT_LOCALE` cookie (`path=/`, one year, `lax`) and `resolveLocale`, which falls back to `en` for unknown values.
+- Request config: `src/i18n/request.ts` reads `cookies()` and supplies the locale plus messages. There is no Proxy and no `[locale]` segment.
+- Rendering: the cookie is request data, so every route is dynamic. `src/app/layout.tsx` sets `export const instant = false` to allow the block under `cacheComponents`; do not add `generateStaticParams` for locales.
+- Switching: `setLocaleAction` in `src/app/actions/locale.actions.ts` writes the cookie; `LocaleSwitcher` calls it and then `router.refresh()`. The URL must not change.
 - Messages: `messages/en.json` and `messages/fr.json`. A Jest test asserts both catalogs have the same key paths; add keys to both.
 - Server Components: `getTranslations` from `next-intl/server`; Client Components: `useTranslations` from `next-intl`.
-- Navigation: import `Link`, `useRouter`, `usePathname`, and `getPathname` from `@/i18n/navigation`, never from `next/link` or `next/navigation`, so hrefs get the active locale.
+- Navigation: import `Link`, `useRouter`, and `usePathname` from `next/link` and `next/navigation`. There is no locale-aware navigation wrapper.
 - Validation: schemas in `src/server/validators/` stay free of `next-intl`; `createAuthSchema(mode, t)` receives a translator function from the component.
-- Pages live under `src/app/[locale]/`; `src/app/[locale]/layout.tsx` is the root layout and must keep `generateStaticParams`.
+- Pages live under `src/app/`; `src/app/layout.tsx` is the root layout.
 - French copy is in-repo and unreviewed by a native speaker; treat edits to `messages/fr.json` as content changes.
 
 <!-- END:i18n -->

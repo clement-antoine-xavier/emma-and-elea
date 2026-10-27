@@ -10,7 +10,7 @@ import {FormLayout} from "@astryxdesign/core/FormLayout";
 import {Stack} from "@astryxdesign/core/Stack";
 import {Heading, Text} from "@astryxdesign/core/Text";
 import {useTranslations} from "next-intl";
-import {useRouter} from "@/i18n/navigation";
+import {useRouter} from "next/navigation";
 import {FormTextInput} from "@/components/form-text-input";
 import {createOrganizationAction} from "@/app/actions/organization.actions";
 import {slugifyOrganizationName} from "@/lib/slug";

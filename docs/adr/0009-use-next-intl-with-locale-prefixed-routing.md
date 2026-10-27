@@ -1,6 +1,6 @@
 # 0009. Use next-intl with locale-prefixed routing
 
-- Status: Accepted
+- Status: Superseded by [ADR-0013](0013-use-cookie-based-locale-without-url-prefixes.md)
 - Deciders: Clement Antoine-Xavier
 - Date: 2026-10-26
 

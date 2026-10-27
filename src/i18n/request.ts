@@ -1,19 +1,10 @@
-import * as rootParams from 'next/root-params';
-import {notFound} from 'next/navigation';
-import {hasLocale} from 'next-intl';
-import {getRequestConfig} from 'next-intl/server';
-import {routing} from './routing';
+import {cookies} from "next/headers";
+import {getRequestConfig} from "next-intl/server";
+import {localeCookieName, resolveLocale} from "./locale";
 
-export default getRequestConfig(async ({locale}) => {
-  if (!locale) {
-    const paramValue = await rootParams.locale();
-
-    if (hasLocale(routing.locales, paramValue)) {
-      locale = paramValue;
-    } else {
-      notFound();
-    }
-  }
+export default getRequestConfig(async () => {
+  const store = await cookies();
+  const locale = resolveLocale(store.get(localeCookieName)?.value);
 
   return {
     locale,

@@ -2,40 +2,27 @@ import type {Metadata} from "next";
 import {Center} from "@astryxdesign/core/Center";
 import {HStack} from "@astryxdesign/core/HStack";
 import {Stack} from "@astryxdesign/core/Stack";
-import {notFound} from "next/navigation";
-import {hasLocale} from "next-intl";
 import {getTranslations} from "next-intl/server";
 import {AuthForm} from "@/components/auth-form";
 import {LocaleSwitcher} from "@/components/locale-switcher";
 import {ThemeSwitcher} from "@/components/theme-switcher";
-import {routing} from "@/i18n/routing";
 import {safeNextPath} from "@/lib/navigation";
 
 // Session and search params are request data; keep the route blocking
 // until the dashboard is migrated to a streamed shell.
 export const instant = false;
 
-type LocaleParams = {params: Promise<{locale: string}>};
-
-type SignUpPageProps = LocaleParams & {
+type SignInPageProps = {
   searchParams: Promise<{next?: string | string[]}>;
 };
 
-export async function generateMetadata({
-  params,
-}: LocaleParams): Promise<Metadata> {
-  const {locale} = await params;
-
-  if (!hasLocale(routing.locales, locale)) {
-    notFound();
-  }
-
-  const t = await getTranslations({locale, namespace: "Auth.signUp"});
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("Auth.signIn");
 
   return {title: t("metadataTitle")};
 }
 
-export default async function SignUpPage({searchParams}: SignUpPageProps) {
+export default async function SignInPage({searchParams}: SignInPageProps) {
   const {next} = await searchParams;
 
   return (
@@ -45,7 +32,7 @@ export default async function SignUpPage({searchParams}: SignUpPageProps) {
           <ThemeSwitcher />
           <LocaleSwitcher />
         </HStack>
-        <AuthForm mode="sign-up" next={safeNextPath(next)} />
+        <AuthForm mode="sign-in" next={safeNextPath(next)} />
       </Stack>
     </Center>
   );

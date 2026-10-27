@@ -2,11 +2,8 @@ import type {Metadata} from "next";
 import {Center} from "@astryxdesign/core/Center";
 import {HStack} from "@astryxdesign/core/HStack";
 import {Stack} from "@astryxdesign/core/Stack";
-import {notFound} from "next/navigation";
-import {hasLocale} from "next-intl";
-import {getLocale, getTranslations} from "next-intl/server";
-import {redirect} from "@/i18n/navigation";
-import {routing} from "@/i18n/routing";
+import {getTranslations} from "next-intl/server";
+import {redirect} from "next/navigation";
 import {organizationService} from "@/server/services/container";
 import {requireSession} from "@/server/auth/actor";
 import {LocaleSwitcher} from "@/components/locale-switcher";
@@ -16,18 +13,8 @@ import {ThemeSwitcher} from "@/components/theme-switcher";
 // Session data keeps this route blocking until it is moved to a streamed shell.
 export const instant = false;
 
-type LocaleParams = {params: Promise<{locale: string}>};
-
-export async function generateMetadata({
-  params,
-}: LocaleParams): Promise<Metadata> {
-  const {locale} = await params;
-
-  if (!hasLocale(routing.locales, locale)) {
-    notFound();
-  }
-
-  const t = await getTranslations({locale, namespace: "Onboarding"});
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("Onboarding");
 
   return {title: t("metadataTitle")};
 }
@@ -37,7 +24,7 @@ export default async function OnboardingPage() {
   const {hasOrganization} = organizationService.getOnboardingState(actor);
 
   if (hasOrganization) {
-    redirect({href: "/dashboard", locale: await getLocale()});
+    redirect("/dashboard");
   }
 
   return (

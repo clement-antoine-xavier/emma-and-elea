@@ -1,7 +1,7 @@
 import type {ReactNode} from "react";
 import {AppShell} from "@astryxdesign/core/AppShell";
 import {getTranslations} from "next-intl/server";
-import {DashboardNav} from "@/components/dashboard-nav";
+import {DashboardSideNav} from "@/components/dashboard-side-nav";
 import {requireOrganizationActor} from "@/server/auth/actor";
 import {dashboardService} from "@/server/services/container";
 
@@ -14,6 +14,7 @@ export default async function DashboardLayout({
   children: ReactNode;
 }) {
   const actor = await requireOrganizationActor();
+  const t = await getTranslations("Dashboard");
   const tRoles = await getTranslations("Roles");
   const {items} = dashboardService.getNavigation(actor);
 
@@ -23,10 +24,11 @@ export default async function DashboardLayout({
       variant="surface"
       contentPadding={0}
       mobileNav={{breakpoint: "lg"}}
-      topNav={
-        <DashboardNav
+      sideNav={
+        <DashboardSideNav
           items={items}
           roleLabel={tRoles(`${actor.role}.label`)}
+          brand={t("brand")}
         />
       }
     >

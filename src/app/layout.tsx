@@ -1,14 +1,12 @@
 import type {Metadata} from 'next';
 import type {ReactNode} from 'react';
 import {Geist, Geist_Mono} from 'next/font/google';
-import {notFound} from 'next/navigation';
-import {NextIntlClientProvider, hasLocale} from 'next-intl';
-import {getTranslations} from 'next-intl/server';
+import {NextIntlClientProvider} from 'next-intl';
+import {getLocale, getTranslations} from 'next-intl/server';
 import {defaultThemeSlug} from '@/astryx-themes';
-import {routing} from '@/i18n/routing';
 import {themeModeInitScript} from '@/lib/theme-mode';
-import '../globals.css';
-import {Providers} from '../providers';
+import './globals.css';
+import {Providers} from './providers';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -20,22 +18,12 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
 });
 
-type LocaleParams = {params: Promise<{locale: string}>};
+// The locale comes from the NEXT_LOCALE cookie, so every route renders per
+// request rather than shipping a prerendered shell.
+export const instant = false;
 
-export function generateStaticParams() {
-  return routing.locales.map((locale) => ({locale}));
-}
-
-export async function generateMetadata({
-  params,
-}: LocaleParams): Promise<Metadata> {
-  const {locale} = await params;
-
-  if (!hasLocale(routing.locales, locale)) {
-    notFound();
-  }
-
-  const t = await getTranslations({locale, namespace: 'Metadata'});
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('Metadata');
 
   return {
     title: t('title'),
@@ -43,15 +31,8 @@ export async function generateMetadata({
   };
 }
 
-export default async function LocaleLayout({
-  children,
-  params,
-}: LocaleParams & {children: ReactNode}) {
-  const {locale} = await params;
-
-  if (!hasLocale(routing.locales, locale)) {
-    notFound();
-  }
+export default async function RootLayout({children}: {children: ReactNode}) {
+  const locale = await getLocale();
 
   return (
     <html

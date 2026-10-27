@@ -11,7 +11,7 @@ import {Link} from '@astryxdesign/core/Link';
 import {Stack} from '@astryxdesign/core/Stack';
 import {Heading, Text} from '@astryxdesign/core/Text';
 import {useTranslations} from 'next-intl';
-import {useRouter} from '@/i18n/navigation';
+import {useRouter} from 'next/navigation';
 import {authClient} from '@/lib/auth-client';
 import {FormTextInput} from '@/components/form-text-input';
 import {

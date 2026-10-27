@@ -5,7 +5,7 @@ import {Banner} from "@astryxdesign/core/Banner";
 import {Button} from "@astryxdesign/core/Button";
 import {Stack} from "@astryxdesign/core/Stack";
 import {useTranslations} from "next-intl";
-import {useRouter} from "@/i18n/navigation";
+import {useRouter} from "next/navigation";
 import {
   acceptInvitationAction,
   type InvitationActionError,

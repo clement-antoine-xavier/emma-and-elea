@@ -15,8 +15,8 @@ import {Selector} from "@astryxdesign/core/Selector";
 import {Stack} from "@astryxdesign/core/Stack";
 import {Table, proportional} from "@astryxdesign/core/Table";
 import {Heading, Text} from "@astryxdesign/core/Text";
-import {useFormatter, useLocale, useTranslations} from "next-intl";
-import {useRouter} from "@/i18n/navigation";
+import {useFormatter, useTranslations} from "next-intl";
+import {useRouter} from "next/navigation";
 import {FormSelector} from "@/components/form-selector";
 import {FormTextInput} from "@/components/form-text-input";
 import {
@@ -71,7 +71,6 @@ export function TeamManager({
   invitations: TeamInvitation[];
 }) {
   const router = useRouter();
-  const locale = useLocale();
   const format = useFormatter();
   const t = useTranslations("Team");
   const tRoles = useTranslations("Roles");
@@ -148,7 +147,7 @@ export function TeamManager({
   };
 
   const invitationLink = (invitationId: string) =>
-    `${window.location.origin}/${locale}/accept-invitation/${invitationId}`;
+    `${window.location.origin}/accept-invitation/${invitationId}`;
 
   async function onSubmit(values: InviteMemberValues) {
     setServerError(null);

@@ -8,7 +8,7 @@ Next.js 16 App Router app with Astryx UI, Prisma ORM 7, and Better Auth.
 - Astryx 0.7.4 (Butter theme)
 - Prisma ORM 7.10.1 + PostgreSQL 18
 - Better Auth 1.7.13 (email/password, admin, organization)
-- next-intl 4.14.9 (English and French, locale-prefixed routes)
+- next-intl 4.14.9 (English and French, locale from the `NEXT_LOCALE` cookie)
 - Zod 4 + React Hook Form 7 for forms
 
 Architecture decisions are recorded in [`docs/adr/`](docs/adr/README.md) using MADR.
@@ -44,8 +44,9 @@ Run the app:
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000). It redirects to `/en` or
-`/fr`, then create an account at `/en/sign-up`.
+Open [http://localhost:3000](http://localhost:3000). The UI language comes from
+the `NEXT_LOCALE` cookie (English by default; use the language switcher to change
+it), and accounts are created at `/sign-up`.
 
 ## Environment
 
@@ -76,7 +77,7 @@ The Prisma client is generated into `src/generated/prisma` (gitignored). It is r
 - Server config: `src/lib/auth.ts`
 - Browser client: `src/lib/auth-client.ts`
 - API route: `src/app/api/auth/[...all]/route.ts`
-- Pages: `/en/sign-in`, `/en/sign-up` (and the `/fr` equivalents)
+- Pages: `/sign-in`, `/sign-up`
 
 After changing Better Auth plugins or config, refresh the Prisma models and migrate:
 
@@ -115,15 +116,20 @@ All forms use Zod schemas in `src/server/validators/` with React Hook Form. The 
 
 ## Internationalization
 
-`next-intl` provides translations, locale negotiation, and formatting. URLs are
-locale-prefixed (`/en`, `/fr`); `/` redirects to the negotiated locale.
+`next-intl` provides translations and formatting. URLs carry no locale prefix:
+the active locale comes from the `NEXT_LOCALE` cookie written by the language
+switcher (English when the cookie is missing or unknown).
 
 - Routing: `src/i18n/routing.ts` — supported locales and the default locale
-- Request config: `src/i18n/request.ts` — reads the locale from `next/root-params`
-- Proxy: `src/proxy.ts` — locale negotiation, redirects, and alternate links
-- Navigation helpers: `src/i18n/navigation.ts` — locale-aware `Link` and `useRouter`
+- Locale cookie: `src/i18n/locale.ts` — `NEXT_LOCALE` name, attributes, and fallback
+- Request config: `src/i18n/request.ts` — reads `cookies()` and loads the catalog
+- Locale switch: `src/app/actions/locale.actions.ts` — sets the cookie; the switcher refreshes the route
 - Messages: `messages/en.json`, `messages/fr.json`
-- Pages: `src/app/[locale]/`
+- Pages: `src/app/`
+
+The cookie is request data, so every route renders per request; `src/app/layout.tsx`
+sets `instant = false` to allow that under Cache Components. There is no Proxy and
+no `Accept-Language` negotiation.
 
 Add a language by extending `routing.locales` and adding `messages/<locale>.json`.
 Both catalogs must share the same keys; `npm test` fails otherwise. French copy

@@ -17,10 +17,11 @@ decision.
 | [0006](0006-containerize-with-docker-and-a-migration-service.md) | Containerize with Docker and a migration service | Accepted | 2026-10-26 |
 | [0007](0007-test-with-jest-and-playwright-against-postgresql.md) | Test with Jest and Playwright against PostgreSQL | Accepted | 2026-10-26 |
 | [0008](0008-use-github-actions-and-ghcr.md) | Use GitHub Actions and GHCR | Accepted | 2026-10-26 |
-| [0009](0009-use-next-intl-with-locale-prefixed-routing.md) | Use next-intl with locale-prefixed routing | Accepted | 2026-10-26 |
+| [0009](0009-use-next-intl-with-locale-prefixed-routing.md) | Use next-intl with locale-prefixed routing | Superseded by [0013](0013-use-cookie-based-locale-without-url-prefixes.md) | 2026-10-26 |
 | [0010](0010-model-the-production-domain.md) | Model the production domain around items, recipe versions and a stock ledger | Accepted | 2026-10-26 |
 | [0011](0011-model-organization-roles-and-permissions.md) | Model organization roles and permissions in code | Accepted | 2026-10-26 |
 | [0012](0012-layer-the-backend.md) | Layer the backend into services and repositories | Accepted | 2026-10-26 |
+| [0013](0013-use-cookie-based-locale-without-url-prefixes.md) | Use a locale cookie without URL prefixes | Accepted | 2026-10-27 |
 
 ## Creating a new ADR
 
