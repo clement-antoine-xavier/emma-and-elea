@@ -1,27 +1,37 @@
 import {betterAuthGateway} from "@/server/auth/better-auth.gateway";
 import {catalogRepository} from "@/server/repositories/catalog.repository";
 import {costingRepository} from "@/server/repositories/costing.repository";
+import {customerRepository} from "@/server/repositories/customer.repository";
+import {dispatchRepository} from "@/server/repositories/dispatch.repository";
 import {equipmentRepository} from "@/server/repositories/equipment.repository";
 import {invitationRepository} from "@/server/repositories/invitation.repository";
 import {membershipRepository} from "@/server/repositories/membership.repository";
+import {orderRepository} from "@/server/repositories/order.repository";
 import {organizationSettingsRepository} from "@/server/repositories/organization-settings.repository";
 import {purchaseRepository} from "@/server/repositories/purchase.repository";
 import {rateRepository} from "@/server/repositories/rate.repository";
 import {recipeRepository} from "@/server/repositories/recipe.repository";
 import {productionRepository} from "@/server/repositories/production.repository";
+import {reportRepository} from "@/server/repositories/report.repository";
+import {salesRepository} from "@/server/repositories/sales.repository";
 import {siteRepository} from "@/server/repositories/site.repository";
 import {stockRepository} from "@/server/repositories/stock.repository";
 import {supplierRepository} from "@/server/repositories/supplier.repository";
 import {createDashboardService} from "./dashboard.service";
 import {createCatalogService} from "./catalog.service";
+import {createCustomerService} from "./customer.service";
+import {createDailySalesService} from "./daily-sales.service";
+import {createDispatchService} from "./dispatch.service";
 import {createEquipmentService} from "./equipment.service";
 import {createInvitationService} from "./invitation.service";
+import {createOrderService} from "./order.service";
 import {organizationBootstrapService} from "./organization-bootstrap.container";
 import {createOrganizationService} from "./organization.service";
 import {createProductionService} from "./production.service";
 import {createPurchasingService} from "./purchasing.service";
 import {createRateService} from "./rate.service";
 import {createRecipeService} from "./recipe.service";
+import {createReportService} from "./report.service";
 import {createSettingsService} from "./settings.service";
 import {createSiteService} from "./site.service";
 import {createStockService} from "./stock.service";
@@ -83,4 +93,33 @@ export const recipeService = createRecipeService({
 export const productionService = createProductionService({
   productionRepository,
   costingRepository,
+});
+
+export const customerService = createCustomerService({customerRepository});
+
+export const orderService = createOrderService({
+  orderRepository,
+  customerRepository,
+  siteRepository,
+  catalogRepository,
+  costingRepository,
+});
+
+export const dispatchService = createDispatchService({
+  dispatchRepository,
+  customerRepository,
+  siteRepository,
+  orderRepository,
+});
+
+export const dailySalesService = createDailySalesService({
+  salesRepository,
+  catalogRepository,
+  siteRepository,
+  costingRepository,
+});
+
+export const reportService = createReportService({
+  reportRepository,
+  stockRepository,
 });

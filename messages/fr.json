@@ -400,6 +400,14 @@
       "supportNote": "Accès support plateforme. Prenez l’identité d’un client pour voir ses données.",
       "organizationTitle": "Espace de travail",
       "organizationBody": "Tout le monde dans cet espace voit tous les sites. Votre rôle détermine ce que vous pouvez modifier."
+    },
+    "kpis": {
+      "title": "Aujourd’hui en un coup d’œil",
+      "intro": "Signaux opérationnels de votre organisation.",
+      "batchesToday": "Lots terminés aujourd’hui",
+      "lowStock": "Articles sous le minimum",
+      "expiringLots": "Lots expirant sous 7 jours",
+      "waste30d": "Coût des pertes (30 jours)"
     }
   },
   "Team": {
@@ -1557,5 +1565,321 @@
       "reasonRequired": "Choisissez un motif de perte.",
       "itemRequired": "Choisissez un article."
     }
+  },
+  "Sales": {
+    "metadataTitle": "Ventes · Emma & Éléa",
+    "title": "Commandes",
+    "intro": "Prenez les commandes clients, préparez les expéditions depuis des lots traçables et saisissez les ventes quotidiennes.",
+    "links": {
+      "customers": "Clients",
+      "dispatches": "Expéditions",
+      "daily": "Ventes quotidiennes"
+    },
+    "types": {
+      "BUSINESS": "Entreprise",
+      "INDIVIDUAL": "Particulier"
+    },
+    "statuses": {
+      "DRAFT": "Brouillon",
+      "CONFIRMED": "Confirmée",
+      "IN_PRODUCTION": "En production",
+      "READY": "Prête",
+      "DELIVERED": "Livrée",
+      "CANCELLED": "Annulée",
+      "DISPATCHED": "Expédiée"
+    },
+    "channels": {
+      "RETAIL": "Détail",
+      "WHOLESALE": "Gros",
+      "BOTH": "Détail et gros",
+      "NONE": "Non précisé"
+    },
+    "validation": {
+      "nameRequired": "Saisissez un nom.",
+      "nameTooLong": "Ce nom est trop long.",
+      "codeInvalid": "Utilisez uniquement des lettres, des chiffres et des tirets.",
+      "typeInvalid": "Choisissez un type de client.",
+      "emailInvalid": "Saisissez une adresse e-mail valide.",
+      "phoneTooLong": "Ce numéro de téléphone est trop long.",
+      "cityTooLong": "Ce nom de ville est trop long.",
+      "vatTooLong": "Ce numéro de TVA est trop long.",
+      "customerRequired": "Choisissez un client.",
+      "siteRequired": "Choisissez un site.",
+      "dateInvalid": "Choisissez une date valide.",
+      "noteTooLong": "Cette note est trop longue.",
+      "itemRequired": "Choisissez un article.",
+      "quantityInvalid": "Saisissez une quantité supérieure à zéro.",
+      "unitRequired": "Choisissez une unité.",
+      "priceInvalid": "Saisissez un prix valide.",
+      "lotRequired": "Choisissez un lot.",
+      "channelInvalid": "Choisissez un canal.",
+      "revenueInvalid": "Saisissez un chiffre d’affaires valide."
+    },
+    "orders": {
+      "createTitle": "Nouvelle commande",
+      "createIntro": "Créez une commande brouillon, ajoutez les articles puis confirmez-la.",
+      "errorTitle": "Impossible de créer la commande.",
+      "fields": {
+        "customer": "Client",
+        "site": "Site",
+        "requestedFor": "Souhaitée pour",
+        "note": "Note"
+      },
+      "submit": "Créer la commande brouillon",
+      "noCustomerTitle": "Ajoutez d’abord un client",
+      "noCustomerBody": "Une commande nécessite un client. Créez-en un depuis l’écran Clients, puis revenez.",
+      "listTitle": "Toutes les commandes",
+      "emptyTitle": "Aucune commande",
+      "emptyBody": "Créez une commande brouillon pour commencer à prendre des demandes.",
+      "columns": {
+        "number": "Numéro",
+        "customer": "Client",
+        "status": "Statut",
+        "requestedFor": "Souhaitée pour",
+        "total": "Total"
+      },
+      "open": "Ouvrir"
+    },
+    "orderPage": {
+      "back": "Retour aux commandes",
+      "status": "Statut",
+      "requestedFor": "Souhaitée pour",
+      "total": "Total",
+      "note": "Note",
+      "noNote": "Aucune note"
+    },
+    "order": {
+      "errorTitle": "Impossible de mettre à jour la commande.",
+      "confirm": "Confirmer la commande",
+      "cancel": "Annuler la commande",
+      "linesTitle": "Lignes de commande",
+      "linesIntro": "Ajoutez ce que le client a commandé. Les expéditions validées augmentent la quantité servie.",
+      "emptyTitle": "Aucune ligne",
+      "emptyBody": "Ajoutez au moins un article avant de confirmer la commande.",
+      "columns": {
+        "item": "Article",
+        "quantity": "Commandé",
+        "fulfilled": "Servi",
+        "unitPrice": "Prix unitaire"
+      },
+      "remove": "Retirer",
+      "addTitle": "Ajouter un article",
+      "addIntro": "Les prix sont enregistrés dans la devise de la commande.",
+      "addErrorTitle": "Impossible d’ajouter l’article.",
+      "fields": {
+        "item": "Article",
+        "quantity": "Quantité",
+        "unit": "Unité",
+        "unitPrice": "Prix unitaire",
+        "note": "Note"
+      },
+      "chooseItem": "Choisir un article",
+      "chooseUnit": "Choisir une unité",
+      "submit": "Ajouter la ligne",
+      "confirmTitle": "Confirmer cette commande ?",
+      "confirmBody": "Les commandes confirmées peuvent être préparées et expédiées. Les lignes ne sont plus modifiables.",
+      "cancelTitle": "Annuler cette commande ?",
+      "cancelBody": "La commande reste dans la liste avec le statut annulé. Cette action est irréversible.",
+      "cancelConfirm": "Annuler la commande",
+      "back": "Retour"
+    },
+    "customers": {
+      "pageMetadataTitle": "Clients · Ventes · Emma & Éléa",
+      "pageTitle": "Clients",
+      "pageIntro": "Gardez les personnes et entreprises à qui vous vendez.",
+      "backToSales": "Retour aux ventes",
+      "createTitle": "Nouveau client",
+      "createIntro": "Ajoutez un client avant de prendre sa première commande.",
+      "errorTitle": "Impossible de créer le client.",
+      "fields": {
+        "name": "Nom",
+        "code": "Code",
+        "codeHint": "Code court facultatif : lettres, chiffres et tirets.",
+        "type": "Type",
+        "contactName": "Contact",
+        "email": "E-mail",
+        "phone": "Téléphone",
+        "city": "Ville",
+        "vatNumber": "Numéro de TVA",
+        "note": "Note"
+      },
+      "submit": "Créer le client",
+      "listTitle": "Tous les clients",
+      "emptyTitle": "Aucun client",
+      "emptyBody": "Créez votre premier client pour commencer à prendre des commandes.",
+      "columns": {
+        "code": "Code",
+        "name": "Nom",
+        "type": "Type",
+        "city": "Ville",
+        "status": "Statut"
+      },
+      "archived": "Archivé",
+      "active": "Actif",
+      "archive": "Archiver",
+      "edit": "Modifier"
+    },
+    "dispatches": {
+      "pageMetadataTitle": "Expéditions · Ventes · Emma & Éléa",
+      "pageTitle": "Expéditions",
+      "pageIntro": "Préparez les livraisons depuis des lots traçables et validez-les dans le journal de stock.",
+      "backToSales": "Retour aux ventes",
+      "createTitle": "Nouvelle expédition",
+      "createIntro": "Créez une expédition brouillon, puis ajoutez les lots envoyés.",
+      "errorTitle": "Impossible de créer l’expédition.",
+      "fields": {
+        "site": "Site",
+        "customer": "Client",
+        "order": "Commande",
+        "carrier": "Transporteur",
+        "note": "Note"
+      },
+      "noCustomer": "Aucun client",
+      "noOrder": "Aucune commande",
+      "submit": "Créer l’expédition brouillon",
+      "listTitle": "Toutes les expéditions",
+      "emptyTitle": "Aucune expédition",
+      "emptyBody": "Créez une expédition pour enregistrer une sortie de stock.",
+      "columns": {
+        "number": "Numéro",
+        "customer": "Client",
+        "status": "Statut",
+        "dispatchedAt": "Expédiée"
+      },
+      "open": "Ouvrir",
+      "paginationLabel": "Pagination des expéditions"
+    },
+    "dispatchPage": {
+      "back": "Retour aux expéditions",
+      "status": "Statut",
+      "order": "Commande",
+      "noOrder": "Non liée",
+      "carrier": "Transporteur",
+      "noCarrier": "—",
+      "dispatchedAt": "Expédiée",
+      "notDispatched": "Pas encore expédiée",
+      "note": "Note",
+      "noNote": "Aucune note"
+    },
+    "dispatch": {
+      "errorTitle": "Impossible de mettre à jour l’expédition.",
+      "post": "Valider l’expédition",
+      "cancel": "Annuler l’expédition",
+      "linesTitle": "Lignes d’expédition",
+      "linesIntro": "Chaque ligne retire une quantité d’un lot. La validation écrit des mouvements négatifs et met à jour la commande liée.",
+      "emptyTitle": "Aucune ligne",
+      "emptyBody": "Ajoutez au moins un lot avant de valider.",
+      "columns": {
+        "lot": "Lot",
+        "item": "Article",
+        "quantity": "Quantité",
+        "unitPrice": "Prix unitaire"
+      },
+      "remove": "Retirer",
+      "addTitle": "Ajouter un lot",
+      "addIntro": "Seuls les lots disponibles sur ce site sont proposés.",
+      "addErrorTitle": "Impossible d’ajouter le lot.",
+      "fields": {
+        "lot": "Lot",
+        "quantity": "Quantité",
+        "unitPrice": "Prix unitaire",
+        "note": "Note"
+      },
+      "chooseLot": "Choisir un lot",
+      "submit": "Ajouter la ligne",
+      "postTitle": "Valider cette expédition ?",
+      "postBody": "Le stock est retiré des lots sélectionnés et le mouvement est ajouté au journal. Cette action est irréversible.",
+      "postConfirm": "Valider l’expédition",
+      "cancelTitle": "Annuler cette expédition ?",
+      "cancelBody": "L’expédition reste dans la liste avec le statut annulé. Le stock n’est pas modifié.",
+      "cancelConfirm": "Annuler l’expédition",
+      "back": "Retour"
+    },
+    "daily": {
+      "pageMetadataTitle": "Ventes quotidiennes · Ventes · Emma & Éléa",
+      "pageTitle": "Ventes quotidiennes",
+      "pageIntro": "Saisissez les quantités vendues et le chiffre d’affaires. Une entrée par site, article, jour et canal.",
+      "backToSales": "Retour aux ventes",
+      "createTitle": "Saisir les ventes",
+      "createIntro": "Enregistrer à nouveau le même site, article, jour et canal remplace l’entrée.",
+      "errorTitle": "Impossible d’enregistrer les ventes.",
+      "fields": {
+        "site": "Site",
+        "item": "Article",
+        "businessDate": "Date d’activité",
+        "channel": "Canal",
+        "quantitySold": "Quantité vendue",
+        "revenue": "Chiffre d’affaires",
+        "note": "Note"
+      },
+      "chooseItem": "Choisir un article",
+      "submit": "Enregistrer les ventes",
+      "listTitle": "30 derniers jours",
+      "emptyTitle": "Aucune vente saisie",
+      "emptyBody": "Saisissez la recette du jour pour construire l’historique des ventes.",
+      "columns": {
+        "date": "Date",
+        "item": "Article",
+        "quantity": "Vendu",
+        "revenue": "Chiffre d’affaires",
+        "channel": "Canal"
+      }
+    },
+    "paginationLabel": "Pagination des commandes",
+    "customerEdit": {
+      "title": "Modifier le client",
+      "intro": "Mettez à jour les coordonnées utilisées sur les commandes et les expéditions.",
+      "savedTitle": "Client mis à jour",
+      "savedBody": "Les modifications sont visibles immédiatement.",
+      "errorTitle": "Impossible de mettre à jour le client.",
+      "submit": "Enregistrer le client"
+    },
+    "customerPage": {
+      "back": "Retour aux clients",
+      "noCode": "Aucun code",
+      "archivedTitle": "Client archivé",
+      "archivedBody": "Ce client est conservé pour l’historique mais ne peut plus être sélectionné sur de nouvelles commandes ou expéditions."
+    }
+  },
+  "Reports": {
+    "metadataTitle": "Rapports · Emma & Éléa",
+    "title": "Rapports",
+    "intro": "Performance du {from} au {to} : marges, rendements, pertes et alertes de stock.",
+    "summaryTitle": "Synthèse",
+    "summaryIntro": "Pertes comparées au coût de la production terminée sur la période.",
+    "wasteCost": "Coût des pertes",
+    "productionCost": "Coût de production",
+    "wasteRate": "Taux de pertes",
+    "alertsCount": "Alertes de stock",
+    "marginsTitle": "Marges par produit",
+    "marginsIntro": "Dernier coût publié comparé au prix de vente de l’article produit.",
+    "margins": {
+      "columns": {
+        "product": "Produit",
+        "cost": "Coût / unité",
+        "price": "Prix de vente",
+        "margin": "Marge"
+      }
+    },
+    "emptyMarginsTitle": "Aucun coût publié",
+    "emptyMarginsBody": "Publiez une recette pour créer un instantané de coût.",
+    "yieldsTitle": "Rendements des lots",
+    "yieldsIntro": "Quantité réelle comparée à la quantité prévue pour les derniers lots terminés.",
+    "yields": {
+      "columns": {
+        "batch": "Lot de production",
+        "recipe": "Recette",
+        "planned": "Prévu",
+        "actual": "Réel",
+        "yield": "Rendement",
+        "date": "Produit le"
+      }
+    },
+    "emptyYieldsTitle": "Aucun lot terminé",
+    "emptyYieldsBody": "Terminez un lot de production pour voir son rendement.",
+    "alertsTitle": "Alertes de stock",
+    "alertsIntro": "Articles au niveau ou en dessous de leur stock minimum.",
+    "emptyAlertsTitle": "Aucune alerte de stock",
+    "emptyAlertsBody": "Tous les articles sont au-dessus de leur minimum."
   }
 }

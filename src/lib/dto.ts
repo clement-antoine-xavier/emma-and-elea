@@ -593,3 +593,164 @@ export type LotTraceRecord = {
     outputs: {lotNumber: string; itemName: string}[];
   }[];
 };
+
+export type CustomerRecord = {
+  id: string;
+  code: string | null;
+  name: string;
+  type: "BUSINESS" | "INDIVIDUAL";
+  contactName: string | null;
+  email: string | null;
+  phone: string | null;
+  city: string | null;
+  vatNumber: string | null;
+  note: string | null;
+  isArchived: boolean;
+};
+
+export type OrderStatusName =
+  | "DRAFT"
+  | "CONFIRMED"
+  | "IN_PRODUCTION"
+  | "READY"
+  | "DELIVERED"
+  | "CANCELLED";
+
+export type OrderSummaryRecord = {
+  id: string;
+  number: string;
+  customerName: string;
+  siteName: string;
+  status: OrderStatusName;
+  requestedFor: Date;
+  totalAmount: string;
+  currency: string;
+  lineCount: number;
+  createdAt: Date;
+};
+
+export type OrderLineRecord = {
+  id: string;
+  itemId: string;
+  itemCode: string;
+  itemName: string;
+  quantity: string;
+  unitCode: string;
+  unitPrice: string;
+  fulfilledQuantity: string;
+  note: string | null;
+};
+
+export type OrderDetailRecord = OrderSummaryRecord & {
+  customerId: string;
+  siteId: string;
+  note: string | null;
+  lines: OrderLineRecord[];
+};
+
+export type DispatchStatusName = "DRAFT" | "DISPATCHED" | "CANCELLED";
+
+export type DispatchSummaryRecord = {
+  id: string;
+  number: string;
+  customerName: string | null;
+  siteName: string;
+  orderNumber: string | null;
+  status: DispatchStatusName;
+  dispatchedAt: Date | null;
+  lineCount: number;
+  createdAt: Date;
+};
+
+export type DispatchLineRecord = {
+  id: string;
+  itemId: string;
+  itemCode: string;
+  itemName: string;
+  lotId: string;
+  lotNumber: string;
+  quantity: string;
+  unitCode: string;
+  unitPrice: string | null;
+};
+
+export type DispatchDetailRecord = DispatchSummaryRecord & {
+  customerId: string | null;
+  siteId: string;
+  orderId: string | null;
+  carrier: string | null;
+  note: string | null;
+  lines: DispatchLineRecord[];
+};
+
+export type DailySalesRecord = {
+  id: string;
+  businessDate: Date;
+  siteId: string;
+  siteName: string;
+  itemId: string;
+  itemName: string;
+  quantitySold: string;
+  unitCode: string;
+  revenue: string;
+  currency: string;
+  channel: "RETAIL" | "WHOLESALE" | "BOTH" | "NONE";
+  source: string;
+};
+
+export type SalesOptions = {
+  customers: {id: string; name: string; code: string | null}[];
+  sites: {id: string; name: string; code: string}[];
+  items: {id: string; code: string; name: string; stockUnitId: string}[];
+  units: {id: string; code: string; labelEn: string; labelFr: string}[];
+  orders: {id: string; number: string; customerName: string}[];
+  lots: {
+    id: string;
+    lotNumber: string;
+    itemId: string;
+    itemName: string;
+    siteId: string;
+    unitId: string;
+    unitCode: string;
+    quantityRemaining: string;
+  }[];
+};
+
+export type ProductMarginRecord = {
+  recipeId: string;
+  recipeName: string;
+  outputItemName: string;
+  categoryName: string | null;
+  costPerUnit: string;
+  salePrice: string | null;
+  marginPct: string | null;
+  currency: string;
+};
+
+export type BatchYieldRecord = {
+  id: string;
+  code: string;
+  recipeName: string;
+  plannedQuantity: string;
+  actualQuantity: string;
+  unitCode: string;
+  yieldPct: string;
+  producedOn: Date | null;
+};
+
+export type ReportsSummary = {
+  wasteCost: string;
+  productionCost: string;
+  wasteRatePct: string;
+  currency: string;
+  from: Date;
+  to: Date;
+};
+
+export type DashboardKpis = {
+  batchesToday: number;
+  lowStockCount: number;
+  expiringLotsCount: number;
+  wasteCost30d: string;
+  currency: string;
+};

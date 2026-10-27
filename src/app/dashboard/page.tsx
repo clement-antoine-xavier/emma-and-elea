@@ -7,9 +7,11 @@ import {HStack} from "@astryxdesign/core/HStack";
 import {Section} from "@astryxdesign/core/Section";
 import {Stack} from "@astryxdesign/core/Stack";
 import {Heading, Text} from "@astryxdesign/core/Text";
-import {getTranslations} from "next-intl/server";
+import {getLocale, getTranslations} from "next-intl/server";
+import {can} from "@/lib/permissions";
+import {formatMoney} from "@/lib/format";
 import {requireOrganizationActor} from "@/server/auth/actor";
-import {dashboardService} from "@/server/services/container";
+import {dashboardService, reportService} from "@/server/services/container";
 
 // Session data keeps this route blocking until it is moved to a streamed shell.
 export const instant = false;
@@ -23,8 +25,14 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function DashboardPage() {
   const actor = await requireOrganizationActor();
   const t = await getTranslations("Dashboard.overview");
+  const tKpis = await getTranslations("Dashboard.kpis");
   const tRoles = await getTranslations("Roles");
   const {areas} = dashboardService.getOverview(actor);
+  const canReadReports = can(actor.role, "report:read");
+  const [locale, kpis] = await Promise.all([
+    getLocale(),
+    canReadReports ? reportService.getKpis(actor) : Promise.resolve(null),
+  ]);
 
   return (
     <Section padding={6} minHeight="100%">
@@ -44,6 +52,54 @@ export default async function DashboardPage() {
               })}
             </Text>
           </Stack>
+
+          {canReadReports && kpis ? (
+            <Stack gap={4}>
+              <Stack gap={1}>
+                <Heading level={2}>{tKpis("title")}</Heading>
+                <Text color="secondary">{tKpis("intro")}</Text>
+              </Stack>
+              <Grid columns={{minWidth: 220, max: 4}} gap={4}>
+                <Card padding={5}>
+                  <Stack gap={1}>
+                    <Text type="label" color="secondary">
+                      {tKpis("batchesToday")}
+                    </Text>
+                    <Heading level={3}>{kpis.batchesToday}</Heading>
+                  </Stack>
+                </Card>
+                <Card padding={5}>
+                  <Stack gap={1}>
+                    <Text type="label" color="secondary">
+                      {tKpis("lowStock")}
+                    </Text>
+                    <Heading level={3}>{kpis.lowStockCount}</Heading>
+                  </Stack>
+                </Card>
+                <Card padding={5}>
+                  <Stack gap={1}>
+                    <Text type="label" color="secondary">
+                      {tKpis("expiringLots")}
+                    </Text>
+                    <Heading level={3}>{kpis.expiringLotsCount}</Heading>
+                  </Stack>
+                </Card>
+                <Card padding={5}>
+                  <Stack gap={1}>
+                    <Text type="label" color="secondary">
+                      {tKpis("waste30d")}
+                    </Text>
+                    <Heading level={3}>
+                      {formatMoney(kpis.wasteCost30d, {
+                        locale,
+                        currency: kpis.currency,
+                      })}
+                    </Heading>
+                  </Stack>
+                </Card>
+              </Grid>
+            </Stack>
+          ) : null}
 
           <Grid columns={{minWidth: 280, max: 2}} gap={4}>
             <Card padding={5}>

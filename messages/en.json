@@ -400,6 +400,14 @@
       "supportNote": "Platform support access. Impersonate a tenant to see its data.",
       "organizationTitle": "Workspace",
       "organizationBody": "Everyone in this workspace sees all sites. Your role decides what you can change."
+    },
+    "kpis": {
+      "title": "Today at a glance",
+      "intro": "Operational signals for your organization.",
+      "batchesToday": "Batches completed today",
+      "lowStock": "Items below minimum",
+      "expiringLots": "Lots expiring in 7 days",
+      "waste30d": "Waste cost (30 days)"
     }
   },
   "Team": {
@@ -1557,5 +1565,321 @@
       "reasonRequired": "Choose a waste reason.",
       "itemRequired": "Choose an item."
     }
+  },
+  "Sales": {
+    "metadataTitle": "Sales · Emma & Éléa",
+    "title": "Orders",
+    "intro": "Take customer orders, prepare dispatches from traceable lots, and record daily sales.",
+    "links": {
+      "customers": "Customers",
+      "dispatches": "Dispatches",
+      "daily": "Daily sales"
+    },
+    "types": {
+      "BUSINESS": "Business",
+      "INDIVIDUAL": "Individual"
+    },
+    "statuses": {
+      "DRAFT": "Draft",
+      "CONFIRMED": "Confirmed",
+      "IN_PRODUCTION": "In production",
+      "READY": "Ready",
+      "DELIVERED": "Delivered",
+      "CANCELLED": "Cancelled",
+      "DISPATCHED": "Dispatched"
+    },
+    "channels": {
+      "RETAIL": "Retail",
+      "WHOLESALE": "Wholesale",
+      "BOTH": "Retail and wholesale",
+      "NONE": "Not specified"
+    },
+    "validation": {
+      "nameRequired": "Enter a name.",
+      "nameTooLong": "This name is too long.",
+      "codeInvalid": "Use letters, digits and dashes only.",
+      "typeInvalid": "Choose a customer type.",
+      "emailInvalid": "Enter a valid email address.",
+      "phoneTooLong": "This phone number is too long.",
+      "cityTooLong": "This city name is too long.",
+      "vatTooLong": "This VAT number is too long.",
+      "customerRequired": "Choose a customer.",
+      "siteRequired": "Choose a site.",
+      "dateInvalid": "Choose a valid date.",
+      "noteTooLong": "This note is too long.",
+      "itemRequired": "Choose an item.",
+      "quantityInvalid": "Enter a quantity greater than zero.",
+      "unitRequired": "Choose a unit.",
+      "priceInvalid": "Enter a valid price.",
+      "lotRequired": "Choose a lot.",
+      "channelInvalid": "Choose a channel.",
+      "revenueInvalid": "Enter a valid revenue."
+    },
+    "orders": {
+      "createTitle": "New order",
+      "createIntro": "Create a draft order, then add items and confirm it.",
+      "errorTitle": "Could not create the order.",
+      "fields": {
+        "customer": "Customer",
+        "site": "Site",
+        "requestedFor": "Requested for",
+        "note": "Note"
+      },
+      "submit": "Create draft order",
+      "noCustomerTitle": "Add a customer first",
+      "noCustomerBody": "Orders need a customer. Create one from the customers screen, then come back.",
+      "listTitle": "All orders",
+      "emptyTitle": "No orders yet",
+      "emptyBody": "Create a draft order to start taking customer requests.",
+      "columns": {
+        "number": "Number",
+        "customer": "Customer",
+        "status": "Status",
+        "requestedFor": "Requested for",
+        "total": "Total"
+      },
+      "open": "Open"
+    },
+    "orderPage": {
+      "back": "Back to orders",
+      "status": "Status",
+      "requestedFor": "Requested for",
+      "total": "Total",
+      "note": "Note",
+      "noNote": "No note"
+    },
+    "order": {
+      "errorTitle": "Could not update the order.",
+      "confirm": "Confirm order",
+      "cancel": "Cancel order",
+      "linesTitle": "Order lines",
+      "linesIntro": "Add what the customer ordered. Posted dispatches increase the fulfilled quantity.",
+      "emptyTitle": "No lines yet",
+      "emptyBody": "Add at least one item before confirming the order.",
+      "columns": {
+        "item": "Item",
+        "quantity": "Ordered",
+        "fulfilled": "Fulfilled",
+        "unitPrice": "Unit price"
+      },
+      "remove": "Remove",
+      "addTitle": "Add an item",
+      "addIntro": "Prices are stored in the order currency.",
+      "addErrorTitle": "Could not add the item.",
+      "fields": {
+        "item": "Item",
+        "quantity": "Quantity",
+        "unit": "Unit",
+        "unitPrice": "Unit price",
+        "note": "Note"
+      },
+      "chooseItem": "Choose an item",
+      "chooseUnit": "Choose a unit",
+      "submit": "Add line",
+      "confirmTitle": "Confirm this order?",
+      "confirmBody": "Confirmed orders can be prepared and dispatched. Lines can no longer be edited.",
+      "cancelTitle": "Cancel this order?",
+      "cancelBody": "The order stays in the list as cancelled. This cannot be undone.",
+      "cancelConfirm": "Cancel order",
+      "back": "Back"
+    },
+    "customers": {
+      "pageMetadataTitle": "Customers · Sales · Emma & Éléa",
+      "pageTitle": "Customers",
+      "pageIntro": "Keep the people and businesses you sell to.",
+      "backToSales": "Back to sales",
+      "createTitle": "New customer",
+      "createIntro": "Add a customer before taking their first order.",
+      "errorTitle": "Could not create the customer.",
+      "fields": {
+        "name": "Name",
+        "code": "Code",
+        "codeHint": "Optional short code: letters, digits and dashes.",
+        "type": "Type",
+        "contactName": "Contact",
+        "email": "Email",
+        "phone": "Phone",
+        "city": "City",
+        "vatNumber": "VAT number",
+        "note": "Note"
+      },
+      "submit": "Create customer",
+      "listTitle": "All customers",
+      "emptyTitle": "No customers yet",
+      "emptyBody": "Create your first customer to start taking orders.",
+      "columns": {
+        "code": "Code",
+        "name": "Name",
+        "type": "Type",
+        "city": "City",
+        "status": "Status"
+      },
+      "archived": "Archived",
+      "active": "Active",
+      "archive": "Archive",
+      "edit": "Edit"
+    },
+    "dispatches": {
+      "pageMetadataTitle": "Dispatches · Sales · Emma & Éléa",
+      "pageTitle": "Dispatches",
+      "pageIntro": "Prepare deliveries from traceable lots and post them to the stock ledger.",
+      "backToSales": "Back to sales",
+      "createTitle": "New dispatch",
+      "createIntro": "Create a draft dispatch, then add the lots you are sending.",
+      "errorTitle": "Could not create the dispatch.",
+      "fields": {
+        "site": "Site",
+        "customer": "Customer",
+        "order": "Order",
+        "carrier": "Carrier",
+        "note": "Note"
+      },
+      "noCustomer": "No customer",
+      "noOrder": "No order",
+      "submit": "Create draft dispatch",
+      "listTitle": "All dispatches",
+      "emptyTitle": "No dispatches yet",
+      "emptyBody": "Create a dispatch to record outgoing stock.",
+      "columns": {
+        "number": "Number",
+        "customer": "Customer",
+        "status": "Status",
+        "dispatchedAt": "Dispatched"
+      },
+      "open": "Open",
+      "paginationLabel": "Dispatches pagination"
+    },
+    "dispatchPage": {
+      "back": "Back to dispatches",
+      "status": "Status",
+      "order": "Order",
+      "noOrder": "Not linked",
+      "carrier": "Carrier",
+      "noCarrier": "—",
+      "dispatchedAt": "Dispatched",
+      "notDispatched": "Not dispatched yet",
+      "note": "Note",
+      "noNote": "No note"
+    },
+    "dispatch": {
+      "errorTitle": "Could not update the dispatch.",
+      "post": "Post dispatch",
+      "cancel": "Cancel dispatch",
+      "linesTitle": "Dispatch lines",
+      "linesIntro": "Each line takes quantity from one lot. Posting writes negative movements and updates the linked order.",
+      "emptyTitle": "No lines yet",
+      "emptyBody": "Add at least one lot before posting.",
+      "columns": {
+        "lot": "Lot",
+        "item": "Item",
+        "quantity": "Quantity",
+        "unitPrice": "Unit price"
+      },
+      "remove": "Remove",
+      "addTitle": "Add a lot",
+      "addIntro": "Only lots available at this site are listed.",
+      "addErrorTitle": "Could not add the lot.",
+      "fields": {
+        "lot": "Lot",
+        "quantity": "Quantity",
+        "unitPrice": "Unit price",
+        "note": "Note"
+      },
+      "chooseLot": "Choose a lot",
+      "submit": "Add line",
+      "postTitle": "Post this dispatch?",
+      "postBody": "Stock is removed from the selected lots and the movement is added to the ledger. This cannot be undone.",
+      "postConfirm": "Post dispatch",
+      "cancelTitle": "Cancel this dispatch?",
+      "cancelBody": "The dispatch stays in the list as cancelled. Stock is not changed.",
+      "cancelConfirm": "Cancel dispatch",
+      "back": "Back"
+    },
+    "daily": {
+      "pageMetadataTitle": "Daily sales · Sales · Emma & Éléa",
+      "pageTitle": "Daily sales",
+      "pageIntro": "Record sold quantities and revenue. One entry per site, item, day and channel.",
+      "backToSales": "Back to sales",
+      "createTitle": "Record sales",
+      "createIntro": "Saving the same site, item, day and channel again replaces the entry.",
+      "errorTitle": "Could not save sales.",
+      "fields": {
+        "site": "Site",
+        "item": "Item",
+        "businessDate": "Business date",
+        "channel": "Channel",
+        "quantitySold": "Quantity sold",
+        "revenue": "Revenue",
+        "note": "Note"
+      },
+      "chooseItem": "Choose an item",
+      "submit": "Save sales",
+      "listTitle": "Last 30 days",
+      "emptyTitle": "No sales recorded",
+      "emptyBody": "Record today's takings to build the sales history.",
+      "columns": {
+        "date": "Date",
+        "item": "Item",
+        "quantity": "Sold",
+        "revenue": "Revenue",
+        "channel": "Channel"
+      }
+    },
+    "paginationLabel": "Orders pagination",
+    "customerEdit": {
+      "title": "Edit customer",
+      "intro": "Update the contact details used on orders and dispatches.",
+      "savedTitle": "Customer updated",
+      "savedBody": "The changes are visible immediately.",
+      "errorTitle": "Could not update the customer.",
+      "submit": "Save customer"
+    },
+    "customerPage": {
+      "back": "Back to customers",
+      "noCode": "No code",
+      "archivedTitle": "Archived customer",
+      "archivedBody": "This customer is kept for history but cannot be selected on new orders or dispatches."
+    }
+  },
+  "Reports": {
+    "metadataTitle": "Reports · Emma & Éléa",
+    "title": "Reports",
+    "intro": "Performance from {from} to {to}: margins, yields, waste and stock alerts.",
+    "summaryTitle": "Summary",
+    "summaryIntro": "Waste compared with the cost of completed production in the period.",
+    "wasteCost": "Waste cost",
+    "productionCost": "Production cost",
+    "wasteRate": "Waste rate",
+    "alertsCount": "Stock alerts",
+    "marginsTitle": "Product margins",
+    "marginsIntro": "Latest published cost snapshot compared with the output item sale price.",
+    "margins": {
+      "columns": {
+        "product": "Product",
+        "cost": "Cost / unit",
+        "price": "Sale price",
+        "margin": "Margin"
+      }
+    },
+    "emptyMarginsTitle": "No published costs yet",
+    "emptyMarginsBody": "Publish a recipe to create a cost snapshot.",
+    "yieldsTitle": "Batch yields",
+    "yieldsIntro": "Actual quantity against planned quantity for the last completed batches.",
+    "yields": {
+      "columns": {
+        "batch": "Batch",
+        "recipe": "Recipe",
+        "planned": "Planned",
+        "actual": "Actual",
+        "yield": "Yield",
+        "date": "Produced"
+      }
+    },
+    "emptyYieldsTitle": "No completed batches",
+    "emptyYieldsBody": "Complete a production batch to see its yield.",
+    "alertsTitle": "Stock alerts",
+    "alertsIntro": "Items at or below their minimum stock level.",
+    "emptyAlertsTitle": "No stock alerts",
+    "emptyAlertsBody": "Every item is above its minimum."
   }
 }

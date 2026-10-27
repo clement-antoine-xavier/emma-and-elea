@@ -210,4 +210,14 @@ test("a completed batch consumes lots and creates a traceable output", async ({
     page.getByRole("heading", { name: "Traceability" }).last(),
   ).toBeVisible();
   await expect(page.getByText(/B-\d{6}-\d{3}/).first()).toBeVisible();
+
+  // Reports read the published cost snapshot and the completed batch.
+  await page.getByRole("link", { name: "Reports", exact: true }).click();
+  await expect(
+    page.getByRole("heading", { name: "Product margins" }),
+  ).toBeVisible();
+  await expect(page.getByText("Croissant production").first()).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Batch yields" }),
+  ).toBeVisible();
 });
