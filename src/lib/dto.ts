@@ -303,3 +303,161 @@ export type LotDetailRecord = LotSummaryRecord & {
   quantityReceived: string;
   movements: StockMovementRecord[];
 };
+
+export type RecipeStatusName = "DRAFT" | "PUBLISHED" | "ARCHIVED";
+
+export type RecipeListRecord = {
+  id: string;
+  code: string;
+  name: string;
+  outputItemName: string;
+  versionNumber: number | null;
+  status: RecipeStatusName | null;
+  costPerUnit: string | null;
+  currency: string | null;
+  marginPct: string | null;
+  isArchived: boolean;
+};
+
+export type RecipeVersionSummary = {
+  id: string;
+  versionNumber: number;
+  status: RecipeStatusName;
+  yieldQuantity: string;
+  yieldUnitCode: string;
+  portionCount: number | null;
+  publishedAt: Date | null;
+  createdAt: Date;
+  costPerUnit: string | null;
+  currency: string | null;
+  marginPct: string | null;
+};
+
+export type RecipeDetailRecord = {
+  id: string;
+  code: string;
+  name: string;
+  description: string | null;
+  outputItemId: string;
+  outputItemName: string;
+  outputItemType: ItemTypeName;
+  currentVersionId: string | null;
+  isArchived: boolean;
+  versions: RecipeVersionSummary[];
+};
+
+export type RecipeLineRecord = {
+  id: string;
+  itemId: string;
+  itemCode: string;
+  itemName: string;
+  itemType: ItemTypeName;
+  quantity: string;
+  unitId: string;
+  unitCode: string;
+  unitKind: string;
+  unitFactorToBase: string;
+  itemStockUnitId: string;
+  itemStockUnitCode: string;
+  itemStockUnitKind: string;
+  itemStockUnitFactorToBase: string;
+  lossPct: string;
+  isOptional: boolean;
+  position: number;
+  note: string | null;
+};
+
+export type RecipeOperationRecord = {
+  id: string;
+  name: string;
+  description: string | null;
+  position: number;
+  durationMinutes: number;
+  activeMinutes: number | null;
+  equipmentId: string | null;
+  equipmentName: string | null;
+  equipmentPowerKw: string | null;
+  equipmentSiteId: string | null;
+  labourRateId: string | null;
+  labourRateLabel: string | null;
+};
+
+export type RecipeCostLineRecord = {
+  id: string;
+  kind: "MATERIAL" | "PACKAGING" | "LABOUR" | "ENERGY" | "OVERHEAD";
+  label: string;
+  quantity: string | null;
+  unitCode: string | null;
+  unitCost: string | null;
+  amount: string;
+};
+
+export type RecipeCostWarning = {
+  code: "MISSING_PRICE" | "MISSING_RATE" | "MISSING_TARIFF";
+  subject: string;
+};
+
+export type RecipeCostRecord = {
+  materialCost: string;
+  packagingCost: string;
+  labourCost: string;
+  energyCost: string;
+  overheadCost: string;
+  totalCost: string;
+  costPerUnit: string;
+  marginPct: string | null;
+  currency: string;
+  computedAt: Date | null;
+  lines: RecipeCostLineRecord[];
+  warnings: RecipeCostWarning[];
+};
+
+export type RecipeVersionDetailRecord = {
+  id: string;
+  recipeId: string;
+  recipeCode: string;
+  recipeName: string;
+  versionNumber: number;
+  status: RecipeStatusName;
+  yieldQuantity: string;
+  yieldUnitId: string;
+  yieldUnitCode: string;
+  portionCount: number | null;
+  prepMinutes: number | null;
+  cookMinutes: number | null;
+  instructions: string | null;
+  changeNote: string | null;
+  publishedAt: Date | null;
+  outputItemId: string;
+  outputItemName: string;
+  outputItemType: ItemTypeName;
+  outputStockUnitId: string;
+  outputStockUnitCode: string;
+  outputStockUnitKind: string;
+  salePrice: string | null;
+  currency: string;
+  lines: RecipeLineRecord[];
+  operations: RecipeOperationRecord[];
+  cost: RecipeCostRecord | null;
+};
+
+export type RecipeOptions = {
+  outputItems: ItemOption[];
+  lineItems: ItemOption[];
+  units: UnitOption[];
+  equipment: {
+    id: string;
+    name: string;
+    siteId: string | null;
+    siteName: string | null;
+    powerKw: string | null;
+  }[];
+  labourRates: {
+    id: string;
+    label: string;
+    hourlyCost: string;
+    currency: string;
+    siteId: string | null;
+    siteName: string | null;
+  }[];
+};

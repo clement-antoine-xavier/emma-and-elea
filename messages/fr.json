@@ -570,6 +570,7 @@
       "lastSite": "Vous ne pouvez pas archiver le dernier site.",
       "invalidUnit": "Choisissez une unité de stock de base et une unité de vente compatible.",
       "invalidState": "Cette action n’est pas disponible dans cet état.",
+      "missingPrice": "Un prix, un taux ou un tarif manque. Complétez les références avant de publier.",
       "generic": "Une erreur est survenue. Veuillez réessayer."
     },
     "validation": {
@@ -908,6 +909,7 @@
       "invalidInput": "Vérifiez les champs signalés.",
       "lastSite": "Vous ne pouvez pas archiver le dernier site.",
       "invalidState": "Cette action n’est pas disponible dans cet état.",
+      "missingPrice": "Un prix, un taux ou un tarif manque. Complétez les références avant de publier.",
       "generic": "Une erreur est survenue. Veuillez réessayer."
     },
     "validation": {
@@ -943,6 +945,7 @@
       "invalidInput": "Vérifiez les champs signalés.",
       "invalidState": "Cette action n’est pas disponible dans cet état.",
       "lastSite": "Vous ne pouvez pas archiver le dernier site.",
+      "missingPrice": "Un prix, un taux ou un tarif manque. Complétez les références avant de publier.",
       "generic": "Une erreur est survenue. Veuillez réessayer."
     }
   },
@@ -1234,6 +1237,193 @@
         "ADJUSTMENT": "Ajustement",
         "COUNT": "Inventaire"
       }
+    }
+  },
+  "Recipes": {
+    "metadataTitle": "Recettes · Emma & Éléa",
+    "title": "Recettes",
+    "intro": "Fiches techniques, versions et coût de revient de chaque produit.",
+    "newVersion": "Nouvelle version",
+    "archive": "Archiver",
+    "archiveTitle": "Archiver {name} ?",
+    "archiveBody": "La recette n’apparaîtra plus dans les sélections. Les lots passés et les instantanés de coût gardent leur historique.",
+    "archiveConfirm": "Archiver la recette",
+    "cancel": "Annuler",
+    "archived": "Archivée",
+    "archivedTitle": "Cette recette est archivée",
+    "archivedBody": "Elle ne peut plus servir à de nouveaux lots. Ses versions et instantanés restent consultables.",
+    "open": "Ouvrir",
+    "draftOnly": "Brouillon",
+    "backToRecipes": "Retour aux recettes",
+    "backToRecipe": "Retour à la recette",
+    "currentVersion": "Version courante",
+    "noCurrentVersion": "Non publiée",
+    "versionsTitle": "Versions",
+    "versionsIntro": "Publier une version archive la précédente et enregistre son instantané de coût.",
+    "publishHintTitle": "Publication",
+    "publishHintBody": "La publication vérifie le rendement, les lignes et les unités, puis enregistre l’instantané de coût.",
+    "publishedTitle": "Version publiée",
+    "publishedBody": "Son contenu est immuable. Créez une nouvelle version pour modifier la recette.",
+    "createTitle": "Nouvelle recette",
+    "createIntro": "Commencez par le produit obtenu. La première version est un brouillon.",
+    "errorTitle": "Impossible de mettre à jour les recettes",
+    "submit": "Créer la recette",
+    "listTitle": "Toutes les recettes",
+    "emptyTitle": "Aucune recette",
+    "emptyBody": "Créez la première recette d’un produit fini ou d’une préparation semi-finie.",
+    "fields": {
+      "name": "Nom",
+      "code": "Code",
+      "codeHint": "2 à 32 lettres, chiffres ou tirets.",
+      "description": "Description",
+      "outputItem": "Produit"
+    },
+    "columns": {
+      "name": "Recette",
+      "version": "Version",
+      "yield": "Rendement",
+      "costPerUnit": "Coût unitaire",
+      "margin": "Marge",
+      "status": "Statut",
+      "publishedAt": "Publiée le"
+    },
+    "statuses": {
+      "DRAFT": "Brouillon",
+      "PUBLISHED": "Publiée",
+      "ARCHIVED": "Archivée"
+    },
+    "versionForm": {
+      "title": "Détails de la version",
+      "intro": "Le rendement est la quantité produite par un lot de cette version.",
+      "saved": "Version enregistrée.",
+      "errorTitle": "Impossible d’enregistrer la version",
+      "submit": "Enregistrer la version",
+      "fields": {
+        "yieldQuantity": "Quantité produite",
+        "yieldUnit": "Unité de rendement",
+        "portionCount": "Portions",
+        "prepMinutes": "Préparation (minutes)",
+        "cookMinutes": "Cuisson (minutes)",
+        "instructions": "Instructions",
+        "changeNote": "Motif de la modification"
+      }
+    },
+    "lines": {
+      "title": "Ingrédients et emballages",
+      "intro": "Une ligne par article consommé par cette version. La perte est appliquée avant le calcul.",
+      "errorTitle": "Impossible de mettre à jour les lignes",
+      "chooseItem": "Choisir un article",
+      "chooseUnit": "Choisir une unité",
+      "submit": "Ajouter la ligne",
+      "emptyTitle": "Aucune ligne",
+      "emptyBody": "Ajoutez les ingrédients et emballages utilisés par un lot.",
+      "remove": "Retirer",
+      "optional": "Facultatif",
+      "fields": {
+        "item": "Article",
+        "quantity": "Quantité",
+        "unit": "Unité",
+        "lossPct": "Perte",
+        "lossPctHint": "Pourcentage perdu en parage, évaporation ou collage.",
+        "isOptional": "Ligne facultative",
+        "isOptionalHint": "Les lignes facultatives ne sont pas incluses dans le coût.",
+        "note": "Note"
+      },
+      "columns": {
+        "item": "Article",
+        "quantity": "Quantité",
+        "loss": "Perte",
+        "optional": "Facultatif"
+      }
+    },
+    "operations": {
+      "title": "Opérations",
+      "intro": "Les étapes fournissent le temps de main-d’œuvre, l’énergie et les instructions de production.",
+      "errorTitle": "Impossible de mettre à jour les opérations",
+      "noEquipment": "Aucun équipement",
+      "defaultRate": "Taux par défaut de l’organisation",
+      "submit": "Ajouter l’opération",
+      "emptyTitle": "Aucune opération",
+      "emptyBody": "Ajoutez les étapes qui consomment de la main-d’œuvre ou de l’équipement.",
+      "remove": "Retirer",
+      "fields": {
+        "name": "Opération",
+        "durationMinutes": "Durée (minutes)",
+        "durationHint": "Temps actif et passif.",
+        "activeMinutes": "Minutes actives",
+        "activeHint": "Temps de main-d’œuvre. Par défaut, la durée complète.",
+        "equipment": "Équipement",
+        "labourRate": "Taux de main-d’œuvre",
+        "description": "Description"
+      },
+      "columns": {
+        "name": "Opération",
+        "minutes": "Temps",
+        "equipment": "Équipement",
+        "rate": "Taux"
+      }
+    },
+    "publish": {
+      "action": "Publier la version",
+      "title": "Publier cette version ?",
+      "body": "La publication archive la version publiée précédente et enregistre l’instantané de coût. Le contenu devient alors immuable.",
+      "confirm": "Publier la version",
+      "cancel": "Annuler",
+      "errorTitle": "Impossible de publier la version"
+    },
+    "cost": {
+      "title": "Détail du coût",
+      "snapshotAt": "Instantané enregistré le {date}.",
+      "livePreview": "Aperçu en direct à partir des prix fournisseurs, taux et tarifs actuels.",
+      "material": "Matières",
+      "packaging": "Emballages",
+      "labour": "Main-d’œuvre",
+      "energy": "Énergie",
+      "overhead": "Frais généraux",
+      "total": "Total",
+      "costPerUnit": "Coût unitaire",
+      "margin": "Marge",
+      "noMargin": "Aucun prix de vente",
+      "minutes": "min",
+      "warningsTitle": "Certaines références manquent",
+      "warnings": {
+        "MISSING_PRICE": "Aucun prix fournisseur ou de réception pour {subject}.",
+        "MISSING_RATE": "Aucun taux de main-d’œuvre pour {subject}.",
+        "MISSING_TARIFF": "Aucun tarif d’énergie pour {subject}."
+      },
+      "kinds": {
+        "MATERIAL": "Matières",
+        "PACKAGING": "Emballages",
+        "LABOUR": "Main-d’œuvre",
+        "ENERGY": "Énergie",
+        "OVERHEAD": "Frais généraux"
+      },
+      "columns": {
+        "kind": "Type",
+        "label": "Ligne",
+        "quantity": "Quantité",
+        "unitCost": "Coût unitaire",
+        "amount": "Montant"
+      }
+    },
+    "validation": {
+      "codeInvalid": "Utilisez 2 à 32 lettres, chiffres ou tirets.",
+      "nameRequired": "Saisissez un nom.",
+      "nameTooLong": "Le nom est trop long.",
+      "descriptionTooLong": "La description est trop longue.",
+      "outputInvalid": "Choisissez un produit fini ou un semi-fini.",
+      "yieldInvalid": "Saisissez un rendement supérieur à zéro.",
+      "unitInvalid": "Choisissez une unité du même type que l’article.",
+      "portionInvalid": "Saisissez un nombre entier de portions.",
+      "minutesInvalid": "Saisissez un nombre entier de minutes.",
+      "instructionsTooLong": "Les instructions sont trop longues.",
+      "noteTooLong": "La note est trop longue.",
+      "itemRequired": "Choisissez un article.",
+      "quantityInvalid": "Saisissez une quantité supérieure à zéro.",
+      "lossInvalid": "Saisissez un pourcentage de perte entre 0 et 100.",
+      "operationNameRequired": "Saisissez un nom d’opération.",
+      "durationInvalid": "Saisissez une durée en minutes entières.",
+      "activeMinutesInvalid": "Saisissez des minutes actives entre 0 et la durée."
     }
   }
 }

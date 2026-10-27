@@ -51,7 +51,9 @@ name and its first site. `/dashboard/settings` manages the organization values,
 sites, labour rates, energy tariffs and equipment. `/dashboard/catalog` manages
 items, categories and allergen declarations. `/dashboard/purchasing` manages
 suppliers and goods receipts; posting one creates its lots and stock movements,
-visible under `/dashboard/stock`.
+visible under `/dashboard/stock`. `/dashboard/recipes` manages versioned
+recipes, live cost previews and stored snapshots; publishing requires every
+price, rate and tariff to resolve.
 
 ## Environment
 

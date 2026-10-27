@@ -9,7 +9,11 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: isCI,
   retries: isCI ? 2 : 0,
-  workers: isCI ? 1 : undefined,
+  // Local runs use `next dev`, which compiles each new route on demand. Even a
+  // few workers queue behind that compilation, so the suite runs sequentially
+  // like CI and only the timeout needs headroom.
+  timeout: 60_000,
+  workers: 1,
   // Keep the reporter and stop the run before the job timeout.
   globalTimeout: 15 * 60 * 1000,
   expect: {timeout: isCI ? 10_000 : 5_000},

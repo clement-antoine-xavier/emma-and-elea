@@ -570,6 +570,7 @@
       "lastSite": "You cannot archive the last site.",
       "invalidUnit": "Choose a base stock unit and a compatible sale unit.",
       "invalidState": "That action is not available in this state.",
+      "missingPrice": "A price, rate or tariff is missing. Complete the references before publishing.",
       "generic": "Something went wrong. Please try again."
     },
     "validation": {
@@ -908,6 +909,7 @@
       "invalidInput": "Check the highlighted fields.",
       "lastSite": "You cannot archive the last site.",
       "invalidState": "That action is not available in this state.",
+      "missingPrice": "A price, rate or tariff is missing. Complete the references before publishing.",
       "generic": "Something went wrong. Please try again."
     },
     "validation": {
@@ -943,6 +945,7 @@
       "invalidInput": "Check the highlighted fields.",
       "invalidState": "That action is not available in this state.",
       "lastSite": "You cannot archive the last site.",
+      "missingPrice": "A price, rate or tariff is missing. Complete the references before publishing.",
       "generic": "Something went wrong. Please try again."
     }
   },
@@ -1234,6 +1237,193 @@
         "ADJUSTMENT": "Adjustment",
         "COUNT": "Stock count"
       }
+    }
+  },
+  "Recipes": {
+    "metadataTitle": "Recipes · Emma & Éléa",
+    "title": "Recipes",
+    "intro": "Technique sheets, versions and the cost of every product.",
+    "newVersion": "New version",
+    "archive": "Archive",
+    "archiveTitle": "Archive {name}?",
+    "archiveBody": "The recipe stops appearing in pickers. Past batches and cost snapshots keep their history.",
+    "archiveConfirm": "Archive recipe",
+    "cancel": "Cancel",
+    "archived": "Archived",
+    "archivedTitle": "This recipe is archived",
+    "archivedBody": "It can no longer be used for new batches. Its versions and snapshots remain readable.",
+    "open": "Open",
+    "draftOnly": "Draft",
+    "backToRecipes": "Back to recipes",
+    "backToRecipe": "Back to the recipe",
+    "currentVersion": "Current version",
+    "noCurrentVersion": "Not published",
+    "versionsTitle": "Versions",
+    "versionsIntro": "Publishing a version archives the previous one and stores its cost snapshot.",
+    "publishHintTitle": "Publishing",
+    "publishHintBody": "Publishing validates the yield, the lines and the unit kinds, then stores the cost snapshot.",
+    "publishedTitle": "Published version",
+    "publishedBody": "Its content is immutable. Create a new version to change the recipe.",
+    "createTitle": "New recipe",
+    "createIntro": "Start with the product it produces. The first version is a draft.",
+    "errorTitle": "Could not update the recipes",
+    "submit": "Create recipe",
+    "listTitle": "All recipes",
+    "emptyTitle": "No recipes yet",
+    "emptyBody": "Create the first recipe for a finished product or a semi-finished preparation.",
+    "fields": {
+      "name": "Name",
+      "code": "Code",
+      "codeHint": "2 to 32 letters, digits or hyphens.",
+      "description": "Description",
+      "outputItem": "Produces"
+    },
+    "columns": {
+      "name": "Recipe",
+      "version": "Version",
+      "yield": "Yield",
+      "costPerUnit": "Cost per unit",
+      "margin": "Margin",
+      "status": "Status",
+      "publishedAt": "Published"
+    },
+    "statuses": {
+      "DRAFT": "Draft",
+      "PUBLISHED": "Published",
+      "ARCHIVED": "Archived"
+    },
+    "versionForm": {
+      "title": "Version details",
+      "intro": "Yield is the quantity produced by one batch of this version.",
+      "saved": "Version saved.",
+      "errorTitle": "Could not save the version",
+      "submit": "Save version",
+      "fields": {
+        "yieldQuantity": "Yield quantity",
+        "yieldUnit": "Yield unit",
+        "portionCount": "Portions",
+        "prepMinutes": "Preparation (minutes)",
+        "cookMinutes": "Cooking (minutes)",
+        "instructions": "Instructions",
+        "changeNote": "Change note"
+      }
+    },
+    "lines": {
+      "title": "Ingredients and packaging",
+      "intro": "One line per item consumed by this version. Loss is applied before costing.",
+      "errorTitle": "Could not update the lines",
+      "chooseItem": "Choose an item",
+      "chooseUnit": "Choose a unit",
+      "submit": "Add line",
+      "emptyTitle": "No lines yet",
+      "emptyBody": "Add the ingredients and packaging used by one batch.",
+      "remove": "Remove",
+      "optional": "Optional",
+      "fields": {
+        "item": "Item",
+        "quantity": "Quantity",
+        "unit": "Unit",
+        "lossPct": "Loss",
+        "lossPctHint": "Percentage lost to trimming, evaporation or sticking.",
+        "isOptional": "Optional line",
+        "isOptionalHint": "Optional lines are not included in the cost.",
+        "note": "Note"
+      },
+      "columns": {
+        "item": "Item",
+        "quantity": "Quantity",
+        "loss": "Loss",
+        "optional": "Optional"
+      }
+    },
+    "operations": {
+      "title": "Operations",
+      "intro": "Steps supply labour time, energy and the instructions shown on the shop floor.",
+      "errorTitle": "Could not update the operations",
+      "noEquipment": "No equipment",
+      "defaultRate": "Organization default rate",
+      "submit": "Add operation",
+      "emptyTitle": "No operations yet",
+      "emptyBody": "Add the steps that consume labour or equipment time.",
+      "remove": "Remove",
+      "fields": {
+        "name": "Operation",
+        "durationMinutes": "Duration (minutes)",
+        "durationHint": "Active and passive time.",
+        "activeMinutes": "Active minutes",
+        "activeHint": "Labour time. Defaults to the full duration.",
+        "equipment": "Equipment",
+        "labourRate": "Labour rate",
+        "description": "Description"
+      },
+      "columns": {
+        "name": "Operation",
+        "minutes": "Time",
+        "equipment": "Equipment",
+        "rate": "Labour rate"
+      }
+    },
+    "publish": {
+      "action": "Publish version",
+      "title": "Publish this version?",
+      "body": "Publishing archives the previous published version and stores the cost snapshot. The content then becomes immutable.",
+      "confirm": "Publish version",
+      "cancel": "Cancel",
+      "errorTitle": "Could not publish the version"
+    },
+    "cost": {
+      "title": "Cost breakdown",
+      "snapshotAt": "Stored snapshot from {date}.",
+      "livePreview": "Live preview from current supplier prices, rates and tariffs.",
+      "material": "Material",
+      "packaging": "Packaging",
+      "labour": "Labour",
+      "energy": "Energy",
+      "overhead": "Overhead",
+      "total": "Total",
+      "costPerUnit": "Cost per unit",
+      "margin": "Margin",
+      "noMargin": "No sale price",
+      "minutes": "min",
+      "warningsTitle": "Some references are missing",
+      "warnings": {
+        "MISSING_PRICE": "No supplier or receipt price for {subject}.",
+        "MISSING_RATE": "No labour rate for {subject}.",
+        "MISSING_TARIFF": "No energy tariff for {subject}."
+      },
+      "kinds": {
+        "MATERIAL": "Material",
+        "PACKAGING": "Packaging",
+        "LABOUR": "Labour",
+        "ENERGY": "Energy",
+        "OVERHEAD": "Overhead"
+      },
+      "columns": {
+        "kind": "Kind",
+        "label": "Line",
+        "quantity": "Quantity",
+        "unitCost": "Unit cost",
+        "amount": "Amount"
+      }
+    },
+    "validation": {
+      "codeInvalid": "Use 2 to 32 letters, digits or hyphens.",
+      "nameRequired": "Enter a name.",
+      "nameTooLong": "The name is too long.",
+      "descriptionTooLong": "The description is too long.",
+      "outputInvalid": "Choose a finished product or a semi-finished item.",
+      "yieldInvalid": "Enter a yield greater than zero.",
+      "unitInvalid": "Choose a unit of the same kind as the item.",
+      "portionInvalid": "Enter a whole number of portions.",
+      "minutesInvalid": "Enter a whole number of minutes.",
+      "instructionsTooLong": "The instructions are too long.",
+      "noteTooLong": "The note is too long.",
+      "itemRequired": "Choose an item.",
+      "quantityInvalid": "Enter a quantity greater than zero.",
+      "lossInvalid": "Enter a loss percentage between 0 and 100.",
+      "operationNameRequired": "Enter an operation name.",
+      "durationInvalid": "Enter a duration in whole minutes.",
+      "activeMinutesInvalid": "Enter active minutes between 0 and the duration."
     }
   }
 }

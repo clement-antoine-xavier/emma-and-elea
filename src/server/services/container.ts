@@ -1,11 +1,13 @@
 import {betterAuthGateway} from "@/server/auth/better-auth.gateway";
 import {catalogRepository} from "@/server/repositories/catalog.repository";
+import {costingRepository} from "@/server/repositories/costing.repository";
 import {equipmentRepository} from "@/server/repositories/equipment.repository";
 import {invitationRepository} from "@/server/repositories/invitation.repository";
 import {membershipRepository} from "@/server/repositories/membership.repository";
 import {organizationSettingsRepository} from "@/server/repositories/organization-settings.repository";
 import {purchaseRepository} from "@/server/repositories/purchase.repository";
 import {rateRepository} from "@/server/repositories/rate.repository";
+import {recipeRepository} from "@/server/repositories/recipe.repository";
 import {siteRepository} from "@/server/repositories/site.repository";
 import {stockRepository} from "@/server/repositories/stock.repository";
 import {supplierRepository} from "@/server/repositories/supplier.repository";
@@ -17,6 +19,7 @@ import {organizationBootstrapService} from "./organization-bootstrap.container";
 import {createOrganizationService} from "./organization.service";
 import {createPurchasingService} from "./purchasing.service";
 import {createRateService} from "./rate.service";
+import {createRecipeService} from "./recipe.service";
 import {createSettingsService} from "./settings.service";
 import {createSiteService} from "./site.service";
 import {createStockService} from "./stock.service";
@@ -66,3 +69,11 @@ export const purchasingService = createPurchasingService({
 });
 
 export const stockService = createStockService({stockRepository});
+
+export const recipeService = createRecipeService({
+  recipeRepository,
+  costingRepository,
+  catalogRepository,
+  equipmentRepository,
+  rateRepository,
+});

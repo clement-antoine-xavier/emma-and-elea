@@ -274,6 +274,7 @@ async function main() {
     supplierRef: string,
     packQuantity: string,
     price: string,
+    packUnitId = kg,
   ) =>
     prisma.supplierItem.upsert({
       where: {
@@ -289,7 +290,7 @@ async function main() {
         itemId,
         supplierRef,
         packQuantity,
-        packUnitId: kg,
+        packUnitId,
         price,
         validFrom: VALID_FROM,
         isPreferred: true,
@@ -300,6 +301,7 @@ async function main() {
   await supplierItem(flour.id, "T65-25", "25", "27.5000");
   await supplierItem(butter.id, "BUR-10", "10", "78.0000");
   await supplierItem(sugar.id, "SUC-25", "25", "19.5000");
+  await supplierItem(box.id, "BOX-100", "100", "15.0000", piece);
 
   const labourRate = await prisma.labourRate.findFirst({
     where: {organizationId, siteId: site.id, label: "Pâtissier"},

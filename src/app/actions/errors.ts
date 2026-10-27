@@ -14,6 +14,7 @@ export type ActionErrorKey =
   | "invalidUnit"
   | "invalidInput"
   | "invalidState"
+  | "missingPrice"
   | "lastSite"
   | "generic";
 
@@ -35,6 +36,8 @@ export function mapDomainError(error: unknown): ActionErrorKey {
       return "invalidInput";
     case "INVALID_STATE_TRANSITION":
       return "invalidState";
+    case "MISSING_PRICE":
+      return "missingPrice";
     case "LAST_SITE":
       return "lastSite";
     default:
