@@ -69,3 +69,85 @@ export type EquipmentRecord = {
   powerKw: string | null;
   archivedAt: Date | null;
 };
+
+export type ItemTypeName =
+  | "RAW_MATERIAL"
+  | "PACKAGING"
+  | "SEMI_FINISHED"
+  | "FINISHED_PRODUCT";
+
+export type SalesChannelName = "RETAIL" | "WHOLESALE" | "BOTH" | "NONE";
+
+export type UnitOption = {
+  id: string;
+  code: string;
+  labelEn: string;
+  labelFr: string;
+  kind: "MASS" | "VOLUME" | "COUNT" | "LENGTH";
+  isBase: boolean;
+};
+
+export type AllergenOption = {
+  id: string;
+  code: string;
+  labelEn: string;
+  labelFr: string;
+};
+
+export type CategoryRecord = {
+  id: string;
+  name: string;
+  parentId: string | null;
+  parentName: string | null;
+  sortOrder: number;
+  itemCount: number;
+  childCount: number;
+  isArchived: boolean;
+};
+
+export type ItemReference = {
+  id: string;
+  name: string;
+};
+
+export type ItemAllergenRecord = {
+  id: string;
+  allergenId: string;
+  code: string;
+  labelEn: string;
+  labelFr: string;
+  presence: "CONTAINS" | "MAY_CONTAIN";
+  note: string | null;
+};
+
+export type ItemListRecord = {
+  id: string;
+  code: string;
+  name: string;
+  type: ItemTypeName;
+  categoryId: string | null;
+  categoryName: string | null;
+  stockUnitCode: string;
+  saleUnitCode: string | null;
+  salePrice: string | null;
+  vatRate: string;
+  isPurchasable: boolean;
+  isProduced: boolean;
+  isSellable: boolean;
+  isArchived: boolean;
+};
+
+export type ItemDetailRecord = ItemListRecord & {
+  description: string | null;
+  categoryId: string | null;
+  stockUnitId: string;
+  saleUnitId: string | null;
+  shelfLifeDays: number | null;
+  minStockQuantity: string | null;
+  parLevelQuantity: string | null;
+  defaultChannel: SalesChannelName;
+  allergens: ItemAllergenRecord[];
+  usedInRecipes: ItemReference[];
+  producesRecipes: ItemReference[];
+  supplierCount: number;
+};

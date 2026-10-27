@@ -1,4 +1,5 @@
 import {betterAuthGateway} from "@/server/auth/better-auth.gateway";
+import {catalogRepository} from "@/server/repositories/catalog.repository";
 import {equipmentRepository} from "@/server/repositories/equipment.repository";
 import {invitationRepository} from "@/server/repositories/invitation.repository";
 import {membershipRepository} from "@/server/repositories/membership.repository";
@@ -6,6 +7,7 @@ import {organizationSettingsRepository} from "@/server/repositories/organization
 import {rateRepository} from "@/server/repositories/rate.repository";
 import {siteRepository} from "@/server/repositories/site.repository";
 import {createDashboardService} from "./dashboard.service";
+import {createCatalogService} from "./catalog.service";
 import {createEquipmentService} from "./equipment.service";
 import {createInvitationService} from "./invitation.service";
 import {organizationBootstrapService} from "./organization-bootstrap.container";
@@ -42,3 +44,5 @@ export const settingsService = createSettingsService({
 export const rateService = createRateService({rateRepository});
 
 export const equipmentService = createEquipmentService({equipmentRepository});
+
+export const catalogService = createCatalogService({catalogRepository});

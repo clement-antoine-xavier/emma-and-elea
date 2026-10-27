@@ -11,6 +11,7 @@ export type ActionErrorKey =
   | "notFound"
   | "conflict"
   | "duplicateCode"
+  | "invalidUnit"
   | "invalidInput"
   | "lastSite"
   | "generic";
@@ -27,6 +28,8 @@ export function mapDomainError(error: unknown): ActionErrorKey {
       return "conflict";
     case "DUPLICATE_CODE":
       return "duplicateCode";
+    case "INVALID_UNIT":
+      return "invalidUnit";
     case "INVALID_INPUT":
       return "invalidInput";
     case "LAST_SITE":

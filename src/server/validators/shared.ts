@@ -1,34 +1,55 @@
 import {z} from "zod";
 
 /**
- * Shared field builders for the settings forms. Values stay strings on the
- * wire so a quantity or a price never round-trips through a JavaScript number
- * before it reaches Prisma `Decimal`; the service passes them through.
+ * Shared field builders for the settings and catalogue forms. Values stay
+ * strings on the wire so a quantity or a price never round-trips through a
+ * JavaScript number before it reaches Prisma `Decimal`; the service passes
+ * them through.
  */
-export function decimalString(options: {
-  message: string;
+
+export type DecimalOptions = {
   min?: number;
   max?: number;
   scale?: number;
-}) {
-  const {message, min = 0, max = Number.MAX_SAFE_INTEGER, scale = 4} = options;
+};
+
+export function isDecimalText(value: string, options: DecimalOptions = {}) {
+  const {min = 0, max = Number.MAX_SAFE_INTEGER, scale = 4} = options;
+
+  if (!/^\d+(?:\.\d+)?$/.test(value)) return false;
+
+  const fraction = value.split(".")[1]?.length ?? 0;
+  const amount = Number(value);
+
+  return (
+    Number.isFinite(amount) &&
+    amount >= min &&
+    amount <= max &&
+    fraction <= scale
+  );
+}
+
+export function decimalString(options: DecimalOptions & {message: string}) {
+  const {message, ...limits} = options;
 
   return z
     .string()
     .trim()
-    .refine((value) => {
-      if (!/^\d+(?:\.\d+)?$/.test(value)) return false;
+    .refine((value) => isDecimalText(value, limits), message);
+}
 
-      const fraction = value.split(".")[1]?.length ?? 0;
-      const amount = Number(value);
+export function optionalDecimalString(
+  options: DecimalOptions & {message: string},
+) {
+  const {message, ...limits} = options;
 
-      return (
-        Number.isFinite(amount) &&
-        amount >= min &&
-        amount <= max &&
-        fraction <= scale
-      );
-    }, message);
+  return z
+    .string()
+    .trim()
+    .refine(
+      (value) => value === "" || isDecimalText(value, limits),
+      message,
+    );
 }
 
 const isoDatePattern = /^\d{4}-\d{2}-\d{2}$/;

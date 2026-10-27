@@ -48,7 +48,8 @@ Open [http://localhost:3000](http://localhost:3000). The UI language comes from
 the `NEXT_LOCALE` cookie (English by default; use the language switcher to change
 it), and accounts are created at `/sign-up`. Onboarding asks for the business
 name and its first site. `/dashboard/settings` manages the organization values,
-sites, labour rates, energy tariffs and equipment.
+sites, labour rates, energy tariffs and equipment. `/dashboard/catalog` manages
+items, categories and allergen declarations.
 
 ## Environment
 

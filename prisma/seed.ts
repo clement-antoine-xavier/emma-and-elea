@@ -128,18 +128,26 @@ async function main() {
     update: {},
   });
 
-  const site = await prisma.site.upsert({
-    where: {organizationId_code: {organizationId, code: "ATL"}},
-    create: {
-      organizationId,
-      code: "ATL",
-      name: "Atelier",
-      kind: "WORKSHOP",
-      city: "Lyon",
-    },
-    update: {},
+  const existingSite = await prisma.site.findFirst({
+    where: {organizationId},
+    orderBy: {createdAt: "asc"},
     select: {id: true, name: true},
   });
+
+  const site =
+    existingSite ??
+    (await prisma.site.upsert({
+      where: {organizationId_code: {organizationId, code: "ATL"}},
+      create: {
+        organizationId,
+        code: "ATL",
+        name: "Atelier",
+        kind: "WORKSHOP",
+        city: "Lyon",
+      },
+      update: {},
+      select: {id: true, name: true},
+    }));
 
   const rawCategoryId = await ensureCategory(
     organizationId,
@@ -201,6 +209,51 @@ async function main() {
   const box = await item("BOITE-CROISSANT", "Boîte 6 croissants", "PACKAGING", piece, null, {
     isPurchasable: true,
   });
+
+  const allergenId = async (code: string): Promise<string> => {
+    const allergen = await prisma.allergen.findUnique({
+      where: {code},
+      select: {id: true},
+    });
+
+    if (!allergen) {
+      throw new Error(
+        `Allergen "${code}" is missing. Run \`npm run db:deploy\` first.`,
+      );
+    }
+
+    return allergen.id;
+  };
+
+  const itemAllergen = async (
+    itemId: string,
+    allergenCode: string,
+    presence: "CONTAINS" | "MAY_CONTAIN" = "CONTAINS",
+  ) => {
+    const id = await allergenId(allergenCode);
+
+    return prisma.itemAllergen.upsert({
+      where: {
+        itemId_allergenId_presence: {
+          itemId,
+          allergenId: id,
+          presence,
+        },
+      },
+      create: {
+        organizationId,
+        itemId,
+        allergenId: id,
+        presence,
+      },
+      update: {},
+    });
+  };
+
+  await itemAllergen(flour.id, "GLUTEN");
+  await itemAllergen(butter.id, "MILK");
+  await itemAllergen(croissant.id, "GLUTEN");
+  await itemAllergen(croissant.id, "MILK");
 
   const supplier = await prisma.supplier.upsert({
     where: {organizationId_code: {organizationId, code: "MINOTERIE"}},
