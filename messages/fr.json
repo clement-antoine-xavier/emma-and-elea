@@ -1465,6 +1465,82 @@
       "consumedBy": "Consommé par",
       "none": "Aucun enregistrement",
       "unknownSource": "Origine inconnue"
+    },
+    "countsLink": "Inventaires",
+    "counts": {
+      "metadataTitle": "Inventaires · Emma & Éléa",
+      "title": "Inventaires",
+      "intro": "Comptez les lots d’un site, saisissez les quantités physiques et validez les écarts dans le journal.",
+      "back": "Retour au stock",
+      "createTitle": "Démarrer un inventaire",
+      "createIntro": "Le brouillon reprend chaque lot disponible du site. Saisissez les quantités physiques, puis un responsable valide.",
+      "errorTitle": "Impossible de démarrer l’inventaire.",
+      "fields": {
+        "site": "Site",
+        "countedAt": "Compté le",
+        "note": "Note"
+      },
+      "submit": "Démarrer l’inventaire",
+      "listTitle": "Sessions d’inventaire",
+      "emptyTitle": "Aucun inventaire",
+      "emptyBody": "Démarrez un inventaire pour comparer le journal au stock physique.",
+      "columns": {
+        "date": "Date",
+        "site": "Site",
+        "status": "Statut",
+        "lines": "Lots",
+        "lot": "Lot",
+        "item": "Article",
+        "expected": "Attendu",
+        "counted": "Compté",
+        "variance": "Écart"
+      },
+      "open": "Ouvrir",
+      "statuses": {
+        "DRAFT": "Brouillon",
+        "POSTED": "Validé",
+        "CANCELLED": "Annulé"
+      },
+      "validation": {
+        "siteRequired": "Choisissez un site.",
+        "dateInvalid": "Choisissez une date valide.",
+        "noteTooLong": "Cette note est trop longue.",
+        "quantityInvalid": "Saisissez une quantité comptée supérieure ou égale à zéro.",
+        "linesRequired": "Saisissez au moins une quantité comptée."
+      },
+      "detailTitle": "Inventaire",
+      "note": "Note",
+      "detail": {
+        "errorTitle": "Impossible de mettre à jour l’inventaire.",
+        "savedTitle": "Quantités enregistrées",
+        "savedBody": "Les écarts sont recalculés à partir des quantités saisies.",
+        "awaitingPostTitle": "En attente d’un responsable",
+        "awaitingPostBody": "Vous pouvez saisir les quantités. Un responsable disposant du droit d’écriture stock valide l’inventaire.",
+        "post": "Valider l’inventaire",
+        "cancel": "Annuler l’inventaire",
+        "linesTitle": "Lignes d’inventaire",
+        "linesIntro": "Statut de la session : {status}. Les quantités attendues sont les valeurs du journal capturées au démarrage.",
+        "columns": {
+          "lot": "Lot",
+          "item": "Article",
+          "expected": "Attendu",
+          "counted": "Compté",
+          "variance": "Écart"
+        },
+        "countedFor": "Quantité comptée pour {lot}",
+        "save": "Enregistrer les quantités",
+        "emptyTitle": "Aucune ligne",
+        "emptyBody": "Cette session ne contient aucun lot disponible à compter.",
+        "postTitle": "Valider cet inventaire ?",
+        "postBody": "Chaque écart non nul écrit un mouvement COUNT et chaque lot passe à la quantité comptée. Cette action est irréversible.",
+        "postConfirm": "Valider l’inventaire",
+        "cancelTitle": "Annuler cet inventaire ?",
+        "cancelBody": "La session reste dans la liste avec le statut annulé. Le stock n’est pas modifié.",
+        "cancelConfirm": "Annuler l’inventaire",
+        "back": "Retour",
+        "note": "Note",
+        "noNote": "Aucune note"
+      }
     }
   },
   "Recipes": {

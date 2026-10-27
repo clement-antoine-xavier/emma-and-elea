@@ -18,6 +18,7 @@ import {reportRepository} from "@/server/repositories/report.repository";
 import {salesRepository} from "@/server/repositories/sales.repository";
 import {scheduleRepository} from "@/server/repositories/schedule.repository";
 import {siteRepository} from "@/server/repositories/site.repository";
+import {stockCountRepository} from "@/server/repositories/stock-count.repository";
 import {stockRepository} from "@/server/repositories/stock.repository";
 import {supplierRepository} from "@/server/repositories/supplier.repository";
 import {createDashboardService} from "./dashboard.service";
@@ -39,6 +40,7 @@ import {createReportService} from "./report.service";
 import {createScheduleService} from "./schedule.service";
 import {createSettingsService} from "./settings.service";
 import {createSiteService} from "./site.service";
+import {createStockCountService} from "./stock-count.service";
 import {createStockService} from "./stock.service";
 import {createSupplierService} from "./supplier.service";
 import {createTeamService} from "./team.service";
@@ -140,5 +142,10 @@ export const reportService = createReportService({
 
 export const scheduleService = createScheduleService({
   scheduleRepository,
+  siteRepository,
+});
+
+export const stockCountService = createStockCountService({
+  stockCountRepository,
   siteRepository,
 });

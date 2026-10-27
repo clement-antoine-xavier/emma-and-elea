@@ -1465,6 +1465,82 @@
       "consumedBy": "Consumed by",
       "none": "None recorded",
       "unknownSource": "Unknown source"
+    },
+    "countsLink": "Stock counts",
+    "counts": {
+      "metadataTitle": "Stock counts · Emma & Éléa",
+      "title": "Stock counts",
+      "intro": "Count the lots at a site, record the physical quantities and post the variances into the ledger.",
+      "back": "Back to stock",
+      "createTitle": "Start a count",
+      "createIntro": "The draft copies every available lot at the site. Enter physical quantities, then a manager posts it.",
+      "errorTitle": "Could not start the count.",
+      "fields": {
+        "site": "Site",
+        "countedAt": "Counted on",
+        "note": "Note"
+      },
+      "submit": "Start count",
+      "listTitle": "Count sessions",
+      "emptyTitle": "No stock counts",
+      "emptyBody": "Start a count to compare the ledger with physical stock.",
+      "columns": {
+        "date": "Date",
+        "site": "Site",
+        "status": "Status",
+        "lines": "Lots",
+        "lot": "Lot",
+        "item": "Item",
+        "expected": "Expected",
+        "counted": "Counted",
+        "variance": "Variance"
+      },
+      "open": "Open",
+      "statuses": {
+        "DRAFT": "Draft",
+        "POSTED": "Posted",
+        "CANCELLED": "Cancelled"
+      },
+      "validation": {
+        "siteRequired": "Choose a site.",
+        "dateInvalid": "Choose a valid date.",
+        "noteTooLong": "This note is too long.",
+        "quantityInvalid": "Enter a counted quantity of zero or more.",
+        "linesRequired": "Enter at least one counted quantity."
+      },
+      "detailTitle": "Stock count",
+      "note": "Note",
+      "detail": {
+        "errorTitle": "Could not update the count.",
+        "savedTitle": "Counts saved",
+        "savedBody": "The variances are recalculated from the quantities you entered.",
+        "awaitingPostTitle": "Waiting for a manager",
+        "awaitingPostBody": "You can enter quantities. A manager with stock write access posts the count.",
+        "post": "Post count",
+        "cancel": "Cancel count",
+        "linesTitle": "Count lines",
+        "linesIntro": "Session status: {status}. Expected quantities are the ledger values captured when the session started.",
+        "columns": {
+          "lot": "Lot",
+          "item": "Item",
+          "expected": "Expected",
+          "counted": "Counted",
+          "variance": "Variance"
+        },
+        "countedFor": "Counted quantity for {lot}",
+        "save": "Save counted quantities",
+        "emptyTitle": "No lines",
+        "emptyBody": "This session has no available lots to count.",
+        "postTitle": "Post this stock count?",
+        "postBody": "Each non-zero variance writes a COUNT movement and each lot is set to the counted quantity. This cannot be undone.",
+        "postConfirm": "Post count",
+        "cancelTitle": "Cancel this count?",
+        "cancelBody": "The session stays in the list as cancelled. Stock is not changed.",
+        "cancelConfirm": "Cancel count",
+        "back": "Back",
+        "note": "Note",
+        "noNote": "No note"
+      }
     }
   },
   "Recipes": {

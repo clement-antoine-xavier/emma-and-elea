@@ -4,6 +4,7 @@ import {Button} from "@astryxdesign/core/Button";
 import {Card} from "@astryxdesign/core/Card";
 import {Center} from "@astryxdesign/core/Center";
 import {EmptyState} from "@astryxdesign/core/EmptyState";
+import {HStack} from "@astryxdesign/core/HStack";
 import {Section} from "@astryxdesign/core/Section";
 import {Stack} from "@astryxdesign/core/Stack";
 import {Heading, Text} from "@astryxdesign/core/Text";
@@ -35,11 +36,18 @@ export default async function StockPage() {
             title={t("title")}
             intro={t("intro")}
             actions={
-              <Button
-                label={t("lotsLink")}
-                variant="secondary"
-                href="/dashboard/stock/lots"
-              />
+              <HStack gap={2} wrap="wrap">
+                <Button
+                  label={t("countsLink")}
+                  variant="secondary"
+                  href="/dashboard/stock/counts"
+                />
+                <Button
+                  label={t("lotsLink")}
+                  variant="secondary"
+                  href="/dashboard/stock/lots"
+                />
+              </HStack>
             }
           />
 

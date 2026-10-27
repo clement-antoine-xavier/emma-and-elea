@@ -284,4 +284,32 @@ test("a completed batch consumes lots and creates a traceable output", async ({
   await page.getByRole("button", { name: "Create batch" }).click();
   await expect(page).toHaveURL(/\/dashboard\/production\/batches\/.+/);
   await expect(page.getByText("30 piece").first()).toBeVisible();
+
+  // Physical count: 24.235 kg expected, 24 kg counted, then posted.
+  await page.getByRole("link", { name: "Stock", exact: true }).click();
+  await page.getByRole("link", { name: "Stock counts" }).click();
+  await page.getByRole("button", { name: "Start count" }).click();
+  await expect(page).toHaveURL(/\/dashboard\/stock\/counts\/.+/);
+
+  const flourCountRow = page
+    .getByRole("row", { name: /Farine production/ })
+    .first();
+  await flourCountRow.getByRole("textbox").fill("24");
+  await page.getByRole("button", { name: "Save counted quantities" }).click();
+  await expect(page.getByText("Counts saved").first()).toBeVisible();
+  await expect(page.getByText("-0.235 kg").first()).toBeVisible();
+
+  await page.getByRole("button", { name: "Post count" }).click();
+  await page
+    .getByRole("alertdialog")
+    .getByRole("button", { name: "Post count" })
+    .click();
+  await expect(page.getByText("Posted").first()).toBeVisible();
+
+  await page.getByRole("link", { name: "Back to stock" }).click();
+  await expect(
+    page.getByRole("row", { name: /Farine production/ }).getByRole("cell", {
+      name: "24 kg",
+    }),
+  ).toBeVisible();
 });

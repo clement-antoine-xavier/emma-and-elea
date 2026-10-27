@@ -926,3 +926,36 @@ export type ShiftRecord = {
   note: string | null;
   assignments: ShiftAssignmentRecord[];
 };
+
+export type StockCountStatusName = "DRAFT" | "POSTED" | "CANCELLED";
+
+export type StockCountSummaryRecord = {
+  id: string;
+  siteId: string;
+  siteName: string;
+  status: StockCountStatusName;
+  countedAt: Date;
+  postedAt: Date | null;
+  lineCount: number;
+  createdAt: Date;
+};
+
+export type StockCountLineRecord = {
+  id: string;
+  lotId: string | null;
+  lotNumber: string | null;
+  itemId: string;
+  itemCode: string;
+  itemName: string;
+  expectedQuantity: string;
+  countedQuantity: string;
+  variance: string;
+  unitId: string;
+  unitCode: string;
+  note: string | null;
+};
+
+export type StockCountDetailRecord = StockCountSummaryRecord & {
+  note: string | null;
+  lines: StockCountLineRecord[];
+};

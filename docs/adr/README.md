@@ -26,6 +26,7 @@ decision.
 | [0015](0015-separate-dispatch-stock-from-daily-sales.md) | Record dispatches in the stock ledger and daily sales separately | Accepted | 2026-10-27 |
 | [0016](0016-forecast-from-daily-sales.md) | Forecast from daily sales and keep plans as snapshots | Accepted | 2026-10-27 |
 | [0017](0017-schedule-against-local-availability.md) | Schedule shifts against local availability and approved absences | Accepted | 2026-10-27 |
+| [0018](0018-post-stock-counts-from-captured-expected.md) | Post stock counts from captured expected quantities | Accepted | 2026-10-27 |
 
 ## Creating a new ADR
 
