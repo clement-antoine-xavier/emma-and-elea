@@ -8,6 +8,7 @@ import {organizationSettingsRepository} from "@/server/repositories/organization
 import {purchaseRepository} from "@/server/repositories/purchase.repository";
 import {rateRepository} from "@/server/repositories/rate.repository";
 import {recipeRepository} from "@/server/repositories/recipe.repository";
+import {productionRepository} from "@/server/repositories/production.repository";
 import {siteRepository} from "@/server/repositories/site.repository";
 import {stockRepository} from "@/server/repositories/stock.repository";
 import {supplierRepository} from "@/server/repositories/supplier.repository";
@@ -17,6 +18,7 @@ import {createEquipmentService} from "./equipment.service";
 import {createInvitationService} from "./invitation.service";
 import {organizationBootstrapService} from "./organization-bootstrap.container";
 import {createOrganizationService} from "./organization.service";
+import {createProductionService} from "./production.service";
 import {createPurchasingService} from "./purchasing.service";
 import {createRateService} from "./rate.service";
 import {createRecipeService} from "./recipe.service";
@@ -76,4 +78,9 @@ export const recipeService = createRecipeService({
   catalogRepository,
   equipmentRepository,
   rateRepository,
+});
+
+export const productionService = createProductionService({
+  productionRepository,
+  costingRepository,
 });

@@ -461,3 +461,135 @@ export type RecipeOptions = {
     siteName: string | null;
   }[];
 };
+
+export type BatchStatusName =
+  | "PLANNED"
+  | "IN_PROGRESS"
+  | "COMPLETED"
+  | "CANCELLED";
+
+export type ProductionBatchSummaryRecord = {
+  id: string;
+  code: string;
+  status: BatchStatusName;
+  siteName: string;
+  recipeName: string;
+  versionNumber: number;
+  plannedQuantity: string;
+  actualQuantity: string | null;
+  unitCode: string;
+  producedOn: Date | null;
+  createdAt: Date;
+};
+
+export type ProductionBatchInputRecord = {
+  id: string;
+  lotId: string;
+  lotNumber: string;
+  itemId: string;
+  itemName: string;
+  unitCode: string;
+  quantity: string;
+  theoreticalQuantity: string | null;
+  unitCost: string;
+};
+
+export type ProductionBatchOutputRecord = {
+  id: string;
+  lotId: string | null;
+  lotNumber: string | null;
+  itemId: string;
+  itemName: string;
+  quantity: string;
+  unitCode: string;
+  isPrimary: boolean;
+  costPerUnit: string | null;
+};
+
+export type ProductionBatchDetailRecord = ProductionBatchSummaryRecord & {
+  siteId: string;
+  recipeId: string;
+  recipeVersionId: string;
+  recipeVersionNumber: number;
+  recipeYieldQuantity: string;
+  recipeYieldUnitId: string;
+  recipeYieldUnitCode: string;
+  recipeYieldUnitKind: string;
+  recipeYieldUnitFactorToBase: string;
+  outputItemId: string;
+  outputItemName: string;
+  outputSalePrice: string | null;
+  outputStockUnitId: string;
+  outputStockUnitCode: string;
+  outputStockUnitKind: string;
+  outputStockUnitFactorToBase: string;
+  outputShelfLifeDays: number | null;
+  unitId: string;
+  unitKind: string;
+  unitFactorToBase: string;
+  plannedStartAt: Date | null;
+  startedAt: Date | null;
+  completedAt: Date | null;
+  note: string | null;
+  inputs: ProductionBatchInputRecord[];
+  outputs: ProductionBatchOutputRecord[];
+  recipeLines: RecipeLineRecord[];
+  recipeOperations: RecipeOperationRecord[];
+  cost: RecipeCostRecord | null;
+};
+
+export type ProductionOptions = {
+  recipes: {
+    recipeId: string;
+    recipeVersionId: string;
+    name: string;
+    versionNumber: number;
+    outputItemName: string;
+    yieldUnitId: string;
+    yieldUnitCode: string;
+  }[];
+  sites: {id: string; name: string; code: string}[];
+};
+
+export type WasteRecordSummary = {
+  id: string;
+  itemName: string;
+  lotNumber: string;
+  quantity: string;
+  unitCode: string;
+  costImpact: string;
+  currency: string;
+  reasonLabel: string;
+  recordedAt: Date;
+  isArchived: boolean;
+};
+
+export type WasteOptions = {
+  lots: {
+    id: string;
+    lotNumber: string;
+    itemName: string;
+    unitId: string;
+    unitCode: string;
+    quantityRemaining: string;
+    unitCost: string;
+    currency: string;
+  }[];
+  lossReasons: {id: string; labelEn: string; labelFr: string}[];
+};
+
+export type LotTraceRecord = {
+  lotId: string;
+  lotNumber: string;
+  source: {type: "RECEIPT" | "BATCH" | "UNKNOWN"; label: string} | null;
+  sourceLots: {
+    lotNumber: string;
+    itemName: string;
+    supplierLotNumber: string | null;
+  }[];
+  consumedBy: {
+    batchId: string;
+    batchCode: string;
+    outputs: {lotNumber: string; itemName: string}[];
+  }[];
+};

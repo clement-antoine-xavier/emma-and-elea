@@ -1237,6 +1237,15 @@
         "ADJUSTMENT": "Ajustement",
         "COUNT": "Inventaire"
       }
+    },
+    "trace": {
+      "title": "Traçabilité",
+      "intro": "Origine de ce lot et lots de production qui l’ont consommé.",
+      "source": "Origine",
+      "sourceLots": "Lots d’origine",
+      "consumedBy": "Consommé par",
+      "none": "Aucun enregistrement",
+      "unknownSource": "Origine inconnue"
     }
   },
   "Recipes": {
@@ -1424,6 +1433,129 @@
       "operationNameRequired": "Saisissez un nom d’opération.",
       "durationInvalid": "Saisissez une durée en minutes entières.",
       "activeMinutesInvalid": "Saisissez des minutes actives entre 0 et la durée."
+    }
+  },
+  "Production": {
+    "metadataTitle": "Production · Emma & Éléa",
+    "title": "Production",
+    "intro": "Lots de fabrication, lots consommés et traçabilité associée.",
+    "wasteLink": "Pertes",
+    "recipesLink": "Recettes",
+    "backToProduction": "Retour à la production",
+    "createTitle": "Planifier un lot",
+    "createIntro": "Un lot de fabrication fige la version publiée utilisée pour son coût et ses entrées.",
+    "errorTitle": "Impossible de mettre à jour la production",
+    "submit": "Planifier le lot",
+    "listTitle": "Lots de fabrication",
+    "emptyTitle": "Aucun lot",
+    "emptyBody": "Publiez une recette, puis planifiez son premier lot.",
+    "open": "Ouvrir",
+    "noRecipeTitle": "Aucune recette publiée",
+    "noRecipeBody": "Publiez une version de recette avant de planifier un lot.",
+    "fields": {
+      "recipe": "Version de recette",
+      "site": "Site",
+      "plannedQuantity": "Quantité prévue",
+      "plannedStartAt": "Début prévu",
+      "note": "Note",
+      "outputItem": "Article produit",
+      "recipeYield": "Rendement de la recette",
+      "plannedStart": "Prévu",
+      "producedOn": "Produit le"
+    },
+    "columns": {
+      "code": "Lot",
+      "recipe": "Recette et site",
+      "status": "Statut",
+      "planned": "Prévu",
+      "actual": "Réel",
+      "producedOn": "Produit le"
+    },
+    "statuses": {
+      "PLANNED": "Planifié",
+      "IN_PROGRESS": "En cours",
+      "COMPLETED": "Terminé",
+      "CANCELLED": "Annulé"
+    },
+    "actions": {
+      "errorTitle": "Impossible de mettre à jour le lot",
+      "start": "Démarrer le lot",
+      "cancel": "Annuler le lot",
+      "completeTitle": "Terminer le lot",
+      "completeIntro": "Les entrées sont allouées en FEFO parmi les lots disponibles du site. La clôture crée le lot de sortie et l’instantané de coût.",
+      "completeErrorTitle": "Impossible de terminer le lot",
+      "complete": "Terminer le lot",
+      "fields": {
+        "actualQuantity": "Quantité réelle",
+        "producedOn": "Produit le"
+      },
+      "cancelTitle": "Annuler ce lot ?",
+      "cancelBody": "Le lot reste enregistré comme annulé et ne consomme aucun stock.",
+      "cancelConfirm": "Annuler le lot",
+      "back": "Conserver le lot"
+    },
+    "inputs": {
+      "title": "Lots consommés",
+      "intro": "Chaque ligne est un lot réel consommé par le lot de fabrication, à son coût de réception.",
+      "columns": {
+        "lot": "Lot",
+        "item": "Article",
+        "quantity": "Quantité",
+        "unitCost": "Coût unitaire"
+      }
+    },
+    "outputs": {
+      "title": "Sortie",
+      "intro": "Le lot de fabrication crée un lot fini principal.",
+      "primary": "Principal",
+      "columns": {
+        "lot": "Lot",
+        "item": "Article",
+        "quantity": "Quantité",
+        "costPerUnit": "Coût unitaire"
+      }
+    },
+    "waste": {
+      "metadataTitle": "Pertes · Emma & Éla",
+      "title": "Pertes",
+      "intro": "Les pertes déclarées sont sorties d’un lot et inscrites au registre.",
+      "createTitle": "Enregistrer une perte",
+      "createIntro": "Archiver une ligne annule la perte avec un nouveau mouvement.",
+      "errorTitle": "Impossible de mettre à jour les pertes",
+      "chooseLot": "Choisir un lot",
+      "chooseReason": "Choisir un motif",
+      "submit": "Enregistrer la perte",
+      "listTitle": "Pertes enregistrées",
+      "emptyTitle": "Aucune perte",
+      "emptyBody": "Enregistrez ici les invendus, produits périmés ou abîmés.",
+      "archive": "Archiver",
+      "active": "Active",
+      "archived": "Annulée",
+      "fields": {
+        "lot": "Lot",
+        "reason": "Motif",
+        "quantity": "Quantité",
+        "recordedAt": "Date",
+        "note": "Note"
+      },
+      "columns": {
+        "date": "Date",
+        "item": "Article et lot",
+        "reason": "Motif",
+        "quantity": "Quantité",
+        "cost": "Coût",
+        "status": "Statut"
+      }
+    },
+    "validation": {
+      "siteRequired": "Choisissez un site.",
+      "recipeRequired": "Choisissez une version de recette publiée.",
+      "quantityInvalid": "Saisissez une quantité supérieure à zéro.",
+      "dateInvalid": "Choisissez une date valide.",
+      "noteTooLong": "La note est trop longue.",
+      "lotRequired": "Choisissez un lot.",
+      "reasonRequired": "Choisissez un motif de perte.",
+      "itemRequired": "Choisissez un article."
     }
   }
 }

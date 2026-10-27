@@ -1237,6 +1237,15 @@
         "ADJUSTMENT": "Adjustment",
         "COUNT": "Stock count"
       }
+    },
+    "trace": {
+      "title": "Traceability",
+      "intro": "Where this lot came from and which batches consumed it.",
+      "source": "Source",
+      "sourceLots": "Source lots",
+      "consumedBy": "Consumed by",
+      "none": "None recorded",
+      "unknownSource": "Unknown source"
     }
   },
   "Recipes": {
@@ -1424,6 +1433,129 @@
       "operationNameRequired": "Enter an operation name.",
       "durationInvalid": "Enter a duration in whole minutes.",
       "activeMinutesInvalid": "Enter active minutes between 0 and the duration."
+    }
+  },
+  "Production": {
+    "metadataTitle": "Production · Emma & Éléa",
+    "title": "Production",
+    "intro": "Batches, their consumed lots and the traceability they create.",
+    "wasteLink": "Waste",
+    "recipesLink": "Recipes",
+    "backToProduction": "Back to production",
+    "createTitle": "Plan a batch",
+    "createIntro": "A batch pins the published recipe version used for its cost and inputs.",
+    "errorTitle": "Could not update production",
+    "submit": "Plan batch",
+    "listTitle": "Batches",
+    "emptyTitle": "No batches yet",
+    "emptyBody": "Publish a recipe, then plan its first batch.",
+    "open": "Open",
+    "noRecipeTitle": "No published recipe",
+    "noRecipeBody": "Publish a recipe version before planning a batch.",
+    "fields": {
+      "recipe": "Recipe version",
+      "site": "Site",
+      "plannedQuantity": "Planned quantity",
+      "plannedStartAt": "Planned start",
+      "note": "Note",
+      "outputItem": "Output item",
+      "recipeYield": "Recipe yield",
+      "plannedStart": "Planned",
+      "producedOn": "Produced on"
+    },
+    "columns": {
+      "code": "Batch",
+      "recipe": "Recipe and site",
+      "status": "Status",
+      "planned": "Planned",
+      "actual": "Actual",
+      "producedOn": "Produced on"
+    },
+    "statuses": {
+      "PLANNED": "Planned",
+      "IN_PROGRESS": "In progress",
+      "COMPLETED": "Completed",
+      "CANCELLED": "Cancelled"
+    },
+    "actions": {
+      "errorTitle": "Could not update the batch",
+      "start": "Start batch",
+      "cancel": "Cancel batch",
+      "completeTitle": "Complete the batch",
+      "completeIntro": "Inputs are allocated FEFO from available lots at the batch site. Completion creates the output lot and the batch cost snapshot.",
+      "completeErrorTitle": "Could not complete the batch",
+      "complete": "Complete batch",
+      "fields": {
+        "actualQuantity": "Actual quantity",
+        "producedOn": "Produced on"
+      },
+      "cancelTitle": "Cancel this batch?",
+      "cancelBody": "The batch is kept as cancelled and consumes no stock.",
+      "cancelConfirm": "Cancel batch",
+      "back": "Keep the batch"
+    },
+    "inputs": {
+      "title": "Consumed lots",
+      "intro": "Each row is a real lot consumed by the batch, at its receipt cost.",
+      "columns": {
+        "lot": "Lot",
+        "item": "Item",
+        "quantity": "Quantity",
+        "unitCost": "Unit cost"
+      }
+    },
+    "outputs": {
+      "title": "Output",
+      "intro": "The batch creates one primary finished lot.",
+      "primary": "Primary",
+      "columns": {
+        "lot": "Lot",
+        "item": "Item",
+        "quantity": "Quantity",
+        "costPerUnit": "Cost per unit"
+      }
+    },
+    "waste": {
+      "metadataTitle": "Waste · Emma & Éléa",
+      "title": "Waste",
+      "intro": "Declared losses are written off against a lot and recorded in the ledger.",
+      "createTitle": "Record waste",
+      "createIntro": "Archiving a record reverses the loss with a new movement.",
+      "errorTitle": "Could not update waste",
+      "chooseLot": "Choose a lot",
+      "chooseReason": "Choose a reason",
+      "submit": "Record waste",
+      "listTitle": "Waste records",
+      "emptyTitle": "No waste recorded",
+      "emptyBody": "Record unsold, expired or damaged stock here.",
+      "archive": "Archive",
+      "active": "Active",
+      "archived": "Reversed",
+      "fields": {
+        "lot": "Lot",
+        "reason": "Reason",
+        "quantity": "Quantity",
+        "recordedAt": "Date",
+        "note": "Note"
+      },
+      "columns": {
+        "date": "Date",
+        "item": "Item and lot",
+        "reason": "Reason",
+        "quantity": "Quantity",
+        "cost": "Cost",
+        "status": "Status"
+      }
+    },
+    "validation": {
+      "siteRequired": "Choose a site.",
+      "recipeRequired": "Choose a published recipe version.",
+      "quantityInvalid": "Enter a quantity greater than zero.",
+      "dateInvalid": "Choose a valid date.",
+      "noteTooLong": "The note is too long.",
+      "lotRequired": "Choose a lot.",
+      "reasonRequired": "Choose a waste reason.",
+      "itemRequired": "Choose an item."
     }
   }
 }

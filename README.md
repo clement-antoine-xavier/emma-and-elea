@@ -53,7 +53,8 @@ items, categories and allergen declarations. `/dashboard/purchasing` manages
 suppliers and goods receipts; posting one creates its lots and stock movements,
 visible under `/dashboard/stock`. `/dashboard/recipes` manages versioned
 recipes, live cost previews and stored snapshots; publishing requires every
-price, rate and tariff to resolve.
+price, rate and tariff to resolve. `/dashboard/production` plans and completes
+batches, allocates lots FEFO, records waste and exposes lot traceability.
 
 ## Environment
 

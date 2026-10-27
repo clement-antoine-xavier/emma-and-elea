@@ -43,6 +43,8 @@ export type CostingLineInput = {
   isOptional: boolean;
   /** Price per base stock unit, or null when no supplier or receipt price exists. */
   unitCostPerStockUnit: string | null;
+  /** Set for a produced batch, where the exact consumed lot is known. */
+  lotId?: string | null;
 };
 
 export type CostingOperationInput = {
@@ -68,6 +70,7 @@ export type CostingInput = {
 export type CostLineDraft = {
   kind: CostLineKindName;
   itemId: string | null;
+  lotId: string | null;
   recipeOperationId: string | null;
   label: string;
   quantity: Decimal | null;
@@ -156,6 +159,7 @@ export function computeCosting(input: CostingInput): CostingResult {
     lines.push({
       kind: line.kind,
       itemId: line.itemId,
+      lotId: line.lotId ?? null,
       recipeOperationId: null,
       label: line.label,
       quantity: quantityWithLoss,
@@ -188,6 +192,7 @@ export function computeCosting(input: CostingInput): CostingResult {
       lines.push({
         kind: "LABOUR",
         itemId: null,
+        lotId: null,
         recipeOperationId: operation.recipeOperationId,
         label: operation.label,
         quantity: new Decimal(minutes),
@@ -223,6 +228,7 @@ export function computeCosting(input: CostingInput): CostingResult {
       lines.push({
         kind: "ENERGY",
         itemId: null,
+        lotId: null,
         recipeOperationId: operation.recipeOperationId,
         label: operation.label,
         quantity: new Decimal(operation.durationMinutes),
@@ -265,6 +271,7 @@ export function computeCosting(input: CostingInput): CostingResult {
   const overheadLine: CostLineDraft = {
     kind: "OVERHEAD",
     itemId: null,
+    lotId: null,
     recipeOperationId: null,
     label: `Overhead ${new Decimal(input.overheadPct).toString()}%`,
     quantity: null,

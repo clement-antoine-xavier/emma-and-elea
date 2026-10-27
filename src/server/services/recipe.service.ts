@@ -607,6 +607,7 @@ export function createRecipeService(deps: {
         lines: result.lines.map((line) => ({
           kind: line.kind,
           itemId: line.itemId,
+          lotId: line.lotId,
           recipeOperationId: line.recipeOperationId,
           label: line.label,
           quantity: line.quantity?.toString() ?? null,

@@ -51,6 +51,7 @@ export type RecipeOperationInput = {
 export type CostSnapshotLineInput = {
   kind: "MATERIAL" | "PACKAGING" | "LABOUR" | "ENERGY" | "OVERHEAD";
   itemId: string | null;
+  lotId: string | null;
   recipeOperationId: string | null;
   label: string;
   quantity: string | null;
@@ -828,6 +829,7 @@ export const recipeRepository: RecipeRepository = {
               organizationId,
               kind: line.kind,
               itemId: line.itemId,
+              lotId: line.lotId,
               recipeOperationId: line.recipeOperationId,
               label: line.label,
               quantity: line.quantity,
