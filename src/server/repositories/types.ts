@@ -1,3 +1,22 @@
+/**
+ * Repository DTOs are plain and serializable.
+ *
+ * Conventions (M0, ADR-0014):
+ * - Money and quantities are `Decimal` columns: repositories map them to
+ *   strings so Server Components can pass them to Client Components without a
+ *   precision loss. Formatting happens in `src/lib/format.ts`.
+ * - Instants stay `Date` inside the server. Pages convert them to ISO strings
+ *   at the boundary, as `TeamPage` does.
+ * - Tenant-scoped reads always receive the `organizationId` resolved from the
+ *   session.
+ */
+export type Page<T> = {
+  items: T[];
+  total: number;
+  page: number;
+  pageSize: number;
+};
+
 export type OrganizationSummary = {
   id: string;
   name: string;

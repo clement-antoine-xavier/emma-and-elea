@@ -21,15 +21,46 @@ function actorFor(role: OrgRole): OrganizationActor {
 describe("dashboard service", () => {
   const service = createDashboardService();
 
-  it("shows the team tab only to roles that can read members", () => {
-    expect(service.getNavigation(actorFor("owner")).items).toContain("team");
-    expect(service.getNavigation(actorFor("admin")).items).toContain("team");
-    expect(
-      service.getNavigation(actorFor("production_manager")).items,
-    ).not.toContain("team");
+  it("gives an owner every workspace route", () => {
+    expect(service.getNavigation(actorFor("owner")).items).toEqual([
+      "overview",
+      "production",
+      "recipes",
+      "stock",
+      "catalog",
+      "purchasing",
+      "sales",
+      "reports",
+      "team",
+      "settings",
+    ]);
+  });
+
+  it("filters the rail by permission for staff", () => {
     expect(service.getNavigation(actorFor("staff")).items).toEqual([
       "overview",
+      "production",
+      "recipes",
+      "stock",
+      "catalog",
+      "settings",
     ]);
+  });
+
+  it("shows purchasing read access but not member management to production managers", () => {
+    const items = service.getNavigation(actorFor("production_manager")).items;
+
+    expect(items).toContain("production");
+    expect(items).toContain("purchasing");
+    expect(items).toContain("reports");
+    expect(items).not.toContain("team");
+  });
+
+  it("keeps member management away from stock and sales roles", () => {
+    expect(service.getNavigation(actorFor("stock_manager")).items).not.toContain(
+      "team",
+    );
+    expect(service.getNavigation(actorFor("sales")).items).not.toContain("team");
   });
 
   it("marks an area as manage only when the role can write it", () => {

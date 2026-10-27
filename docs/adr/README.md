@@ -22,6 +22,7 @@ decision.
 | [0011](0011-model-organization-roles-and-permissions.md) | Model organization roles and permissions in code | Accepted | 2026-10-26 |
 | [0012](0012-layer-the-backend.md) | Layer the backend into services and repositories | Accepted | 2026-10-26 |
 | [0013](0013-use-cookie-based-locale-without-url-prefixes.md) | Use a locale cookie without URL prefixes | Accepted | 2026-10-27 |
+| [0014](0014-post-ledger-changes-in-one-transaction.md) | Post ledger changes as one repository transaction | Accepted | 2026-10-27 |
 
 ## Creating a new ADR
 

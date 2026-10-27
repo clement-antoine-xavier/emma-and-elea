@@ -352,8 +352,22 @@
     "nav": {
       "label": "Workspace navigation",
       "overview": "Overview",
+      "production": "Production",
+      "recipes": "Recipes",
+      "stock": "Stock",
+      "catalog": "Catalog",
+      "purchasing": "Purchasing",
+      "sales": "Sales",
+      "reports": "Reports",
       "team": "Team",
-      "account": "Account"
+      "settings": "Settings",
+      "account": "Account",
+      "sections": {
+        "operations": "Operations",
+        "supply": "Catalog and purchasing",
+        "business": "Business",
+        "organization": "Organization"
+      }
     },
     "overview": {
       "eyebrow": "Workspace",
@@ -447,5 +461,44 @@
     "wrongAccount": "This invitation was sent to {email}. Sign in with that address.",
     "error": "Could not accept the invitation.",
     "wrongAccountGeneric": "Sign in with the email address that received the invitation."
+  },
+  "Workspace": {
+    "metadataTitle": "{area} · Emma & Éléa",
+    "emptyTitle": "This area is being prepared",
+    "emptyBody": "You already have access here. The tools for this area will appear in an upcoming release.",
+    "pages": {
+      "catalog": {
+        "title": "Catalog",
+        "intro": "Items, categories and allergens, from raw materials to finished products."
+      },
+      "recipes": {
+        "title": "Recipes",
+        "intro": "Technique sheets, versions and the cost of every product."
+      },
+      "production": {
+        "title": "Production",
+        "intro": "What the workshop makes today, batch by batch."
+      },
+      "stock": {
+        "title": "Stock",
+        "intro": "Lots, movements, expiry dates and traceability."
+      },
+      "purchasing": {
+        "title": "Purchasing",
+        "intro": "Suppliers, prices and goods receipts."
+      },
+      "sales": {
+        "title": "Sales",
+        "intro": "Customers, orders, dispatches and daily sales."
+      },
+      "reports": {
+        "title": "Reports",
+        "intro": "Margins, waste and stock alerts."
+      },
+      "settings": {
+        "title": "Settings",
+        "intro": "Your business, sites, rates and equipment."
+      }
+    }
   }
 }

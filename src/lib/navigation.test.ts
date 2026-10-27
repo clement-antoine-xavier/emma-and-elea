@@ -1,4 +1,15 @@
-import {safeNextPath} from "@/lib/navigation";
+import {dashboardHref, safeNextPath} from "@/lib/navigation";
+
+describe("dashboardHref", () => {
+  it("maps the overview to the dashboard root", () => {
+    expect(dashboardHref("overview")).toBe("/dashboard");
+  });
+
+  it("maps every other workspace area to a dashboard route", () => {
+    expect(dashboardHref("catalog")).toBe("/dashboard/catalog");
+    expect(dashboardHref("settings")).toBe("/dashboard/settings");
+  });
+});
 
 describe("safeNextPath", () => {
   it("keeps a relative path", () => {

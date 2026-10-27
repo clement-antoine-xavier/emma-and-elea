@@ -32,8 +32,10 @@ export default defineConfig({
     // CI already ran `npm run build`; use the production server so the first
     // sign-up does not wait for Next.js to compile routes on demand.
     command: isCI ? "npm run start:standalone" : "npm run dev",
-    // Production rate limiting would reject the suite's several sign-ups.
-    env: isCI ? {E2E_DISABLE_AUTH_RATE_LIMIT: "true"} : {},
+    // The suite creates several accounts in one run, so the server it starts
+    // must not rate-limit auth. A server you started yourself keeps its own
+    // settings; restart it with the same variable to reproduce CI locally.
+    env: {E2E_DISABLE_AUTH_RATE_LIMIT: "true"},
     url: "http://localhost:3000",
     reuseExistingServer: !isCI,
     timeout: 120_000,

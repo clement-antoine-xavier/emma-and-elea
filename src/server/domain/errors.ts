@@ -3,6 +3,7 @@
  * into form errors, redirects, or HTTP status codes.
  */
 export type DomainErrorCode =
+  // Identity, tenancy and people (ADR-0012).
   | "FORBIDDEN"
   | "NOT_FOUND"
   | "CONFLICT"
@@ -16,6 +17,21 @@ export type DomainErrorCode =
   | "INVITATION_EXPIRED"
   | "INVITATION_NOT_PENDING"
   | "WRONG_ACCOUNT"
+  // Reference data and catalogue.
+  | "INVALID_UNIT"
+  | "DUPLICATE_CODE"
+  | "DUPLICATE_NUMBER"
+  | "ARCHIVED"
+  // Recipes and costing.
+  | "IMMUTABLE_VERSION"
+  | "INVALID_RECIPE_OUTPUT"
+  | "RECIPE_CYCLE"
+  | "MISSING_PRICE"
+  // Ledger, production and commercial.
+  | "INSUFFICIENT_STOCK"
+  | "INVALID_STATE_TRANSITION"
+  | "INVALID_QUANTITY"
+  | "UNBALANCED_POSTING"
   | "UNEXPECTED";
 
 export class DomainError extends Error {

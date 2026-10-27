@@ -43,6 +43,7 @@ Layered: entry point → service → repository → Prisma. See ADR-0012.
 - `npx skills list` — list installed skills.
 - `npm run db:migrate` — create and apply a Prisma migration.
 - `npm run db:generate` — regenerate the Prisma client.
+- `npm run db:seed` — add idempotent demo data to one organization (`-- --org=<slug>` when several exist).
 - `npm run db:studio` — open Prisma Studio.
 - `npm run auth:generate` — add/refresh Better Auth models in the Prisma schema.
 - `npm run auth:create-admin -- --email … --password … --name …` — create an admin user.

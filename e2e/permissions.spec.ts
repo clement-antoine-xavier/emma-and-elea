@@ -34,6 +34,12 @@ test("an owner invites staff, and staff cannot reach team management", async ({
   await page.getByRole("button", { name: "Create workspace" }).click();
   await expect(page).toHaveURL(/\/dashboard$/);
 
+  // The owner sees every workspace section.
+  await expect(page.getByRole("link", { name: "Production" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Purchasing" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Reports" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Settings" })).toBeVisible();
+
   // The owner sees the Team tab and invites a staff member.
   await page.getByRole("link", { name: "Team" }).click();
   await expect(page).toHaveURL(/\/dashboard\/team$/);
@@ -71,6 +77,9 @@ test("an owner invites staff, and staff cannot reach team management", async ({
   ).toBeVisible();
   await expect(page.getByText("Staff").first()).toBeVisible();
   await expect(page.getByRole("link", { name: "Team" })).toHaveCount(0);
+  await expect(page.getByRole("link", { name: "Purchasing" })).toHaveCount(0);
+  await expect(page.getByRole("link", { name: "Reports" })).toHaveCount(0);
+  await expect(page.getByRole("link", { name: "Production" })).toBeVisible();
   await expect(page.getByText("Costs and margins")).toHaveCount(0);
 
   // Direct navigation to a guarded route is refused by the server. Cache

@@ -19,6 +19,7 @@
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:deploy": "prisma migrate deploy",
+    "db:seed": "tsx prisma/seed.ts",
     "db:studio": "prisma studio",
     "auth:generate": "auth generate --config src/lib/auth.ts --output prisma/schema.prisma --yes",
     "auth:create-admin": "auth create-admin --config src/lib/auth.ts",
@@ -65,6 +66,7 @@
     "jest-environment-jsdom": "^30.5.2",
     "prisma": "^7.10.1",
     "ts-node": "^10.9.2",
+    "tsx": "^4.23.15",
     "typescript": "^5"
   },
   "allowScripts": {

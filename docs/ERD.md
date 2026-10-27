@@ -797,7 +797,7 @@ Physical inventory session.
 - A `NULL` `lotId` means an item-level count, not a lot count; the application
   permits at most one such row per item and session.
 - Posting a count writes one `COUNT` movement per non-zero variance;
-  `src/lib/stock-count.ts` builds those drafts and is unit-tested.
+  `src/server/domain/stock-count.ts` builds those drafts and is unit-tested.
 
 ## Production
 
@@ -1354,7 +1354,7 @@ future trigger could promote.
 | 3 | A recipe has at most one `PUBLISHED` version. | DB (partial unique index) |
 | 4 | A `PUBLISHED` version's lines and operations cannot change; editing creates a new draft. | DB (permission) + app |
 | 5 | `Item.stockUnitId` references a `Unit` with `isBase = true`. | app |
-| 6 | Every quantity and unit pair uses units of the same `UnitKind`; conversion goes through `factorToBase`. | app (`src/lib/units.ts`) |
+| 6 | Every quantity and unit pair uses units of the same `UnitKind`; conversion goes through `factorToBase`. | app (`src/server/domain/units.ts`) |
 | 7 | `Lot.quantityRemaining` equals the sum of its `StockMovement.quantity`. | DB (reconciliation query) + app |
 | 8 | `Lot.quantityRemaining` never goes below zero. | DB (`CHECK`) + app |
 | 9 | Every change to a lot quantity has a matching `StockMovement` in the same transaction. | app |
@@ -1475,12 +1475,12 @@ landed in `20261026193803_add_stock_counts`.
    `databaseHooks.organization` does not work: the organization plugin writes
    the row through the raw adapter and bypasses database hooks. Covered by
    `e2e/organization.spec.ts`.
-5. Unit conversion lives in `src/lib/units.ts`; `assertBaseUnit` enforces that
-   an item stocks in the base unit of its kind, and `convertQuantity` refuses
-   cross-kind conversions. Ad-hoc `factorToBase` arithmetic elsewhere is
-   forbidden.
+5. Unit conversion lives in `src/server/domain/units.ts`; `assertBaseUnit`
+   enforces that an item stocks in the base unit of its kind, and
+   `convertQuantity` refuses cross-kind conversions. Ad-hoc `factorToBase`
+   arithmetic elsewhere is forbidden.
 6. Add composite indexes in the same migration as new tables; the recall and
    expiry queries are the ones that will grow.
-7. Posting an inventory session uses `src/lib/stock-count.ts`:
+7. Posting an inventory session uses `src/server/domain/stock-count.ts`:
    `computeVariance` and `countMovements` produce the signed `COUNT` movements
    and skip zero variances. The service that persists them does not exist yet.

@@ -1,8 +1,9 @@
 import {can, type Permission} from "@/lib/permissions";
+import type {DashboardNavItem} from "@/lib/navigation";
 import {assertOrganizationActor} from "@/server/auth/guards";
 import type {Actor} from "@/server/auth/types";
 
-export type DashboardNavItem = "overview" | "team";
+export type {DashboardNavItem};
 
 export type DashboardAreaKey =
   | "catalog"
@@ -18,6 +19,22 @@ export type DashboardArea = {
   key: DashboardAreaKey;
   access: "manage" | "view";
 };
+
+const navItems: ReadonlyArray<{
+  key: DashboardNavItem;
+  read: Permission;
+}> = [
+  {key: "overview", read: "organization:read"},
+  {key: "production", read: "production:read"},
+  {key: "recipes", read: "recipe:read"},
+  {key: "stock", read: "stock:read"},
+  {key: "catalog", read: "catalog:read"},
+  {key: "purchasing", read: "purchasing:read"},
+  {key: "sales", read: "order:read"},
+  {key: "reports", read: "report:read"},
+  {key: "team", read: "member:read"},
+  {key: "settings", read: "organization:read"},
+];
 
 const areas: ReadonlyArray<{
   key: DashboardAreaKey;
@@ -43,11 +60,12 @@ export function createDashboardService(): DashboardService {
   return {
     getNavigation(actorInput) {
       const actor = assertOrganizationActor(actorInput);
-      const items: DashboardNavItem[] = ["overview"];
 
-      if (can(actor.role, "member:read")) items.push("team");
-
-      return {items};
+      return {
+        items: navItems
+          .filter((item) => can(actor.role, item.read))
+          .map((item) => item.key),
+      };
     },
 
     getOverview(actorInput) {

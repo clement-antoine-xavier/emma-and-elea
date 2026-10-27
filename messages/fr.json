@@ -352,8 +352,22 @@
     "nav": {
       "label": "Navigation de l’espace",
       "overview": "Vue d’ensemble",
+      "production": "Production",
+      "recipes": "Recettes",
+      "stock": "Stock",
+      "catalog": "Catalogue",
+      "purchasing": "Achats",
+      "sales": "Ventes",
+      "reports": "Rapports",
       "team": "Équipe",
-      "account": "Compte"
+      "settings": "Paramètres",
+      "account": "Compte",
+      "sections": {
+        "operations": "Opérations",
+        "supply": "Catalogue et achats",
+        "business": "Activité",
+        "organization": "Organisation"
+      }
     },
     "overview": {
       "eyebrow": "Espace de travail",
@@ -447,5 +461,44 @@
     "wrongAccount": "Cette invitation a été envoyée à {email}. Connectez-vous avec cette adresse.",
     "error": "Impossible d’accepter l’invitation.",
     "wrongAccountGeneric": "Connectez-vous avec l’adresse e-mail qui a reçu l’invitation."
+  },
+  "Workspace": {
+    "metadataTitle": "{area} · Emma & Éléa",
+    "emptyTitle": "Cet espace est en préparation",
+    "emptyBody": "Vous y avez déjà accès. Les outils de cet espace arriveront dans une prochaine version.",
+    "pages": {
+      "catalog": {
+        "title": "Catalogue",
+        "intro": "Articles, catégories et allergènes, de la matière première au produit fini."
+      },
+      "recipes": {
+        "title": "Recettes",
+        "intro": "Fiches techniques, versions et coût de revient de chaque produit."
+      },
+      "production": {
+        "title": "Production",
+        "intro": "Ce que l’atelier fabrique aujourd’hui, lot par lot."
+      },
+      "stock": {
+        "title": "Stock",
+        "intro": "Lots, mouvements, dates limites et traçabilité."
+      },
+      "purchasing": {
+        "title": "Achats",
+        "intro": "Fournisseurs, prix et réceptions de marchandises."
+      },
+      "sales": {
+        "title": "Ventes",
+        "intro": "Clients, commandes, expéditions et ventes quotidiennes."
+      },
+      "reports": {
+        "title": "Rapports",
+        "intro": "Marges, pertes et alertes de stock."
+      },
+      "settings": {
+        "title": "Paramètres",
+        "intro": "Votre entreprise, vos sites, vos taux et vos équipements."
+      }
+    }
   }
 }
