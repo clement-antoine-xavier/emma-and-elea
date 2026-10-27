@@ -83,6 +83,8 @@ The implementation uses:
 
 ## Links
 
+- [ADR-0019](0019-test-the-layers.md) extends this decision with repository
+  integration tests against the same PostgreSQL database.
 - [Jest configuration](../../jest.config.ts)
 - [Jest setup](../../jest.setup.ts)
 - [Playwright configuration](../../playwright.config.ts)

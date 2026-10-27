@@ -196,6 +196,47 @@ test("an order dispatch consumes lots and reports leave daily sales untouched", 
   expect(Number(facts.dispatchMovement)).toBe(-1);
   expect(facts.dailySalesCount).toBe(0);
 
+  // A draft order can be cancelled before preparation.
+  await page.getByRole("link", { name: "Sales", exact: true }).click();
+  const cancelOrderForm = page
+    .locator("form")
+    .filter({ has: page.getByRole("button", { name: "Create draft order" }) });
+  await pickOption(
+    page,
+    cancelOrderForm.getByRole("combobox", { name: "Customer" }),
+    /SALCLI/,
+  );
+  await page.getByRole("button", { name: "Create draft order" }).click();
+  await expect(page).toHaveURL(/\/dashboard\/sales\/orders\//);
+  await page.getByRole("button", { name: "Cancel order" }).click();
+  await page
+    .getByRole("alertdialog")
+    .getByRole("button", { name: "Cancel order" })
+    .click();
+  await expect(page.getByText("Cancelled").first()).toBeVisible();
+
+  // A draft dispatch can be cancelled without touching stock.
+  await page.getByRole("link", { name: "Sales", exact: true }).click();
+  await page.getByRole("link", { name: "Dispatches" }).click();
+  const cancelDispatchForm = page
+    .locator("form")
+    .filter({
+      has: page.getByRole("button", { name: "Create draft dispatch" }),
+    });
+  await pickOption(
+    page,
+    cancelDispatchForm.getByRole("combobox", { name: "Customer" }),
+    /SALCLI/,
+  );
+  await page.getByRole("button", { name: "Create draft dispatch" }).click();
+  await expect(page).toHaveURL(/\/dashboard\/sales\/dispatches\//);
+  await page.getByRole("button", { name: "Cancel dispatch" }).click();
+  await page
+    .getByRole("alertdialog")
+    .getByRole("button", { name: "Cancel dispatch" })
+    .click();
+  await expect(page.getByText("Cancelled").first()).toBeVisible();
+
   // Daily sales are entered separately and feed the reports.
   await page.getByRole("link", { name: "Sales", exact: true }).click();
   await page.getByRole("link", { name: "Daily sales" }).click();

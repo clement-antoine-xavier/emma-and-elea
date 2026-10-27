@@ -238,4 +238,47 @@ describe("team service", () => {
       "FORBIDDEN",
     );
   });
+
+  it("reports a missing member or invitation", async () => {
+    const deps = makeDeps();
+
+    await expectDomainError(
+      deps.service.removeMember(
+        actorFor("owner"),
+        {memberId: "missing"},
+        deps.headers,
+      ),
+      "NOT_FOUND",
+    );
+    await expectDomainError(
+      deps.service.cancelInvitation(
+        actorFor("owner"),
+        {invitationId: "missing"},
+        deps.headers,
+      ),
+      "NOT_FOUND",
+    );
+  });
+
+  it("cancels a pending invitation through the gateway", async () => {
+    const deps = makeDeps();
+    deps.invitationRepository.findPendingInOrganization = jest.fn(async () => ({
+      id: "invitation_1",
+      email: "staff@example.com",
+      role: "staff",
+      expiresAt: new Date("2099-11-02T00:00:00.000Z"),
+    }));
+
+    await expect(
+      deps.service.cancelInvitation(
+        actorFor("owner"),
+        {invitationId: "invitation_1"},
+        deps.headers,
+      ),
+    ).resolves.toBeUndefined();
+    expect(deps.authGateway.cancelInvitation).toHaveBeenCalledWith(
+      "invitation_1",
+      deps.headers,
+    );
+  });
 });

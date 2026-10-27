@@ -165,8 +165,10 @@ is maintained in-repo and should be reviewed by a French speaker.
 ## Testing
 
 ```bash
-npm test          # Jest unit and component tests
-npm run test:e2e  # Playwright E2E against PostgreSQL
+npm test                  # Jest unit and component tests
+npm run test:coverage     # Unit tests with the coverage report and thresholds
+npm run test:integration  # Repository tests against the real PostgreSQL
+npm run test:e2e          # Playwright E2E against PostgreSQL
 ```
 
 Install the Playwright browser once:
@@ -175,7 +177,13 @@ Install the Playwright browser once:
 npx playwright install chromium
 ```
 
-E2E tests use the `DATABASE_URL` from `.env`, run against the dev server at `http://localhost:3000`, create unique `e2e-*@example.com` users, verify them in PostgreSQL, and delete them afterward.
+Integration suites (`*.integration.test.ts`) create their own organization and
+user with a random suffix, build fixtures through Prisma, and delete only those
+rows. They never truncate the database, so they are safe against a development
+database. Start PostgreSQL with `docker compose up -d postgres` and apply
+migrations with `npm run db:deploy` before running them.
+
+E2E tests use the `DATABASE_URL` from `.env`, run against the dev server at `http://localhost:3000`, create unique `e2e-*@example.com` users, verify them in PostgreSQL, and delete them afterward. The suite covers full feature flows plus catalog/settings editing and archiving, team edits, tenant isolation, signed-out redirects, 404s and the translated dashboard.
 
 ## Docker
 
@@ -211,7 +219,8 @@ Image tags are `main`, `latest`, `sha-<short>`, and semver tags from `v*` releas
 ```bash
 npm run typecheck
 npm run lint
-npm test
+npm run test:coverage
+npm run test:integration
 npm run test:e2e
 npm run astryx -- doctor
 docker compose config

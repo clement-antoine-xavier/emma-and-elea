@@ -21,6 +21,44 @@ async function withClient<T>(callback: (client: Client) => Promise<T>) {
   }
 }
 
+/**
+ * Insert simple raw materials straight into the tenant. Used to test list
+ * pagination without clicking through 25 create forms.
+ */
+export async function seedItems(
+  slug: string,
+  count: number,
+  prefix = "Seed item",
+): Promise<string[]> {
+  return withClient(async (client) => {
+    const organization = await client.query(
+      'SELECT id FROM "organization" WHERE slug = $1',
+      [slug],
+    );
+    const organizationId = organization.rows[0]?.id as string | undefined;
+    if (!organizationId) {
+      throw new Error(`No organization with slug "${slug}"`);
+    }
+
+    const ids: string[] = [];
+    for (let index = 0; index < count; index += 1) {
+      const id = `e2e-item-${Date.now()}-${index}`;
+      await client.query(
+        `INSERT INTO "item"
+           ("id", "organizationId", "code", "name", "type", "stockUnitId",
+            "vatRate", "defaultChannel", "isPurchasable", "isProduced",
+            "isSellable", "createdAt", "updatedAt")
+         VALUES ($1, $2, $3, $4, 'RAW_MATERIAL', 'unit_kg',
+                 5.50, 'NONE', true, false, false, now(), now())`,
+        [id, organizationId, `SEED-${index}`, `${prefix} ${String(index).padStart(2, "0")}`],
+      );
+      ids.push(id);
+    }
+
+    return ids;
+  });
+}
+
 export async function deleteE2EUsers() {
   await withClient((client) =>
     client.query(`DELETE FROM "user" WHERE email LIKE 'e2e-%@example.com'`),

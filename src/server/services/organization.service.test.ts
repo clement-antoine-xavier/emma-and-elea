@@ -106,4 +106,24 @@ describe("organization service", () => {
       }),
     ).toEqual({hasOrganization: true});
   });
+
+  it("keeps the workspace when the first-site bootstrap fails", async () => {
+    const {service, bootstrapService, headers} = makeService();
+    const consoleError = jest
+      .spyOn(console, "error")
+      .mockImplementation(() => {});
+    (bootstrapService.bootstrapOrganization as jest.Mock).mockRejectedValue(
+      new Error("settings unavailable"),
+    );
+
+    await expect(
+      service.createOrganization(actor, input, headers),
+    ).resolves.toEqual({id: "org_1", name: "Bakery", slug: "bakery"});
+    expect(consoleError).toHaveBeenCalledWith(
+      expect.stringContaining("Failed to create the first site"),
+      expect.any(Error),
+    );
+
+    consoleError.mockRestore();
+  });
 });

@@ -93,7 +93,11 @@ export function createCustomerService(deps: {
       const actor = assertOrganizationActor(actorInput);
       assertPermission(actor, "customer:write");
 
-      await deps.customerRepository.archive(actor.organizationId, id);
+      const archived = await deps.customerRepository.archive(
+        actor.organizationId,
+        id,
+      );
+      if (!archived) throw new DomainError("NOT_FOUND");
     },
   };
 }

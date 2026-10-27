@@ -339,3 +339,336 @@ describe("planning service", () => {
     ).rejects.toMatchObject({code: "INVALID_STATE_TRANSITION"});
   });
 });
+
+const plan = {
+  id: "plan_1",
+  siteId: "site_1",
+  siteName: "Atelier",
+  plannedFor: new Date("2026-10-28T00:00:00.000Z"),
+  status: "DRAFT" as const,
+  source: "MANUAL" as const,
+  lineCount: 1,
+  createdAt: new Date("2026-10-27T08:00:00.000Z"),
+  note: null,
+  lines: [
+    {
+      id: "line_1",
+      itemId: "item_1",
+      itemCode: "CRO",
+      itemName: "Croissant",
+      recipeId: "recipe_1",
+      recipeName: "Croissant",
+      orderId: null,
+      orderNumber: null,
+      customerName: null,
+      plannedQuantity: "5",
+      unitId: "unit_kg",
+      unitCode: "kg",
+      note: null,
+      batchId: null,
+      batchCode: null,
+    },
+  ],
+};
+
+const batchLine = {
+  planId: "plan_1",
+  planStatus: "CONFIRMED" as const,
+  siteId: "site_1",
+  plannedFor: new Date("2026-10-28T00:00:00.000Z"),
+  lineId: "line_1",
+  quantity: "1000",
+  unitKind: "MASS" as const,
+  unitFactorToBase: "1",
+  recipeId: "recipe_1",
+  recipeName: "Croissant",
+  recipeVersionId: "version_1",
+  recipeVersionStatus: "PUBLISHED",
+  yieldUnitId: "unit_g",
+  yieldUnitKind: "MASS" as const,
+  yieldUnitFactorToBase: "0.001",
+  batchId: null,
+  note: null,
+};
+
+describe("planning board and plan details", () => {
+  beforeEach(() => {
+    jest.useFakeTimers().setSystemTime(new Date("2026-10-27T12:00:00.000Z"));
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  it("defaults to the first site and tomorrow", async () => {
+    const planningService = service();
+
+    const result = await planningService.getBoard(actorFor("production_manager"), {});
+
+    expect(result.board.siteId).toBe("site_1");
+    expect(result.board.plannedFor).toEqual(
+      new Date("2026-10-28T00:00:00.000Z"),
+    );
+    expect(result.canWrite).toBe(true);
+    expect(result.options.sites).toEqual([
+      {id: "site_1", name: "Atelier", code: "ATL"},
+    ]);
+  });
+
+  it("honours a requested site and date", async () => {
+    const planningService = service();
+
+    const result = await planningService.getBoard(actorFor("production_manager"), {
+      siteId: "site_1",
+      date: "2026-11-05",
+    });
+
+    expect(result.board.plannedFor).toEqual(
+      new Date("2026-11-05T00:00:00.000Z"),
+    );
+  });
+
+  it("returns a plan with options or null", async () => {
+    const planningService = service({
+      planning: {findPlan: jest.fn().mockResolvedValue(plan)},
+    });
+
+    await expect(
+      planningService.getPlan(actorFor("production_manager"), "plan_1"),
+    ).resolves.toMatchObject({plan, canWrite: true});
+
+    const empty = service({
+      planning: {findPlan: jest.fn().mockResolvedValue(null)},
+    });
+    await expect(
+      empty.getPlan(actorFor("production_manager"), "missing"),
+    ).resolves.toBeNull();
+  });
+});
+
+describe("plan lines and state", () => {
+  it("adds a line using the forecast item recipe and stock unit", async () => {
+    const planning = planningRepository({
+      findPlan: jest.fn().mockResolvedValue(plan),
+    });
+    const planningService = createPlanningService({
+      planningRepository: planning,
+      forecastRepository: forecastRepository(),
+      stockRepository: stockRepository(),
+      productionRepository: productionRepository(),
+      settingsRepository: settingsRepository(),
+      siteRepository: siteRepository(),
+    });
+
+    await expect(
+      planningService.addLine(actorFor("production_manager"), "plan_1", {
+        itemId: "item_1",
+        quantity: "5",
+        note: null,
+      }),
+    ).resolves.toBeUndefined();
+    expect(planning.addLine).toHaveBeenCalledWith("org_1", "plan_1", {
+      itemId: "item_1",
+      recipeId: "recipe_1",
+      orderLineId: null,
+      plannedQuantity: "5",
+      unitId: "unit_kg",
+      note: null,
+    });
+  });
+
+  it("rejects a missing plan, an unknown item and a non-positive line", async () => {
+    const missingPlan = service({
+      planning: {findPlan: jest.fn().mockResolvedValue(null)},
+    });
+    await expect(
+      missingPlan.addLine(actorFor("production_manager"), "missing", {
+        itemId: "item_1",
+        quantity: "1",
+        note: null,
+      }),
+    ).rejects.toMatchObject({code: "NOT_FOUND"});
+
+    const unknownItem = service({
+      planning: {findPlan: jest.fn().mockResolvedValue(plan)},
+    });
+    await expect(
+      unknownItem.addLine(actorFor("production_manager"), "plan_1", {
+        itemId: "missing",
+        quantity: "1",
+        note: null,
+      }),
+    ).rejects.toMatchObject({code: "NOT_FOUND"});
+
+    await expect(
+      unknownItem.addLine(actorFor("production_manager"), "plan_1", {
+        itemId: "item_1",
+        quantity: "0",
+        note: null,
+      }),
+    ).rejects.toMatchObject({code: "INVALID_INPUT"});
+  });
+
+  it("updates and removes lines after checking the plan", async () => {
+    const planning = planningRepository({
+      findPlan: jest.fn().mockResolvedValue(plan),
+    });
+    const planningService = service({planning});
+
+    await expect(
+      planningService.updateLine(
+        actorFor("production_manager"),
+        "plan_1",
+        "line_1",
+        "6",
+      ),
+    ).resolves.toBeUndefined();
+    await expect(
+      planningService.removeLine(
+        actorFor("production_manager"),
+        "plan_1",
+        "line_1",
+      ),
+    ).resolves.toBeUndefined();
+    expect(planning.updateLine).toHaveBeenCalledWith(
+      "org_1",
+      "plan_1",
+      "line_1",
+      "6",
+    );
+
+    await expect(
+      planningService.updateLine(
+        actorFor("production_manager"),
+        "plan_1",
+        "line_1",
+        "0",
+      ),
+    ).rejects.toMatchObject({code: "INVALID_INPUT"});
+
+    const missing = service({
+      planning: {findPlan: jest.fn().mockResolvedValue(null)},
+    });
+    await expect(
+      missing.removeLine(actorFor("production_manager"), "missing", "line_1"),
+    ).rejects.toMatchObject({code: "NOT_FOUND"});
+  });
+
+  it("confirms only a draft plan with lines", async () => {
+    const planning = planningRepository({
+      findPlan: jest.fn().mockResolvedValue(plan),
+    });
+    const planningService = service({planning});
+
+    await expect(
+      planningService.confirmPlan(actorFor("production_manager"), "plan_1"),
+    ).resolves.toBeUndefined();
+    expect(planning.confirm).toHaveBeenCalledWith("org_1", "plan_1");
+
+    const empty = service({
+      planning: {
+        findPlan: jest.fn().mockResolvedValue({...plan, lines: []}),
+      },
+    });
+    await expect(
+      empty.confirmPlan(actorFor("production_manager"), "plan_1"),
+    ).rejects.toMatchObject({code: "INVALID_STATE_TRANSITION"});
+
+    const confirmed = service({
+      planning: {
+        findPlan: jest.fn().mockResolvedValue({...plan, status: "CONFIRMED"}),
+      },
+    });
+    await expect(
+      confirmed.confirmPlan(actorFor("production_manager"), "plan_1"),
+    ).rejects.toMatchObject({code: "INVALID_STATE_TRANSITION"});
+  });
+
+  it("closes and cancels a plan", async () => {
+    const planning = planningRepository();
+    const planningService = service({planning});
+
+    await expect(
+      planningService.closePlan(actorFor("production_manager"), "plan_1"),
+    ).resolves.toBeUndefined();
+    await expect(
+      planningService.cancelPlan(actorFor("production_manager"), "plan_1"),
+    ).resolves.toBeUndefined();
+    expect(planning.close).toHaveBeenCalledWith("org_1", "plan_1");
+    expect(planning.cancel).toHaveBeenCalledWith("org_1", "plan_1");
+  });
+});
+
+describe("plan line to batch", () => {
+  it("converts the planned quantity into the recipe yield unit", async () => {
+    const planning = planningRepository({
+      findLineForBatch: jest.fn().mockResolvedValue(batchLine),
+    });
+    const production = productionRepository();
+    const planningService = service({planning, production});
+
+    await expect(
+      planningService.createBatchFromLine(
+        actorFor("production_manager"),
+        "line_1",
+      ),
+    ).resolves.toEqual({batchId: "batch_1"});
+    expect(production.createBatch).toHaveBeenCalledWith("org_1", {
+      siteId: "site_1",
+      recipeVersionId: "version_1",
+      productionPlanLineId: "line_1",
+      plannedQuantity: "1000000",
+      unitId: "unit_g",
+      plannedStartAt: null,
+      note: null,
+    });
+  });
+
+  it("rejects a missing line, a draft plan or an already batched line", async () => {
+    const missing = service({
+      planning: {findLineForBatch: jest.fn().mockResolvedValue(null)},
+    });
+    await expect(
+      missing.createBatchFromLine(actorFor("production_manager"), "missing"),
+    ).rejects.toMatchObject({code: "NOT_FOUND"});
+
+    const draft = service({
+      planning: {
+        findLineForBatch: jest
+          .fn()
+          .mockResolvedValue({...batchLine, planStatus: "DRAFT"}),
+      },
+    });
+    await expect(
+      draft.createBatchFromLine(actorFor("production_manager"), "line_1"),
+    ).rejects.toMatchObject({code: "INVALID_STATE_TRANSITION"});
+
+    const batched = service({
+      planning: {
+        findLineForBatch: jest
+          .fn()
+          .mockResolvedValue({...batchLine, batchId: "batch_1"}),
+      },
+    });
+    await expect(
+      batched.createBatchFromLine(actorFor("production_manager"), "line_1"),
+    ).rejects.toMatchObject({code: "INVALID_STATE_TRANSITION"});
+  });
+
+  it("rejects a line whose recipe is not published", async () => {
+    const planningService = service({
+      planning: {
+        findLineForBatch: jest
+          .fn()
+          .mockResolvedValue({...batchLine, recipeVersionStatus: "DRAFT"}),
+      },
+    });
+
+    await expect(
+      planningService.createBatchFromLine(
+        actorFor("production_manager"),
+        "line_1",
+      ),
+    ).rejects.toMatchObject({code: "INVALID_STATE_TRANSITION"});
+  });
+});

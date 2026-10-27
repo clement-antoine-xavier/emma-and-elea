@@ -81,7 +81,10 @@ export function optionalIsoDateString(message: string) {
     .refine((value) => value === "" || isIsoDate(value), message);
 }
 
-const isoDateTimePattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2})?$/;
+// `new Date("...T24:00")` rolls over to the next day instead of failing, so
+// the hour and minute ranges are checked by the pattern itself.
+const isoDateTimePattern =
+  /^\d{4}-\d{2}-\d{2}T(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d)?$/;
 
 function isIsoDateTime(value: string): boolean {
   if (!isoDateTimePattern.test(value)) return false;

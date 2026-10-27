@@ -312,4 +312,33 @@ test("a completed batch consumes lots and creates a traceable output", async ({
       name: "24 kg",
     }),
   ).toBeVisible();
+
+  // Waste is written off against a lot and can be reversed.
+  await page.getByRole("link", { name: "Production", exact: true }).click();
+  await page.getByRole("link", { name: "Waste" }).click();
+  await expect(page).toHaveURL(/\/dashboard\/production\/waste$/);
+
+  const wasteForm = page
+    .locator("form")
+    .filter({ has: page.getByRole("button", { name: "Record waste" }) });
+  await pickOption(
+    page,
+    wasteForm.getByRole("combobox", { name: "Lot" }),
+    /Farine production/,
+  );
+  await pickOption(
+    page,
+    wasteForm.getByRole("combobox", { name: "Reason" }),
+    /Unsold goods/,
+  );
+  await wasteForm.getByLabel("Quantity").fill("1");
+  await page.getByRole("button", { name: "Record waste" }).click();
+
+  const wasteRow = page.getByRole("row", { name: /Farine production/ }).first();
+  await expect(wasteRow).toBeVisible();
+  await expect(wasteRow.getByText("1 kg").first()).toBeVisible();
+  await expect(wasteRow.getByText("Active")).toBeVisible();
+
+  await wasteRow.getByRole("button", { name: "Archive" }).click();
+  await expect(wasteRow.getByText("Reversed")).toBeVisible();
 });

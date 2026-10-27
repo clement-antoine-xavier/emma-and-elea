@@ -62,8 +62,21 @@ jobs:
       - name: Lint
         run: npm run lint
 
-      - name: Unit tests
-        run: npm test
+      - name: Unit and component tests with coverage
+        run: npm run test:coverage
+
+      - name: Repository integration tests
+        run: npm run test:integration
+
+      - name: Upload coverage report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7.0.2
+        with:
+          name: coverage
+          path: |
+            coverage/lcov.info
+            coverage/coverage-summary.json
+          retention-days: 3
 
       - name: Build
         run: npm run build

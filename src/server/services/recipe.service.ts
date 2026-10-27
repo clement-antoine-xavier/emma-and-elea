@@ -378,7 +378,14 @@ export function createRecipeService(deps: {
       const actor = assertOrganizationActor(actorInput);
       assertPermission(actor, "recipe:read");
 
-      const version = await requireVersion(actor.organizationId, versionId);
+      // The page turns a missing version into notFound(); returning null keeps
+      // that contract instead of surfacing a domain error as a 500.
+      const version = await deps.recipeRepository.findVersion(
+        actor.organizationId,
+        versionId,
+      );
+      if (!version) return null;
+
       const canReadCost = can(actor.role, "cost:read");
 
       if (canReadCost && version.status === "DRAFT") {

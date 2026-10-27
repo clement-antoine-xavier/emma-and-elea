@@ -38,6 +38,8 @@ Layered: entry point → service → repository → Prisma. See ADR-0012.
 - `npm run lint` — ESLint.
 - `npm run typecheck` — generate Next.js route types and typecheck.
 - `npm test` — Jest unit/component tests.
+- `npm run test:coverage` — unit/component tests with coverage and thresholds.
+- `npm run test:integration` — repository tests against real PostgreSQL.
 - `npm run test:e2e` — Playwright E2E tests (requires PostgreSQL).
 - `npm run astryx -- <command>` — Astryx CLI.
 - `npx skills list` — list installed skills.
@@ -109,12 +111,15 @@ All data input uses Zod for validation and React Hook Form for state.
 
 ## Testing
 
-- Jest + React Testing Library for unit/component tests: `npm test` (or `npm run test:watch`).
+- Jest + React Testing Library for unit/component tests: `npm test` (or `npm run test:watch`); use `npm run test:coverage` for the thresholded report.
+- Repository tests (`*.integration.test.ts`) run with `npm run test:integration` in a node environment against the real PostgreSQL. Each suite creates an isolated organization/user, builds fixtures through Prisma, and deletes only those rows; never truncate the database. `jest.integration.setup.ts` disconnects the pg pool, and the config forces a worker exit.
+- `jest.config.ts` measures coverage with `collectCoverageFrom` and global thresholds. Repositories are measured by the integration suite, not merged into the unit report. Generated Prisma, type-only DTOs, auth bootstrap files and route components are excluded.
 - Playwright for E2E: `npm run test:e2e` (or `npm run test:e2e:ui`). Locally it uses the dev server; CI builds once and runs the standalone server with auth rate limiting disabled for the suite.
-- E2E uses the real PostgreSQL at `DATABASE_URL`. `e2e/global-setup.ts` deletes stale `e2e-%@example.com` users; tests create unique users and delete them afterward.
+- E2E uses the real PostgreSQL at `DATABASE_URL`. `e2e/global-setup.ts` deletes stale `e2e-%@example.com` users; tests create unique users and delete them afterward. `e2e/helpers.ts` has `signUp`, `createWorkspace`, `signUpAndCreateWorkspace` and hydration/navigation helpers; `e2e/db.ts` has read helpers and `seedItems` for list pagination.
+- E2E covers full feature flows plus catalog/settings editing and archiving, team edits, stock counts and waste, order/dispatch cancellation, tenant isolation, 404/redirect handling and the French dashboard.
 - Keep the Playwright `baseURL` at `http://localhost:3000` to match `BETTER_AUTH_URL`.
 - Astryx is ESM; mock `@astryxdesign/core/*` in Jest component tests instead of importing the real package.
-- CI runs both suites in `.github/workflows/next.js.yml` against the PostgreSQL service.
+- CI runs `test:coverage` and `test:integration` in `.github/workflows/next.js.yml` against the PostgreSQL service, then builds and runs E2E. See ADR-0019 and `docs/testing/bug-hunt.md`.
 
 <!-- END:testing -->
 
