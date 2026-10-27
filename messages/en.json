@@ -569,6 +569,7 @@
       "invalidInput": "Check the highlighted fields.",
       "lastSite": "You cannot archive the last site.",
       "invalidUnit": "Choose a base stock unit and a compatible sale unit.",
+      "invalidState": "That action is not available in this state.",
       "generic": "Something went wrong. Please try again."
     },
     "validation": {
@@ -906,6 +907,7 @@
       "invalidUnit": "Choose a base stock unit and a compatible sale unit.",
       "invalidInput": "Check the highlighted fields.",
       "lastSite": "You cannot archive the last site.",
+      "invalidState": "That action is not available in this state.",
       "generic": "Something went wrong. Please try again."
     },
     "validation": {
@@ -928,6 +930,310 @@
       "allergenInvalid": "Choose an allergen.",
       "presenceInvalid": "Choose whether the item contains the allergen or may contain it.",
       "noteTooLong": "The note is too long."
+    }
+  },
+  "Common": {
+    "errors": {
+      "unauthenticated": "Your session has expired. Sign in again.",
+      "forbidden": "You are not allowed to do that.",
+      "notFound": "That record no longer exists.",
+      "conflict": "That change conflicts with existing data.",
+      "duplicateCode": "This code or name is already used.",
+      "invalidUnit": "Choose units that measure the same kind of quantity.",
+      "invalidInput": "Check the highlighted fields.",
+      "invalidState": "That action is not available in this state.",
+      "lastSite": "You cannot archive the last site.",
+      "generic": "Something went wrong. Please try again."
+    }
+  },
+  "Suppliers": {
+    "metadataTitle": "Suppliers · Emma & Éléa",
+    "title": "Suppliers",
+    "intro": "Suppliers of {organization}, their catalogue references and pack prices.",
+    "detailIntro": "Supplier {code}.",
+    "createTitle": "Add a supplier",
+    "createIntro": "Prices are recorded per pack, excluding VAT.",
+    "editTitle": "Supplier details",
+    "editIntro": "Supplier {code}.",
+    "saved": "Supplier saved.",
+    "errorTitle": "Could not update the suppliers",
+    "submit": "Add supplier",
+    "save": "Save supplier",
+    "listTitle": "All suppliers",
+    "emptyTitle": "No suppliers yet",
+    "emptyBody": "Add the businesses you buy raw materials and packaging from.",
+    "open": "Open",
+    "archive": "Archive",
+    "archiveTitle": "Archive {name}?",
+    "archiveBody": "The supplier stops appearing in pickers. Receipts and price history stay available.",
+    "archiveConfirm": "Archive supplier",
+    "cancel": "Cancel",
+    "backToList": "Back to suppliers",
+    "active": "Active",
+    "archived": "Archived",
+    "columns": {
+      "code": "Code",
+      "name": "Name",
+      "city": "City",
+      "items": "Items",
+      "status": "Status"
+    },
+    "fields": {
+      "name": "Name",
+      "code": "Code",
+      "codeHint": "2 to 16 letters, digits or hyphens.",
+      "contactName": "Contact",
+      "email": "Email",
+      "phone": "Phone",
+      "city": "City",
+      "leadTime": "Lead time (days)",
+      "leadTimeHint": "Default number of days between order and delivery.",
+      "note": "Note"
+    },
+    "items": {
+      "title": "Supplier prices",
+      "intro": "One row per item and effective date. Close a row before adding a new price.",
+      "errorTitle": "Could not update the supplier prices",
+      "chooseItem": "Choose an item",
+      "chooseUnit": "Choose a pack unit",
+      "submit": "Add supplier price",
+      "emptyTitle": "No prices yet",
+      "emptyBody": "Add the first item this supplier sells you.",
+      "close": "Close",
+      "closed": "Closed",
+      "preferred": "Preferred",
+      "active": "Active",
+      "fields": {
+        "item": "Item",
+        "supplierRef": "Supplier reference",
+        "packQuantity": "Pack quantity",
+        "packUnit": "Pack unit",
+        "price": "Pack price",
+        "priceHint": "Excluding VAT.",
+        "leadTime": "Lead time (days)",
+        "minOrder": "Minimum order",
+        "validFrom": "Effective from",
+        "isPreferred": "Preferred supplier",
+        "isPreferredHint": "Used by default when an item has several suppliers."
+      },
+      "columns": {
+        "item": "Item",
+        "pack": "Pack",
+        "price": "Price",
+        "validFrom": "From",
+        "status": "Status"
+      }
+    },
+    "validation": {
+      "codeInvalid": "Use 2 to 16 letters, digits or hyphens.",
+      "nameRequired": "Enter a supplier name.",
+      "nameTooLong": "The supplier name is too long.",
+      "emailInvalid": "Enter a valid email address.",
+      "phoneTooLong": "The phone number is too long.",
+      "cityTooLong": "The city is too long.",
+      "leadTimeInvalid": "Enter a number of days between 0 and 365.",
+      "noteTooLong": "The note is too long.",
+      "itemRequired": "Choose an item and a pack unit.",
+      "packQuantityInvalid": "Enter a pack quantity greater than zero.",
+      "priceInvalid": "Enter a positive price with up to 4 decimals.",
+      "dateInvalid": "Choose a valid date.",
+      "minOrderInvalid": "Enter a positive quantity with up to 4 decimals.",
+      "refTooLong": "The supplier reference is too long."
+    }
+  },
+  "Purchasing": {
+    "metadataTitle": "Purchasing · Emma & Éléa",
+    "title": "Purchasing",
+    "intro": "Goods receipts from your suppliers. Posting a receipt creates its lots and stock movements.",
+    "newReceipt": "New receipt",
+    "suppliersLink": "Suppliers",
+    "backToReceipts": "Back to purchasing",
+    "open": "Open",
+    "paginationLabel": "Receipt pagination",
+    "emptyTitle": "No receipts yet",
+    "emptyBody": "Create a draft receipt when a delivery arrives.",
+    "filters": {
+      "search": "Search",
+      "searchPlaceholder": "Number or supplier",
+      "status": "Status",
+      "allStatuses": "All statuses",
+      "apply": "Apply filters"
+    },
+    "statuses": {
+      "DRAFT": "Draft",
+      "POSTED": "Posted",
+      "CANCELLED": "Cancelled"
+    },
+    "columns": {
+      "number": "Number",
+      "supplier": "Supplier and site",
+      "status": "Status",
+      "receivedAt": "Received",
+      "total": "Total"
+    },
+    "form": {
+      "metadataTitle": "New receipt · Emma & Éléa",
+      "title": "New receipt",
+      "intro": "Start with the delivery header, then add the lines before posting.",
+      "errorTitle": "Could not create the receipt",
+      "submit": "Create draft",
+      "fields": {
+        "site": "Site",
+        "supplier": "Supplier",
+        "supplierReference": "Supplier reference",
+        "supplierReferenceHint": "Delivery note or invoice number.",
+        "note": "Note"
+      }
+    },
+    "detail": {
+      "supplier": "Supplier",
+      "site": "Site",
+      "reference": "Reference",
+      "createdAt": "Created",
+      "receivedAt": "Received",
+      "total": "Total",
+      "errorTitle": "Could not update the receipt",
+      "post": "Post receipt",
+      "cancelReceipt": "Cancel draft",
+      "postTitle": "Post this receipt?",
+      "postBody": "Posting creates one lot and one stock movement per line. It cannot be undone.",
+      "postConfirm": "Post receipt",
+      "cancel": "Cancel",
+      "cancelTitle": "Cancel this draft?",
+      "cancelBody": "The receipt stays in the list as cancelled and creates no stock.",
+      "cancelConfirm": "Cancel draft",
+      "linesTitle": "Lines",
+      "linesIntro": "Status: {status}.",
+      "emptyTitle": "No lines yet",
+      "emptyBody": "Add at least one line before posting.",
+      "remove": "Remove",
+      "columns": {
+        "item": "Item",
+        "quantity": "Quantity",
+        "unitPrice": "Unit price",
+        "lineTotal": "Total",
+        "lot": "Lot",
+        "expiresOn": "Expiry"
+      }
+    },
+    "lineForm": {
+      "title": "Add a line",
+      "intro": "Quantities may use any unit of the item's kind; posting converts them to the stock unit.",
+      "errorTitle": "Could not add the line",
+      "chooseItem": "Choose an item",
+      "chooseUnit": "Choose a unit",
+      "submit": "Add line",
+      "fields": {
+        "item": "Item",
+        "quantity": "Quantity",
+        "unit": "Unit",
+        "unitPrice": "Unit price",
+        "unitPriceHint": "Per selected unit, excluding VAT.",
+        "lotNumber": "Lot number",
+        "lotNumberHint": "Leave empty to generate it from the lot pattern.",
+        "supplierLotNumber": "Supplier lot",
+        "expiresOn": "Use-by date",
+        "bestBeforeOn": "Best-before date"
+      }
+    },
+    "validation": {
+      "siteRequired": "Choose a site.",
+      "supplierRequired": "Choose a supplier.",
+      "referenceTooLong": "The reference is too long.",
+      "noteTooLong": "The note is too long.",
+      "itemRequired": "Choose an item.",
+      "quantityInvalid": "Enter a quantity greater than zero.",
+      "unitRequired": "Choose a unit.",
+      "unitPriceInvalid": "Enter a positive unit price with up to 4 decimals.",
+      "dateInvalid": "Choose a valid date.",
+      "lotTooLong": "The lot number is too long."
+    }
+  },
+  "Stock": {
+    "metadataTitle": "Stock · Emma & Éléa",
+    "title": "Stock",
+    "intro": "Current quantities by site, derived from the lot ledger.",
+    "lotsLink": "All lots",
+    "backToStock": "Back to stock",
+    "alerts": {
+      "title": "Replenishment alerts",
+      "body": "{count, plural, one {# item is below its minimum stock.} other {# items are below their minimum stock.}}"
+    },
+    "levelsTitle": "Stock levels",
+    "levelsIntro": "Only available lots with a remaining quantity are counted.",
+    "emptyTitle": "No stock yet",
+    "emptyBody": "Post a purchase receipt to create the first lots.",
+    "low": "Low",
+    "ok": "OK",
+    "lotsButton": "Lots",
+    "columns": {
+      "item": "Item",
+      "site": "Site",
+      "quantity": "Quantity",
+      "minimum": "Minimum",
+      "status": "Status"
+    },
+    "lots": {
+      "metadataTitle": "Lots · Emma & Éléa",
+      "title": "Lots",
+      "intro": "Every quantity in stock belongs to a lot. Open a lot to see its ledger.",
+      "paginationLabel": "Lot pagination",
+      "emptyTitle": "No lots",
+      "emptyBody": "Post a purchase receipt or complete a production batch to create lots.",
+      "open": "Open",
+      "columns": {
+        "lotNumber": "Lot",
+        "item": "Item",
+        "site": "Site",
+        "remaining": "Remaining",
+        "expiresOn": "Expiry",
+        "status": "Status"
+      },
+      "statuses": {
+        "AVAILABLE": "Available",
+        "QUARANTINE": "Quarantine",
+        "CONSUMED": "Consumed",
+        "EXPIRED": "Expired",
+        "DISCARDED": "Discarded"
+      },
+      "filters": {
+        "search": "Search",
+        "searchPlaceholder": "Lot, item name or code",
+        "includeEmpty": "Include empty lots",
+        "apply": "Apply filters"
+      }
+    },
+    "lot": {
+      "backToLots": "Back to lots",
+      "movementsTitle": "Movements",
+      "movementsIntro": "The append-only ledger for this lot. Corrections are new movements, never edits.",
+      "fields": {
+        "item": "Item",
+        "site": "Site",
+        "received": "Received",
+        "expires": "Expiry",
+        "quantityReceived": "Received quantity",
+        "quantityRemaining": "Remaining",
+        "unitCost": "Unit cost",
+        "status": "Status"
+      },
+      "columns": {
+        "type": "Type",
+        "quantity": "Quantity",
+        "occurredAt": "Date",
+        "reference": "Reference",
+        "reason": "Reason"
+      },
+      "movementTypes": {
+        "RECEIPT": "Receipt",
+        "CONSUMPTION": "Consumption",
+        "PRODUCTION_OUTPUT": "Production output",
+        "DISPATCH": "Dispatch",
+        "WASTE": "Waste",
+        "TRANSFER": "Transfer",
+        "ADJUSTMENT": "Adjustment",
+        "COUNT": "Stock count"
+      }
     }
   }
 }

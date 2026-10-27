@@ -54,19 +54,29 @@ export function optionalDecimalString(
 
 const isoDatePattern = /^\d{4}-\d{2}-\d{2}$/;
 
+function isIsoDate(value: string): boolean {
+  if (!isoDatePattern.test(value)) return false;
+
+  const date = new Date(`${value}T00:00:00.000Z`);
+
+  return (
+    !Number.isNaN(date.getTime()) &&
+    date.toISOString().slice(0, 10) === value
+  );
+}
+
 /** A calendar day, stored as `@db.Date` at UTC midnight. */
 export function isoDateString(message: string) {
   return z
     .string()
     .trim()
-    .refine((value) => {
-      if (!isoDatePattern.test(value)) return false;
+    .refine((value) => isIsoDate(value), message);
+}
 
-      const date = new Date(`${value}T00:00:00.000Z`);
-
-      return (
-        !Number.isNaN(date.getTime()) &&
-        date.toISOString().slice(0, 10) === value
-      );
-    }, message);
+/** An optional calendar day: an empty string means "not set". */
+export function optionalIsoDateString(message: string) {
+  return z
+    .string()
+    .trim()
+    .refine((value) => value === "" || isIsoDate(value), message);
 }

@@ -569,6 +569,7 @@
       "invalidInput": "Vérifiez les champs signalés.",
       "lastSite": "Vous ne pouvez pas archiver le dernier site.",
       "invalidUnit": "Choisissez une unité de stock de base et une unité de vente compatible.",
+      "invalidState": "Cette action n’est pas disponible dans cet état.",
       "generic": "Une erreur est survenue. Veuillez réessayer."
     },
     "validation": {
@@ -906,6 +907,7 @@
       "invalidUnit": "Choisissez une unité de stock de base et une unité de vente compatible.",
       "invalidInput": "Vérifiez les champs signalés.",
       "lastSite": "Vous ne pouvez pas archiver le dernier site.",
+      "invalidState": "Cette action n’est pas disponible dans cet état.",
       "generic": "Une erreur est survenue. Veuillez réessayer."
     },
     "validation": {
@@ -928,6 +930,310 @@
       "allergenInvalid": "Choisissez un allergène.",
       "presenceInvalid": "Indiquez si l’article contient l’allergène ou peut le contenir.",
       "noteTooLong": "La note est trop longue."
+    }
+  },
+  "Common": {
+    "errors": {
+      "unauthenticated": "Votre session a expiré. Reconnectez-vous.",
+      "forbidden": "Vous n’êtes pas autorisé à effectuer cette action.",
+      "notFound": "Cet enregistrement n’existe plus.",
+      "conflict": "Cette modification entre en conflit avec des données existantes.",
+      "duplicateCode": "Ce code ou ce nom est déjà utilisé.",
+      "invalidUnit": "Choisissez des unités qui mesurent le même type de quantité.",
+      "invalidInput": "Vérifiez les champs signalés.",
+      "invalidState": "Cette action n’est pas disponible dans cet état.",
+      "lastSite": "Vous ne pouvez pas archiver le dernier site.",
+      "generic": "Une erreur est survenue. Veuillez réessayer."
+    }
+  },
+  "Suppliers": {
+    "metadataTitle": "Fournisseurs · Emma & Éléa",
+    "title": "Fournisseurs",
+    "intro": "Fournisseurs de {organization}, leurs références catalogue et leurs prix par colis.",
+    "detailIntro": "Fournisseur {code}.",
+    "createTitle": "Ajouter un fournisseur",
+    "createIntro": "Les prix sont enregistrés par colis, hors TVA.",
+    "editTitle": "Détails du fournisseur",
+    "editIntro": "Fournisseur {code}.",
+    "saved": "Fournisseur enregistré.",
+    "errorTitle": "Impossible de mettre à jour les fournisseurs",
+    "submit": "Ajouter le fournisseur",
+    "save": "Enregistrer le fournisseur",
+    "listTitle": "Tous les fournisseurs",
+    "emptyTitle": "Aucun fournisseur",
+    "emptyBody": "Ajoutez les entreprises auprès desquelles vous achetez matières premières et emballages.",
+    "open": "Ouvrir",
+    "archive": "Archiver",
+    "archiveTitle": "Archiver {name} ?",
+    "archiveBody": "Le fournisseur n’apparaîtra plus dans les sélections. Les réceptions et l’historique des prix restent disponibles.",
+    "archiveConfirm": "Archiver le fournisseur",
+    "cancel": "Annuler",
+    "backToList": "Retour aux fournisseurs",
+    "active": "Actif",
+    "archived": "Archivé",
+    "columns": {
+      "code": "Code",
+      "name": "Nom",
+      "city": "Ville",
+      "items": "Articles",
+      "status": "Statut"
+    },
+    "fields": {
+      "name": "Nom",
+      "code": "Code",
+      "codeHint": "2 à 16 lettres, chiffres ou tirets.",
+      "contactName": "Contact",
+      "email": "E-mail",
+      "phone": "Téléphone",
+      "city": "Ville",
+      "leadTime": "Délai (jours)",
+      "leadTimeHint": "Nombre de jours par défaut entre la commande et la livraison.",
+      "note": "Note"
+    },
+    "items": {
+      "title": "Prix fournisseur",
+      "intro": "Une ligne par article et par date d’effet. Clôturez une ligne avant d’ajouter un nouveau prix.",
+      "errorTitle": "Impossible de mettre à jour les prix fournisseur",
+      "chooseItem": "Choisir un article",
+      "chooseUnit": "Choisir une unité de colis",
+      "submit": "Ajouter le prix",
+      "emptyTitle": "Aucun prix",
+      "emptyBody": "Ajoutez le premier article vendu par ce fournisseur.",
+      "close": "Clôturer",
+      "closed": "Clôturé",
+      "preferred": "Préféré",
+      "active": "Actif",
+      "fields": {
+        "item": "Article",
+        "supplierRef": "Référence fournisseur",
+        "packQuantity": "Quantité par colis",
+        "packUnit": "Unité du colis",
+        "price": "Prix du colis",
+        "priceHint": "Hors TVA.",
+        "leadTime": "Délai (jours)",
+        "minOrder": "Commande minimum",
+        "validFrom": "Applicable à partir du",
+        "isPreferred": "Fournisseur préféré",
+        "isPreferredHint": "Utilisé par défaut quand un article a plusieurs fournisseurs."
+      },
+      "columns": {
+        "item": "Article",
+        "pack": "Colis",
+        "price": "Prix",
+        "validFrom": "À partir du",
+        "status": "Statut"
+      }
+    },
+    "validation": {
+      "codeInvalid": "Utilisez 2 à 16 lettres, chiffres ou tirets.",
+      "nameRequired": "Saisissez un nom de fournisseur.",
+      "nameTooLong": "Le nom du fournisseur est trop long.",
+      "emailInvalid": "Saisissez une adresse e-mail valide.",
+      "phoneTooLong": "Le numéro de téléphone est trop long.",
+      "cityTooLong": "La ville est trop longue.",
+      "leadTimeInvalid": "Saisissez un nombre de jours entre 0 et 365.",
+      "noteTooLong": "La note est trop longue.",
+      "itemRequired": "Choisissez un article et une unité de colis.",
+      "packQuantityInvalid": "Saisissez une quantité de colis supérieure à zéro.",
+      "priceInvalid": "Saisissez un prix positif avec 4 décimales au maximum.",
+      "dateInvalid": "Choisissez une date valide.",
+      "minOrderInvalid": "Saisissez une quantité positive avec 4 décimales au maximum.",
+      "refTooLong": "La référence fournisseur est trop longue."
+    }
+  },
+  "Purchasing": {
+    "metadataTitle": "Achats · Emma & Éléa",
+    "title": "Achats",
+    "intro": "Réceptions de vos fournisseurs. Valider une réception crée ses lots et ses mouvements de stock.",
+    "newReceipt": "Nouvelle réception",
+    "suppliersLink": "Fournisseurs",
+    "backToReceipts": "Retour aux achats",
+    "open": "Ouvrir",
+    "paginationLabel": "Pagination des réceptions",
+    "emptyTitle": "Aucune réception",
+    "emptyBody": "Créez un brouillon de réception quand une livraison arrive.",
+    "filters": {
+      "search": "Rechercher",
+      "searchPlaceholder": "Numéro ou fournisseur",
+      "status": "Statut",
+      "allStatuses": "Tous les statuts",
+      "apply": "Appliquer les filtres"
+    },
+    "statuses": {
+      "DRAFT": "Brouillon",
+      "POSTED": "Validée",
+      "CANCELLED": "Annulée"
+    },
+    "columns": {
+      "number": "Numéro",
+      "supplier": "Fournisseur et site",
+      "status": "Statut",
+      "receivedAt": "Réception",
+      "total": "Total"
+    },
+    "form": {
+      "metadataTitle": "Nouvelle réception · Emma & Éléa",
+      "title": "Nouvelle réception",
+      "intro": "Commencez par l’en-tête de livraison, puis ajoutez les lignes avant validation.",
+      "errorTitle": "Impossible de créer la réception",
+      "submit": "Créer le brouillon",
+      "fields": {
+        "site": "Site",
+        "supplier": "Fournisseur",
+        "supplierReference": "Référence fournisseur",
+        "supplierReferenceHint": "Numéro de bon de livraison ou de facture.",
+        "note": "Note"
+      }
+    },
+    "detail": {
+      "supplier": "Fournisseur",
+      "site": "Site",
+      "reference": "Référence",
+      "createdAt": "Créée",
+      "receivedAt": "Réceptionnée",
+      "total": "Total",
+      "errorTitle": "Impossible de mettre à jour la réception",
+      "post": "Valider la réception",
+      "cancelReceipt": "Annuler le brouillon",
+      "postTitle": "Valider cette réception ?",
+      "postBody": "La validation crée un lot et un mouvement de stock par ligne. Elle est irréversible.",
+      "postConfirm": "Valider la réception",
+      "cancel": "Annuler",
+      "cancelTitle": "Annuler ce brouillon ?",
+      "cancelBody": "La réception reste dans la liste comme annulée et ne crée aucun stock.",
+      "cancelConfirm": "Annuler le brouillon",
+      "linesTitle": "Lignes",
+      "linesIntro": "Statut : {status}.",
+      "emptyTitle": "Aucune ligne",
+      "emptyBody": "Ajoutez au moins une ligne avant de valider.",
+      "remove": "Retirer",
+      "columns": {
+        "item": "Article",
+        "quantity": "Quantité",
+        "unitPrice": "Prix unitaire",
+        "lineTotal": "Total",
+        "lot": "Lot",
+        "expiresOn": "DLC"
+      }
+    },
+    "lineForm": {
+      "title": "Ajouter une ligne",
+      "intro": "Les quantités peuvent utiliser toute unité du même type que l’article ; la validation les convertit en unité de stock.",
+      "errorTitle": "Impossible d’ajouter la ligne",
+      "chooseItem": "Choisir un article",
+      "chooseUnit": "Choisir une unité",
+      "submit": "Ajouter la ligne",
+      "fields": {
+        "item": "Article",
+        "quantity": "Quantité",
+        "unit": "Unité",
+        "unitPrice": "Prix unitaire",
+        "unitPriceHint": "Par unité choisie, hors TVA.",
+        "lotNumber": "Numéro de lot",
+        "lotNumberHint": "Laissez vide pour le générer à partir du modèle de lot.",
+        "supplierLotNumber": "Lot fournisseur",
+        "expiresOn": "Date limite de consommation",
+        "bestBeforeOn": "Date de durabilité minimale"
+      }
+    },
+    "validation": {
+      "siteRequired": "Choisissez un site.",
+      "supplierRequired": "Choisissez un fournisseur.",
+      "referenceTooLong": "La référence est trop longue.",
+      "noteTooLong": "La note est trop longue.",
+      "itemRequired": "Choisissez un article.",
+      "quantityInvalid": "Saisissez une quantité supérieure à zéro.",
+      "unitRequired": "Choisissez une unité.",
+      "unitPriceInvalid": "Saisissez un prix unitaire positif avec 4 décimales au maximum.",
+      "dateInvalid": "Choisissez une date valide.",
+      "lotTooLong": "Le numéro de lot est trop long."
+    }
+  },
+  "Stock": {
+    "metadataTitle": "Stock · Emma & Éléa",
+    "title": "Stock",
+    "intro": "Quantités actuelles par site, calculées à partir du registre des lots.",
+    "lotsLink": "Tous les lots",
+    "backToStock": "Retour au stock",
+    "alerts": {
+      "title": "Alertes de réapprovisionnement",
+      "body": "{count, plural, one {# article est sous son stock minimum.} other {# articles sont sous leur stock minimum.}}"
+    },
+    "levelsTitle": "Niveaux de stock",
+    "levelsIntro": "Seuls les lots disponibles avec une quantité restante sont comptés.",
+    "emptyTitle": "Aucun stock",
+    "emptyBody": "Validez une réception pour créer les premiers lots.",
+    "low": "Bas",
+    "ok": "OK",
+    "lotsButton": "Lots",
+    "columns": {
+      "item": "Article",
+      "site": "Site",
+      "quantity": "Quantité",
+      "minimum": "Minimum",
+      "status": "Statut"
+    },
+    "lots": {
+      "metadataTitle": "Lots · Emma & Éléa",
+      "title": "Lots",
+      "intro": "Chaque quantité en stock appartient à un lot. Ouvrez un lot pour voir son registre.",
+      "paginationLabel": "Pagination des lots",
+      "emptyTitle": "Aucun lot",
+      "emptyBody": "Validez une réception ou terminez un lot de production pour créer des lots.",
+      "open": "Ouvrir",
+      "columns": {
+        "lotNumber": "Lot",
+        "item": "Article",
+        "site": "Site",
+        "remaining": "Restant",
+        "expiresOn": "DLC",
+        "status": "Statut"
+      },
+      "statuses": {
+        "AVAILABLE": "Disponible",
+        "QUARANTINE": "Quarantaine",
+        "CONSUMED": "Consommé",
+        "EXPIRED": "Périmé",
+        "DISCARDED": "Écarté"
+      },
+      "filters": {
+        "search": "Rechercher",
+        "searchPlaceholder": "Lot, nom ou code d’article",
+        "includeEmpty": "Inclure les lots vides",
+        "apply": "Appliquer les filtres"
+      }
+    },
+    "lot": {
+      "backToLots": "Retour aux lots",
+      "movementsTitle": "Mouvements",
+      "movementsIntro": "Le registre en ajout seul de ce lot. Les corrections sont de nouveaux mouvements, jamais des modifications.",
+      "fields": {
+        "item": "Article",
+        "site": "Site",
+        "received": "Réceptionné",
+        "expires": "DLC",
+        "quantityReceived": "Quantité reçue",
+        "quantityRemaining": "Restant",
+        "unitCost": "Coût unitaire",
+        "status": "Statut"
+      },
+      "columns": {
+        "type": "Type",
+        "quantity": "Quantité",
+        "occurredAt": "Date",
+        "reference": "Référence",
+        "reason": "Motif"
+      },
+      "movementTypes": {
+        "RECEIPT": "Réception",
+        "CONSUMPTION": "Consommation",
+        "PRODUCTION_OUTPUT": "Sortie de production",
+        "DISPATCH": "Expédition",
+        "WASTE": "Perte",
+        "TRANSFER": "Transfert",
+        "ADJUSTMENT": "Ajustement",
+        "COUNT": "Inventaire"
+      }
     }
   }
 }

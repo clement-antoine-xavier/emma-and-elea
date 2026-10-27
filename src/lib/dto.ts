@@ -110,6 +110,14 @@ export type ItemReference = {
   name: string;
 };
 
+export type ItemOption = {
+  id: string;
+  code: string;
+  name: string;
+  type: ItemTypeName;
+  stockUnitId: string;
+};
+
 export type ItemAllergenRecord = {
   id: string;
   allergenId: string;
@@ -150,4 +158,148 @@ export type ItemDetailRecord = ItemListRecord & {
   usedInRecipes: ItemReference[];
   producesRecipes: ItemReference[];
   supplierCount: number;
+};
+
+export type SupplierRecord = {
+  id: string;
+  code: string;
+  name: string;
+  contactName: string | null;
+  email: string | null;
+  phone: string | null;
+  city: string | null;
+  defaultLeadTimeDays: number | null;
+  note: string | null;
+  isArchived: boolean;
+};
+
+export type SupplierListRecord = SupplierRecord & {
+  activeItemCount: number;
+};
+
+export type SupplierItemRecord = {
+  id: string;
+  itemId: string;
+  itemCode: string;
+  itemName: string;
+  supplierRef: string | null;
+  packQuantity: string;
+  packUnitId: string;
+  packUnitCode: string;
+  price: string;
+  currency: string;
+  leadTimeDays: number | null;
+  minOrderQuantity: string | null;
+  isPreferred: boolean;
+  validFrom: Date;
+  validTo: Date | null;
+  isArchived: boolean;
+};
+
+export type SupplierDetailRecord = SupplierRecord & {
+  items: SupplierItemRecord[];
+};
+
+export type ReceiptStatusName = "DRAFT" | "POSTED" | "CANCELLED";
+
+export type ReceiptSummaryRecord = {
+  id: string;
+  number: string;
+  supplierName: string;
+  siteName: string;
+  status: ReceiptStatusName;
+  receivedAt: Date | null;
+  totalAmount: string;
+  currency: string;
+  lineCount: number;
+  createdAt: Date;
+};
+
+export type ReceiptLineRecord = {
+  id: string;
+  itemId: string;
+  itemCode: string;
+  itemName: string;
+  quantity: string;
+  unitCode: string;
+  unitPrice: string;
+  lineTotal: string;
+  lotNumber: string | null;
+  supplierLotNumber: string | null;
+  expiresOn: Date | null;
+  bestBeforeOn: Date | null;
+  lotId: string | null;
+};
+
+export type ReceiptDetailRecord = ReceiptSummaryRecord & {
+  supplierId: string;
+  siteId: string;
+  supplierReference: string | null;
+  note: string | null;
+  lines: ReceiptLineRecord[];
+};
+
+export type ReceiptFormOptions = {
+  suppliers: {id: string; name: string; code: string}[];
+  sites: {id: string; name: string; code: string}[];
+  items: {id: string; code: string; name: string}[];
+  units: {id: string; code: string; labelEn: string; labelFr: string}[];
+};
+
+export type StockLevelRecord = {
+  itemId: string;
+  itemCode: string;
+  itemName: string;
+  siteId: string;
+  siteName: string;
+  unitCode: string;
+  quantity: string;
+  minStockQuantity: string | null;
+  parLevelQuantity: string | null;
+  isBelowMin: boolean;
+};
+
+export type LotSummaryRecord = {
+  id: string;
+  lotNumber: string;
+  itemId: string;
+  itemCode: string;
+  itemName: string;
+  siteId: string;
+  siteName: string;
+  quantityRemaining: string;
+  unitCode: string;
+  unitCost: string;
+  currency: string;
+  receivedAt: Date;
+  expiresOn: Date | null;
+  status:
+    | "AVAILABLE"
+    | "QUARANTINE"
+    | "CONSUMED"
+    | "EXPIRED"
+    | "DISCARDED";
+};
+
+export type StockMovementRecord = {
+  id: string;
+  type:
+    | "RECEIPT"
+    | "CONSUMPTION"
+    | "PRODUCTION_OUTPUT"
+    | "DISPATCH"
+    | "WASTE"
+    | "TRANSFER"
+    | "ADJUSTMENT"
+    | "COUNT";
+  quantity: string;
+  unitCode: string;
+  occurredAt: Date;
+  referenceType: string | null;
+  reason: string | null;
+};
+
+export type LotDetailRecord = LotSummaryRecord & {
+  quantityReceived: string;
+  movements: StockMovementRecord[];
 };

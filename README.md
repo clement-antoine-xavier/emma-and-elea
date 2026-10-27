@@ -49,7 +49,9 @@ the `NEXT_LOCALE` cookie (English by default; use the language switcher to chang
 it), and accounts are created at `/sign-up`. Onboarding asks for the business
 name and its first site. `/dashboard/settings` manages the organization values,
 sites, labour rates, energy tariffs and equipment. `/dashboard/catalog` manages
-items, categories and allergen declarations.
+items, categories and allergen declarations. `/dashboard/purchasing` manages
+suppliers and goods receipts; posting one creates its lots and stock movements,
+visible under `/dashboard/stock`.
 
 ## Environment
 

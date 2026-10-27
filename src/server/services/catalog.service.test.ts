@@ -55,6 +55,7 @@ function repository(
       .mockImplementation(async (id: string) =>
         [kg, g, piece].find((unit) => unit.id === id) ?? null,
       ),
+    listItemOptions: jest.fn().mockResolvedValue([]),
     listAllergens: jest.fn().mockResolvedValue([
       {
         id: "allergen_gluten",

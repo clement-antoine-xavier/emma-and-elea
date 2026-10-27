@@ -13,6 +13,7 @@ export type ActionErrorKey =
   | "duplicateCode"
   | "invalidUnit"
   | "invalidInput"
+  | "invalidState"
   | "lastSite"
   | "generic";
 
@@ -32,6 +33,8 @@ export function mapDomainError(error: unknown): ActionErrorKey {
       return "invalidUnit";
     case "INVALID_INPUT":
       return "invalidInput";
+    case "INVALID_STATE_TRANSITION":
+      return "invalidState";
     case "LAST_SITE":
       return "lastSite";
     default:

@@ -5,6 +5,7 @@ import type {
   CategoryRecord,
   ItemDetailRecord,
   ItemListRecord,
+  ItemOption,
   ItemTypeName,
   SalesChannelName,
   UnitOption,
@@ -53,6 +54,7 @@ export type ItemPage = {
 export interface CatalogRepository {
   listUnits(): Promise<UnitOption[]>;
   findUnit(id: string): Promise<UnitOption | null>;
+  listItemOptions(organizationId: string): Promise<ItemOption[]>;
   listAllergens(): Promise<AllergenOption[]>;
   listItems(
     organizationId: string,
@@ -166,6 +168,25 @@ export const catalogRepository: CatalogRepository = {
 
   async findUnit(id) {
     return prisma.unit.findUnique({where: {id}, select: unitSelect});
+  },
+
+  async listItemOptions(organizationId) {
+    const items = await prisma.item.findMany({
+      where: {organizationId, archivedAt: null},
+      orderBy: {name: "asc"},
+      select: {
+        id: true,
+        code: true,
+        name: true,
+        type: true,
+        stockUnitId: true,
+      },
+    });
+
+    return items.map((item) => ({
+      ...item,
+      type: item.type as ItemTypeName,
+    }));
   },
 
   async listAllergens() {
