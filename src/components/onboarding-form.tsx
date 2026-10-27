@@ -14,6 +14,7 @@ import {useRouter} from "next/navigation";
 import {FormTextInput} from "@/components/form-text-input";
 import {createOrganizationAction} from "@/app/actions/organization.actions";
 import {slugifyOrganizationName} from "@/lib/slug";
+import {siteCodeFromName} from "@/lib/site-code";
 import {
   createOrganizationSchema,
   type CreateOrganizationValues,
@@ -23,8 +24,13 @@ export function OnboardingForm() {
   const router = useRouter();
   const t = useTranslations("Onboarding");
   const tValidation = useTranslations("Onboarding.validation");
+
   const [isSlugEdited, setIsSlugEdited] = useState(false);
+  const [isSiteNameEdited, setIsSiteNameEdited] = useState(false);
+  const [isSiteCodeEdited, setIsSiteCodeEdited] = useState(false);
   const autoSlug = useRef("");
+  const autoSiteName = useRef("");
+  const autoSiteCode = useRef("");
 
   const schema = useMemo(
     () => createOrganizationSchema((key) => tValidation(key)),
@@ -40,13 +46,19 @@ export function OnboardingForm() {
     formState: {errors, isSubmitting},
   } = useForm<CreateOrganizationValues>({
     resolver: zodResolver(schema),
-    defaultValues: {name: "", slug: ""},
+    defaultValues: {
+      name: "",
+      slug: "",
+      siteName: "",
+      siteCode: "ATL",
+    },
     mode: "onSubmit",
     reValidateMode: "onChange",
     shouldFocusError: false,
   });
 
   const name = useWatch({control, name: "name"});
+  const siteName = useWatch({control, name: "siteName"});
 
   useEffect(() => {
     if (isSlugEdited) return;
@@ -59,12 +71,38 @@ export function OnboardingForm() {
     }
   }, [isSlugEdited, name, setValue]);
 
+  // The first site defaults to the business name and its code to the first
+  // three letters; both stay editable, and editing either one stops the sync.
+  useEffect(() => {
+    if (isSiteNameEdited) return;
+
+    const generated = name?.trim() ?? "";
+
+    if (generated !== autoSiteName.current) {
+      autoSiteName.current = generated;
+      setValue("siteName", generated, {shouldValidate: false});
+    }
+  }, [isSiteNameEdited, name, setValue]);
+
+  useEffect(() => {
+    if (isSiteCodeEdited) return;
+
+    const generated = siteCodeFromName(siteName || name || "");
+
+    if (generated !== autoSiteCode.current) {
+      autoSiteCode.current = generated;
+      setValue("siteCode", generated, {shouldValidate: false});
+    }
+  }, [isSiteCodeEdited, name, siteName, setValue]);
+
   async function onSubmit(values: CreateOrganizationValues) {
     clearErrors("root");
 
     const result = await createOrganizationAction({
       name: values.name,
       slug: values.slug,
+      siteName: values.siteName,
+      siteCode: values.siteCode,
     });
 
     if (!result.ok) {
@@ -119,6 +157,34 @@ export function OnboardingForm() {
               onValueChange={() => setIsSlugEdited(true)}
             />
           </FormLayout>
+
+          <Stack gap={3}>
+            <Stack gap={1}>
+              <Heading level={2}>{t("siteTitle")}</Heading>
+              <Text type="supporting">{t("siteSubtitle")}</Text>
+            </Stack>
+
+            <FormLayout>
+              <FormTextInput
+                control={control}
+                name="siteName"
+                label={t("fields.siteName")}
+                description={t("fields.siteNameHint")}
+                autoComplete="off"
+                isRequired
+                onValueChange={() => setIsSiteNameEdited(true)}
+              />
+              <FormTextInput
+                control={control}
+                name="siteCode"
+                label={t("fields.siteCode")}
+                description={t("fields.siteCodeHint")}
+                autoComplete="off"
+                isRequired
+                onValueChange={() => setIsSiteCodeEdited(true)}
+              />
+            </FormLayout>
+          </Stack>
 
           <Button
             variant="primary"

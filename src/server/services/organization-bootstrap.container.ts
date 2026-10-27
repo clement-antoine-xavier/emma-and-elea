@@ -1,4 +1,5 @@
 import {organizationSettingsRepository} from "@/server/repositories/organization-settings.repository";
+import {siteRepository} from "@/server/repositories/site.repository";
 import {createOrganizationBootstrapService} from "./organization-bootstrap.service";
 
 /**
@@ -7,4 +8,5 @@ import {createOrganizationBootstrapService} from "./organization-bootstrap.servi
  */
 export const organizationBootstrapService = createOrganizationBootstrapService({
   settingsRepository: organizationSettingsRepository,
+  siteRepository,
 });

@@ -1,8 +1,9 @@
 import { expect, test } from "@playwright/test";
+import { gotoHydrated } from "./helpers";
 
 test.describe("theme and language preferences", () => {
   test("persists the selected theme across reloads", async ({ page }) => {
-    await page.goto("/");
+    await gotoHydrated(page, "/");
 
     await page.getByRole("radio", { name: "Dark" }).click();
     await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
@@ -19,7 +20,7 @@ test.describe("theme and language preferences", () => {
   test("switches language without losing the theme or changing the URL", async ({
     page,
   }) => {
-    await page.goto("/sign-in");
+    await gotoHydrated(page, "/sign-in");
 
     await page.getByRole("radio", { name: "Dark" }).click();
     await page.getByRole("radio", { name: "Français" }).click();
@@ -46,7 +47,7 @@ test.describe("theme and language preferences", () => {
   });
 
   test("returns to the system preference", async ({ page }) => {
-    await page.goto("/");
+    await gotoHydrated(page, "/");
 
     await page.getByRole("radio", { name: "Dark" }).click();
     await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");

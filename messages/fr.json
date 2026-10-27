@@ -326,10 +326,16 @@
     "metadataTitle": "Créez votre espace · Emma & Éléa",
     "title": "Créez votre espace",
     "subtitle": "Indiquez le nom de votre entreprise. Vous pourrez inviter votre équipe ensuite.",
+    "siteTitle": "Votre premier site",
+    "siteSubtitle": "Un site est un lieu où le stock est rangé et où la production a lieu : atelier, boutique ou entrepôt. Vous pourrez en ajouter d’autres.",
     "fields": {
       "name": "Nom de l’entreprise",
       "slug": "Adresse de l’espace",
-      "slugHint": "Lettres minuscules, chiffres et tirets."
+      "slugHint": "Lettres minuscules, chiffres et tirets.",
+      "siteName": "Nom du site",
+      "siteNameHint": "Par exemple « Atelier » ou « Boutique Croix-Rousse ».",
+      "siteCode": "Code du site",
+      "siteCodeHint": "2 à 8 lettres majuscules ou chiffres. Il préfixe les numéros de lot."
     },
     "submit": "Créer l’espace",
     "errors": {
@@ -342,6 +348,9 @@
       "nameTooLong": "Le nom de l’entreprise est trop long.",
       "slugInvalid": "Utilisez des lettres minuscules, des chiffres et des tirets simples.",
       "slugTooLong": "L’adresse de l’espace est trop longue.",
+      "siteNameRequired": "Saisissez le nom de votre premier site.",
+      "siteNameTooLong": "Le nom du site est trop long.",
+      "siteCodeInvalid": "Utilisez 2 à 8 lettres majuscules ou chiffres.",
       "emailInvalid": "Saisissez une adresse e-mail valide.",
       "roleInvalid": "Choisissez un rôle valide."
     }
@@ -499,6 +508,244 @@
         "title": "Paramètres",
         "intro": "Votre entreprise, vos sites, vos taux et vos équipements."
       }
+    }
+  },
+  "Settings": {
+    "metadataTitle": "Paramètres · Emma & Éléa",
+    "title": "Paramètres",
+    "intro": "Votre entreprise, vos sites, vos taux et vos équipements.",
+    "backToSettings": "Retour aux paramètres",
+    "manageTitle": "Gérer",
+    "cards": {
+      "sites": {
+        "title": "Sites",
+        "body": "Ateliers, boutiques et entrepôts où se trouve le stock.",
+        "action": "Gérer les sites"
+      },
+      "rates": {
+        "title": "Main-d’œuvre et énergie",
+        "body": "Coûts horaires et tarifs d’énergie, versionnés par date.",
+        "action": "Gérer les taux"
+      },
+      "equipment": {
+        "title": "Équipements",
+        "body": "Fours, batteurs et leur puissance, utilisés pour le coût de l’énergie.",
+        "action": "Gérer les équipements"
+      }
+    },
+    "organization": {
+      "title": "Organisation",
+      "intro": "Ces valeurs pilotent le coût de revient, les numéros de lot et les prévisions. Seuls les propriétaires et les admins peuvent les modifier.",
+      "saved": "Paramètres enregistrés.",
+      "errorTitle": "Impossible d’enregistrer les paramètres",
+      "submit": "Enregistrer les paramètres",
+      "notSet": "Non défini",
+      "fields": {
+        "currency": "Devise",
+        "currencyHint": "Code ISO à trois lettres, par exemple EUR.",
+        "overheadPct": "Frais généraux",
+        "overheadPctHint": "Pourcentage ajouté aux matières, emballages, main-d’œuvre et énergie.",
+        "forecastHistoryDays": "Historique de prévision",
+        "forecastHistoryDaysHint": "Jours d’historique de ventes utilisés pour suggérer les quantités (7 à 365).",
+        "forecastSafetyPct": "Marge de sécurité",
+        "forecastSafetyPctHint": "Marge ajoutée aux quantités suggérées.",
+        "defaultShelfLifeDays": "Durée de vie par défaut",
+        "defaultShelfLifeDaysHint": "Jours ajoutés à la date limite d’un lot fini quand l’article n’a pas de valeur par défaut.",
+        "lotNumberPattern": "Modèle de numéro de lot",
+        "lotNumberPatternHint": "Variables : '{site}', '{yyMMdd}', '{seq}'.",
+        "pricesIncludeVat": "Les prix incluent la TVA"
+      },
+      "vat": {
+        "included": "Incluse",
+        "excluded": "Exclue"
+      }
+    },
+    "errors": {
+      "unauthenticated": "Votre session a expiré. Reconnectez-vous.",
+      "forbidden": "Vous n’êtes pas autorisé à effectuer cette action.",
+      "notFound": "Cet enregistrement n’existe plus.",
+      "conflict": "Cette modification entre en conflit avec des données existantes.",
+      "duplicateCode": "Ce code est déjà utilisé.",
+      "invalidInput": "Vérifiez les champs signalés.",
+      "lastSite": "Vous ne pouvez pas archiver le dernier site.",
+      "generic": "Une erreur est survenue. Veuillez réessayer."
+    },
+    "validation": {
+      "currencyInvalid": "Utilisez un code devise à trois lettres.",
+      "overheadInvalid": "Saisissez un pourcentage entre 0 et 100.",
+      "historyInvalid": "Saisissez un nombre de jours entre 7 et 365.",
+      "safetyInvalid": "Saisissez un pourcentage entre 0 et 100.",
+      "shelfLifeInvalid": "Saisissez un nombre de jours entre 0 et 365, ou laissez vide.",
+      "lotPatternInvalid": "Utilisez de 3 à 60 caractères.",
+      "vatInvalid": "Indiquez si les prix incluent la TVA."
+    }
+  },
+  "Sites": {
+    "metadataTitle": "Sites · Emma & Éléa",
+    "title": "Sites",
+    "intro": "Lieux où {organization} stocke et produit.",
+    "detailIntro": "Site {code}. Son code préfixe les numéros de lot.",
+    "createTitle": "Ajouter un site",
+    "createIntro": "Un site peut être un atelier, une boutique, un entrepôt ou un laboratoire.",
+    "submit": "Ajouter le site",
+    "listTitle": "Tous les sites",
+    "edit": "Modifier",
+    "archive": "Archiver",
+    "active": "Actif",
+    "archived": "Archivé",
+    "errorTitle": "Impossible de mettre à jour les sites",
+    "emptyTitle": "Aucun site pour l’instant",
+    "emptyBody": "Ajoutez votre premier site pour commencer à réceptionner du stock.",
+    "editTitle": "Modifier le site",
+    "editIntro": "Site {code}.",
+    "saved": "Site enregistré.",
+    "save": "Enregistrer le site",
+    "backToList": "Retour aux sites",
+    "fields": {
+      "name": "Nom du site",
+      "code": "Code",
+      "codeHint": "2 à 8 lettres majuscules ou chiffres.",
+      "kind": "Type",
+      "city": "Ville",
+      "timezone": "Fuseau horaire",
+      "timezoneHint": "Nom IANA, par exemple Europe/Paris."
+    },
+    "columns": {
+      "code": "Code",
+      "name": "Nom",
+      "kind": "Type",
+      "city": "Ville",
+      "status": "Statut"
+    },
+    "kinds": {
+      "WORKSHOP": "Atelier",
+      "SHOP": "Boutique",
+      "WAREHOUSE": "Entrepôt",
+      "LAB": "Laboratoire"
+    },
+    "validation": {
+      "nameRequired": "Saisissez un nom de site.",
+      "nameTooLong": "Le nom du site est trop long.",
+      "codeInvalid": "Utilisez 2 à 8 lettres ou chiffres.",
+      "kindInvalid": "Choisissez un type valide.",
+      "cityTooLong": "La ville est trop longue.",
+      "timezoneInvalid": "Saisissez un fuseau horaire valide."
+    }
+  },
+  "Rates": {
+    "metadataTitle": "Taux · Emma & Éléa",
+    "title": "Main-d’œuvre et énergie",
+    "intro": "Coûts utilisés par le calcul de revient, versionnés par date pour que les lots passés gardent leurs chiffres.",
+    "errorTitle": "Impossible de mettre à jour les taux",
+    "allSites": "Tous les sites",
+    "active": "Actif",
+    "archived": "Archivé",
+    "closed": "Clos",
+    "archive": "Archiver",
+    "close": "Clôturer aujourd’hui",
+    "kinds": {
+      "ELECTRICITY": "Électricité",
+      "GAS": "Gaz"
+    },
+    "labour": {
+      "title": "Taux de main-d’œuvre",
+      "intro": "Coût horaire chargé par poste. Créez une nouvelle ligne au lieu de modifier un ancien taux.",
+      "submit": "Ajouter un taux",
+      "emptyTitle": "Aucun taux de main-d’œuvre",
+      "emptyBody": "Ajoutez un taux avant de publier une recette avec des opérations.",
+      "fields": {
+        "label": "Poste",
+        "labelHint": "Par exemple Pâtissier ou Apprenti.",
+        "hourlyCost": "Coût horaire",
+        "hourlyCostHint": "Coût chargé, hors TVA.",
+        "site": "Site",
+        "validFrom": "Applicable à partir du",
+        "validFromHint": "Le taux s’applique à partir de ce jour."
+      },
+      "columns": {
+        "label": "Poste",
+        "site": "Site",
+        "hourlyCost": "Coût horaire",
+        "validFrom": "À partir du",
+        "status": "Statut"
+      }
+    },
+    "energy": {
+      "title": "Tarifs d’énergie",
+      "intro": "Prix au kWh pour chaque site. Clôturez un ancien tarif avant d’en ajouter un nouveau.",
+      "submit": "Ajouter un tarif",
+      "emptyTitle": "Aucun tarif d’énergie",
+      "emptyBody": "Ajoutez un tarif pour valoriser l’énergie consommée par un lot.",
+      "fields": {
+        "site": "Site",
+        "kind": "Énergie",
+        "pricePerKwh": "Prix au kWh",
+        "pricePerKwhHint": "Hors TVA.",
+        "validFrom": "Applicable à partir du",
+        "validFromHint": "Le tarif s’applique à partir de ce jour."
+      },
+      "columns": {
+        "site": "Site",
+        "kind": "Énergie",
+        "pricePerKwh": "Prix au kWh",
+        "validFrom": "À partir du",
+        "status": "Statut"
+      }
+    },
+    "validation": {
+      "labelRequired": "Saisissez un nom de poste.",
+      "labelTooLong": "Le nom du poste est trop long.",
+      "costInvalid": "Saisissez un montant positif avec 4 décimales au maximum.",
+      "dateInvalid": "Choisissez une date valide.",
+      "kindInvalid": "Choisissez un type d’énergie valide.",
+      "siteRequired": "Choisissez un site."
+    }
+  },
+  "Equipment": {
+    "metadataTitle": "Équipements · Emma & Éléa",
+    "title": "Équipements",
+    "intro": "Machines dont la puissance contribue au coût de l’énergie.",
+    "createTitle": "Ajouter un équipement",
+    "createIntro": "La puissance est facultative ; laissez-la vide si la machine ne consomme pas d’énergie.",
+    "submit": "Ajouter l’équipement",
+    "listTitle": "Tous les équipements",
+    "shared": "Partagé",
+    "active": "Actif",
+    "archived": "Archivé",
+    "archive": "Archiver",
+    "errorTitle": "Impossible de mettre à jour les équipements",
+    "emptyTitle": "Aucun équipement",
+    "emptyBody": "Ajoutez un four, un batteur ou une autre machine pour valoriser son énergie.",
+    "fields": {
+      "name": "Nom",
+      "kind": "Type",
+      "site": "Site",
+      "powerKw": "Puissance",
+      "powerKwHint": "En kilowatts. Laissez vide si la machine ne consomme pas d’énergie."
+    },
+    "columns": {
+      "name": "Nom",
+      "kind": "Type",
+      "site": "Site",
+      "powerKw": "Puissance",
+      "status": "Statut"
+    },
+    "kinds": {
+      "OVEN": "Four",
+      "MIXER": "Batteur",
+      "FRIDGE": "Réfrigérateur",
+      "FREEZER": "Congélateur",
+      "PROOFER": "Étuve",
+      "FRYER": "Friteuse",
+      "SCALE": "Balance",
+      "LABELLER": "Étiqueteuse",
+      "OTHER": "Autre"
+    },
+    "validation": {
+      "nameRequired": "Saisissez un nom d’équipement.",
+      "nameTooLong": "Le nom de l’équipement est trop long.",
+      "kindInvalid": "Choisissez un type valide.",
+      "powerInvalid": "Saisissez une puissance en kW entre 0 et 500, ou laissez vide."
     }
   }
 }

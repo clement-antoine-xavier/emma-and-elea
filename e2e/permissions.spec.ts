@@ -82,6 +82,15 @@ test("an owner invites staff, and staff cannot reach team management", async ({
   await expect(page.getByRole("link", { name: "Production" })).toBeVisible();
   await expect(page.getByText("Costs and margins")).toHaveCount(0);
 
+  // Settings stays visible, but only the areas staff can read have a card.
+  await page.getByRole("link", { name: "Settings" }).click();
+  await expect(page).toHaveURL(/\/dashboard\/settings$/);
+  await expect(page.getByRole("link", { name: "Manage sites" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Manage rates" })).toHaveCount(0);
+  await expect(
+    page.getByRole("link", { name: "Manage equipment" }),
+  ).toHaveCount(0);
+
   // Direct navigation to a guarded route is refused by the server. Cache
   // Components may stream the shell before notFound(), so assert the 404 page
   // rather than the HTTP status.

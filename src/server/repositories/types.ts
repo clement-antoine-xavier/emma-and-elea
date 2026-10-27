@@ -17,6 +17,14 @@ export type Page<T> = {
   pageSize: number;
 };
 
+export type {
+  EnergyTariffRecord,
+  EquipmentRecord,
+  LabourRateRecord,
+  OrganizationSettingsRecord,
+  SiteRecord,
+} from "@/lib/dto";
+
 export type OrganizationSummary = {
   id: string;
   name: string;

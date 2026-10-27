@@ -20,6 +20,8 @@ export type CreateOrganizationActionResult =
 export async function createOrganizationAction(input: {
   name: string;
   slug: string;
+  siteName: string;
+  siteCode: string;
 }): Promise<CreateOrganizationActionResult> {
   const actor = await getActorContext();
   if (!actor) return {ok: false, error: "unauthenticated"};

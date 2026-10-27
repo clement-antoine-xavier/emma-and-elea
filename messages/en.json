@@ -326,10 +326,16 @@
     "metadataTitle": "Create your workspace · Emma & Éléa",
     "title": "Create your workspace",
     "subtitle": "Tell us the name of your business. You can invite your team next.",
+    "siteTitle": "Your first site",
+    "siteSubtitle": "A site is a place where stock sits and production happens: a workshop, a shop or a warehouse. You can add more later.",
     "fields": {
       "name": "Business name",
       "slug": "Workspace address",
-      "slugHint": "Lowercase letters, numbers and hyphens."
+      "slugHint": "Lowercase letters, numbers and hyphens.",
+      "siteName": "Site name",
+      "siteNameHint": "For example “Atelier” or “Boutique Croix-Rousse”.",
+      "siteCode": "Site code",
+      "siteCodeHint": "2 to 8 uppercase letters or digits. It prefixes lot numbers."
     },
     "submit": "Create workspace",
     "errors": {
@@ -342,6 +348,9 @@
       "nameTooLong": "The business name is too long.",
       "slugInvalid": "Use lowercase letters, numbers and single hyphens.",
       "slugTooLong": "The workspace address is too long.",
+      "siteNameRequired": "Enter a name for your first site.",
+      "siteNameTooLong": "The site name is too long.",
+      "siteCodeInvalid": "Use 2 to 8 uppercase letters or digits.",
       "emailInvalid": "Enter a valid email address.",
       "roleInvalid": "Choose a valid role."
     }
@@ -499,6 +508,244 @@
         "title": "Settings",
         "intro": "Your business, sites, rates and equipment."
       }
+    }
+  },
+  "Settings": {
+    "metadataTitle": "Settings · Emma & Éléa",
+    "title": "Settings",
+    "intro": "Your business, sites, rates and equipment.",
+    "backToSettings": "Back to settings",
+    "manageTitle": "Manage",
+    "cards": {
+      "sites": {
+        "title": "Sites",
+        "body": "Workshops, shops and warehouses where stock lives.",
+        "action": "Manage sites"
+      },
+      "rates": {
+        "title": "Labour and energy",
+        "body": "Hourly costs and energy tariffs, versioned by date.",
+        "action": "Manage rates"
+      },
+      "equipment": {
+        "title": "Equipment",
+        "body": "Ovens, mixers and their power draw, used for energy costing.",
+        "action": "Manage equipment"
+      }
+    },
+    "organization": {
+      "title": "Organization",
+      "intro": "These values drive costing, lot numbers and forecasting. Only owners and admins can change them.",
+      "saved": "Settings saved.",
+      "errorTitle": "Could not save the settings",
+      "submit": "Save settings",
+      "notSet": "Not set",
+      "fields": {
+        "currency": "Currency",
+        "currencyHint": "Three-letter ISO code, for example EUR.",
+        "overheadPct": "Overhead",
+        "overheadPctHint": "Percentage added to material, packaging, labour and energy.",
+        "forecastHistoryDays": "Forecast history",
+        "forecastHistoryDaysHint": "Days of sales history used to suggest quantities (7 to 365).",
+        "forecastSafetyPct": "Safety margin",
+        "forecastSafetyPctHint": "Buffer added to suggested quantities.",
+        "defaultShelfLifeDays": "Default shelf life",
+        "defaultShelfLifeDaysHint": "Days added to the expiry of a finished lot when the item has no default.",
+        "lotNumberPattern": "Lot number pattern",
+        "lotNumberPatternHint": "Placeholders: '{site}', '{yyMMdd}', '{seq}'.",
+        "pricesIncludeVat": "Prices include VAT"
+      },
+      "vat": {
+        "included": "Included",
+        "excluded": "Excluded"
+      }
+    },
+    "errors": {
+      "unauthenticated": "Your session has expired. Sign in again.",
+      "forbidden": "You are not allowed to do that.",
+      "notFound": "That record no longer exists.",
+      "conflict": "That change conflicts with existing data.",
+      "duplicateCode": "This code is already used.",
+      "invalidInput": "Check the highlighted fields.",
+      "lastSite": "You cannot archive the last site.",
+      "generic": "Something went wrong. Please try again."
+    },
+    "validation": {
+      "currencyInvalid": "Use a three-letter currency code.",
+      "overheadInvalid": "Enter a percentage between 0 and 100.",
+      "historyInvalid": "Enter a number of days between 7 and 365.",
+      "safetyInvalid": "Enter a percentage between 0 and 100.",
+      "shelfLifeInvalid": "Enter a number of days between 0 and 365, or leave empty.",
+      "lotPatternInvalid": "Use 3 to 60 characters.",
+      "vatInvalid": "Choose whether prices include VAT."
+    }
+  },
+  "Sites": {
+    "metadataTitle": "Sites · Emma & Éléa",
+    "title": "Sites",
+    "intro": "Places where {organization} holds stock and produces.",
+    "detailIntro": "Site {code}. Its code prefixes lot numbers.",
+    "createTitle": "Add a site",
+    "createIntro": "A site can be a workshop, a shop, a warehouse or a lab.",
+    "submit": "Add site",
+    "listTitle": "All sites",
+    "edit": "Edit",
+    "archive": "Archive",
+    "active": "Active",
+    "archived": "Archived",
+    "errorTitle": "Could not update the sites",
+    "emptyTitle": "No sites yet",
+    "emptyBody": "Add your first site to start receiving stock.",
+    "editTitle": "Edit site",
+    "editIntro": "Site {code}.",
+    "saved": "Site saved.",
+    "save": "Save site",
+    "backToList": "Back to sites",
+    "fields": {
+      "name": "Site name",
+      "code": "Code",
+      "codeHint": "2 to 8 uppercase letters or digits.",
+      "kind": "Kind",
+      "city": "City",
+      "timezone": "Timezone",
+      "timezoneHint": "IANA name, for example Europe/Paris."
+    },
+    "columns": {
+      "code": "Code",
+      "name": "Name",
+      "kind": "Kind",
+      "city": "City",
+      "status": "Status"
+    },
+    "kinds": {
+      "WORKSHOP": "Workshop",
+      "SHOP": "Shop",
+      "WAREHOUSE": "Warehouse",
+      "LAB": "Lab"
+    },
+    "validation": {
+      "nameRequired": "Enter a site name.",
+      "nameTooLong": "The site name is too long.",
+      "codeInvalid": "Use 2 to 8 letters or digits.",
+      "kindInvalid": "Choose a valid kind.",
+      "cityTooLong": "The city is too long.",
+      "timezoneInvalid": "Enter a valid timezone."
+    }
+  },
+  "Rates": {
+    "metadataTitle": "Rates · Emma & Éléa",
+    "title": "Labour and energy",
+    "intro": "Costs used by the costing engine, versioned by date so past batches keep their numbers.",
+    "errorTitle": "Could not update the rates",
+    "allSites": "All sites",
+    "active": "Active",
+    "archived": "Archived",
+    "closed": "Closed",
+    "archive": "Archive",
+    "close": "Close today",
+    "kinds": {
+      "ELECTRICITY": "Electricity",
+      "GAS": "Gas"
+    },
+    "labour": {
+      "title": "Labour rates",
+      "intro": "Fully loaded hourly cost by role. Create a new row instead of editing an old rate.",
+      "submit": "Add labour rate",
+      "emptyTitle": "No labour rates yet",
+      "emptyBody": "Add a rate before publishing a recipe with operations.",
+      "fields": {
+        "label": "Role",
+        "labelHint": "For example Pâtissier or Apprenti.",
+        "hourlyCost": "Hourly cost",
+        "hourlyCostHint": "Fully loaded cost, excluding VAT.",
+        "site": "Site",
+        "validFrom": "Effective from",
+        "validFromHint": "The rate applies from this day."
+      },
+      "columns": {
+        "label": "Role",
+        "site": "Site",
+        "hourlyCost": "Hourly cost",
+        "validFrom": "From",
+        "status": "Status"
+      }
+    },
+    "energy": {
+      "title": "Energy tariffs",
+      "intro": "Price per kWh for each site. Close an old tariff before adding a new one.",
+      "submit": "Add energy tariff",
+      "emptyTitle": "No energy tariffs yet",
+      "emptyBody": "Add a tariff to cost the energy used by a batch.",
+      "fields": {
+        "site": "Site",
+        "kind": "Energy",
+        "pricePerKwh": "Price per kWh",
+        "pricePerKwhHint": "Excluding VAT.",
+        "validFrom": "Effective from",
+        "validFromHint": "The tariff applies from this day."
+      },
+      "columns": {
+        "site": "Site",
+        "kind": "Energy",
+        "pricePerKwh": "Price per kWh",
+        "validFrom": "From",
+        "status": "Status"
+      }
+    },
+    "validation": {
+      "labelRequired": "Enter a role name.",
+      "labelTooLong": "The role name is too long.",
+      "costInvalid": "Enter a positive amount with up to 4 decimals.",
+      "dateInvalid": "Choose a valid date.",
+      "kindInvalid": "Choose a valid energy type.",
+      "siteRequired": "Choose a site."
+    }
+  },
+  "Equipment": {
+    "metadataTitle": "Equipment · Emma & Éléa",
+    "title": "Equipment",
+    "intro": "Machines whose power draw contributes to energy cost.",
+    "createTitle": "Add equipment",
+    "createIntro": "Power is optional; leave it empty when the machine has no energy cost.",
+    "submit": "Add equipment",
+    "listTitle": "All equipment",
+    "shared": "Shared",
+    "active": "Active",
+    "archived": "Archived",
+    "archive": "Archive",
+    "errorTitle": "Could not update the equipment",
+    "emptyTitle": "No equipment yet",
+    "emptyBody": "Add an oven, a mixer or another machine to cost its energy.",
+    "fields": {
+      "name": "Name",
+      "kind": "Kind",
+      "site": "Site",
+      "powerKw": "Power",
+      "powerKwHint": "In kilowatts. Leave empty when the machine has no energy cost."
+    },
+    "columns": {
+      "name": "Name",
+      "kind": "Kind",
+      "site": "Site",
+      "powerKw": "Power",
+      "status": "Status"
+    },
+    "kinds": {
+      "OVEN": "Oven",
+      "MIXER": "Mixer",
+      "FRIDGE": "Fridge",
+      "FREEZER": "Freezer",
+      "PROOFER": "Proofer",
+      "FRYER": "Fryer",
+      "SCALE": "Scale",
+      "LABELLER": "Labeller",
+      "OTHER": "Other"
+    },
+    "validation": {
+      "nameRequired": "Enter an equipment name.",
+      "nameTooLong": "The equipment name is too long.",
+      "kindInvalid": "Choose a valid kind.",
+      "powerInvalid": "Enter a power in kW between 0 and 500, or leave empty."
     }
   }
 }

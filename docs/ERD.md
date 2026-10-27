@@ -1469,12 +1469,14 @@ landed in `20261026193803_add_stock_counts`.
 3. `Unit` and `Allergen` are seeded by the Phase 1 migration, not at application
    startup, so every environment has identical reference data.
 4. Tenant bootstrap lives in `ensureOrganizationDefaults()`
-   (`src/server/services/organization-bootstrap.service.ts`): it upserts `OrganizationSetting` and
-   inserts the eight default `LossReason` rows. It is idempotent and wired to a
-   **`hooks.after` endpoint hook** on `/organization/create`.
-   `databaseHooks.organization` does not work: the organization plugin writes
-   the row through the raw adapter and bypasses database hooks. Covered by
-   `e2e/organization.spec.ts`.
+   (`src/server/services/organization-bootstrap.service.ts`): it upserts
+   `OrganizationSetting`, inserts the eight default `LossReason` rows, and,
+   when onboarding supplies one, creates the first `Site` if the organization
+   has none. It is idempotent and wired to a **`hooks.after` endpoint hook** on
+   `/organization/create`. `databaseHooks.organization` does not work: the
+   organization plugin writes the row through the raw adapter and bypasses
+   database hooks. Covered by `e2e/organization.spec.ts`; organizations created
+   before the site step are repaired by `npm run db:backfill-sites`.
 5. Unit conversion lives in `src/server/domain/units.ts`; `assertBaseUnit`
    enforces that an item stocks in the base unit of its kind, and
    `convertQuantity` refuses cross-kind conversions. Ad-hoc `factorToBase`

@@ -22,6 +22,7 @@ export type DomainErrorCode =
   | "DUPLICATE_CODE"
   | "DUPLICATE_NUMBER"
   | "ARCHIVED"
+  | "LAST_SITE"
   // Recipes and costing.
   | "IMMUTABLE_VERSION"
   | "INVALID_RECIPE_OUTPUT"

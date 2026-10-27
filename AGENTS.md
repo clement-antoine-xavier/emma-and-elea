@@ -44,6 +44,7 @@ Layered: entry point → service → repository → Prisma. See ADR-0012.
 - `npm run db:migrate` — create and apply a Prisma migration.
 - `npm run db:generate` — regenerate the Prisma client.
 - `npm run db:seed` — add idempotent demo data to one organization (`-- --org=<slug>` when several exist).
+- `npm run db:backfill-sites` — create a default site for organizations that have none.
 - `npm run db:studio` — open Prisma Studio.
 - `npm run auth:generate` — add/refresh Better Auth models in the Prisma schema.
 - `npm run auth:create-admin -- --email … --password … --name …` — create an admin user.

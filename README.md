@@ -46,7 +46,9 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000). The UI language comes from
 the `NEXT_LOCALE` cookie (English by default; use the language switcher to change
-it), and accounts are created at `/sign-up`.
+it), and accounts are created at `/sign-up`. Onboarding asks for the business
+name and its first site. `/dashboard/settings` manages the organization values,
+sites, labour rates, energy tariffs and equipment.
 
 ## Environment
 
@@ -82,6 +84,12 @@ npm run db:seed -- --org=my-bakery
 ```
 
 The command exits with instructions when no organization exists yet; create one at `/sign-up` first. Units and allergens are seeded by the database migration, not by this script.
+
+Organizations created before onboarding asked for a first site can get one with:
+
+```bash
+npm run db:backfill-sites
+```
 
 ## Auth
 

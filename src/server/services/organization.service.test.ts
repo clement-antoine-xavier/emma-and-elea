@@ -2,6 +2,7 @@ import {createOrganizationService} from "@/server/services/organization.service"
 import {DomainError} from "@/server/domain/errors";
 import type {Actor} from "@/server/auth/types";
 import type {BetterAuthGateway} from "@/server/auth/better-auth.gateway";
+import type {OrganizationBootstrapService} from "@/server/services/organization-bootstrap.service";
 
 const actor: Actor = {
   userId: "user_1",
@@ -17,12 +18,19 @@ const actor: Actor = {
   role: null,
 };
 
+const input = {
+  name: "Bakery",
+  slug: "bakery",
+  siteName: "Atelier",
+  siteCode: "ATL",
+};
+
 function makeService() {
   const authGateway: BetterAuthGateway = {
-    createOrganization: jest.fn(async (input) => ({
+    createOrganization: jest.fn(async (data) => ({
       id: "org_1",
-      name: input.name,
-      slug: input.slug,
+      name: data.name,
+      slug: data.slug,
     })),
     createInvitation: jest.fn(),
     updateMemberRole: jest.fn(),
@@ -31,20 +39,25 @@ function makeService() {
     acceptInvitation: jest.fn(),
   };
 
+  const bootstrapService: OrganizationBootstrapService = {
+    bootstrapOrganization: jest.fn().mockResolvedValue(undefined),
+  };
+
   return {
     authGateway,
-    service: createOrganizationService({authGateway}),
+    bootstrapService,
+    service: createOrganizationService({authGateway, bootstrapService}),
     headers: new Headers(),
   };
 }
 
 describe("organization service", () => {
-  it("creates a workspace through the auth gateway", async () => {
+  it("creates a workspace and its first site", async () => {
     const deps = makeService();
 
     const organization = await deps.service.createOrganization(
       actor,
-      {name: "Bakery", slug: "bakery"},
+      input,
       deps.headers,
     );
 
@@ -57,17 +70,25 @@ describe("organization service", () => {
       {name: "Bakery", slug: "bakery"},
       deps.headers,
     );
+    expect(deps.bootstrapService.bootstrapOrganization).toHaveBeenCalledWith(
+      "org_1",
+      {
+        site: {
+          name: "Atelier",
+          code: "ATL",
+          kind: "WORKSHOP",
+          city: null,
+          timezone: "Europe/Paris",
+        },
+      },
+    );
   });
 
   it("requires an authenticated actor", async () => {
     const deps = makeService();
 
     await expect(
-      deps.service.createOrganization(
-        null,
-        {name: "Bakery", slug: "bakery"},
-        deps.headers,
-      ),
+      deps.service.createOrganization(null, input, deps.headers),
     ).rejects.toBeInstanceOf(DomainError);
     expect(deps.authGateway.createOrganization).not.toHaveBeenCalled();
   });

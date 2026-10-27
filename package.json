@@ -20,6 +20,7 @@
     "db:migrate": "prisma migrate dev",
     "db:deploy": "prisma migrate deploy",
     "db:seed": "tsx prisma/seed.ts",
+    "db:backfill-sites": "tsx prisma/backfill-sites.ts",
     "db:studio": "prisma studio",
     "auth:generate": "auth generate --config src/lib/auth.ts --output prisma/schema.prisma --yes",
     "auth:create-admin": "auth create-admin --config src/lib/auth.ts",
