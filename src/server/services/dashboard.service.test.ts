@@ -47,17 +47,17 @@ describe("dashboard service", () => {
     ]);
   });
 
-  it("shows purchasing read access but not member management to production managers", () => {
+  it("shows planning and team access to production managers", () => {
     const items = service.getNavigation(actorFor("production_manager")).items;
 
     expect(items).toContain("production");
     expect(items).toContain("purchasing");
     expect(items).toContain("reports");
-    expect(items).not.toContain("team");
+    expect(items).toContain("team");
   });
 
-  it("keeps member management away from stock and sales roles", () => {
-    expect(service.getNavigation(actorFor("stock_manager")).items).not.toContain(
+  it("gives stock managers the team rail but keeps sales out of it", () => {
+    expect(service.getNavigation(actorFor("stock_manager")).items).toContain(
       "team",
     );
     expect(service.getNavigation(actorFor("sales")).items).not.toContain("team");

@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { deleteOrganizationBySlug, deleteUserByEmail } from "./db";
-import { gotoHydrated } from "./helpers";
+import { clickNav, gotoHydrated } from "./helpers";
 
 const unique = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 const email = `e2e-purchasing-${unique}@example.com`;
@@ -39,7 +39,7 @@ test("a receipt posts lots and stock movements", async ({ page }) => {
   await expect(page).toHaveURL(/\/dashboard\/catalog\/items\//);
 
   // A supplier and one supplier price.
-  await page.getByRole("link", { name: "Purchasing", exact: true }).click();
+  await clickNav(page, "Purchasing", "/dashboard/purchasing");
   await page.getByRole("link", { name: "Suppliers" }).click();
   const supplierForm = page
     .locator("form")
@@ -72,7 +72,7 @@ test("a receipt posts lots and stock movements", async ({ page }) => {
   ).toBeVisible();
 
   // Draft receipt.
-  await page.getByRole("link", { name: "Purchasing", exact: true }).click();
+  await clickNav(page, "Purchasing", "/dashboard/purchasing");
   await page.getByRole("link", { name: "New receipt" }).click();
   const receiptForm = page
     .locator("form")

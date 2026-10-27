@@ -80,3 +80,19 @@ export function optionalIsoDateString(message: string) {
     .trim()
     .refine((value) => value === "" || isIsoDate(value), message);
 }
+
+const isoDateTimePattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2})?$/;
+
+function isIsoDateTime(value: string): boolean {
+  if (!isoDateTimePattern.test(value)) return false;
+
+  return !Number.isNaN(new Date(value).getTime());
+}
+
+/** A wall-clock datetime with no timezone suffix, `YYYY-MM-DDTHH:MM`. */
+export function isoDateTimeString(message: string) {
+  return z
+    .string()
+    .trim()
+    .refine((value) => isIsoDateTime(value), message);
+}

@@ -99,3 +99,63 @@ export function formatBusinessDate(
     timeZone: "UTC",
   }).format(date);
 }
+
+/** An instant rendered in the site's timezone (shifts and absences). */
+export function formatDateTime(
+  value: string | Date | null | undefined,
+  options: {
+    locale: string;
+    timeZone: string;
+    fallback?: string;
+  },
+): string {
+  if (!value) return options.fallback ?? FALLBACK;
+
+  const date = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(date.getTime())) return options.fallback ?? FALLBACK;
+
+  return new Intl.DateTimeFormat(options.locale, {
+    dateStyle: "medium",
+    timeStyle: "short",
+    timeZone: options.timeZone,
+  }).format(date);
+}
+
+/** Minutes from midnight as a `HH:MM` label. */
+export function formatMinutes(minutes: number): string {
+  const hours = Math.floor(minutes / 60);
+  const rest = minutes % 60;
+  return `${String(hours).padStart(2, "0")}:${String(rest).padStart(2, "0")}`;
+}
+
+/** The calendar date of an instant in a specific timezone. */
+export function formatZonedDate(
+  value: string | Date | null | undefined,
+  options: {locale: string; timeZone: string; fallback?: string},
+): string {
+  if (!value) return options.fallback ?? FALLBACK;
+
+  const date = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(date.getTime())) return options.fallback ?? FALLBACK;
+
+  return new Intl.DateTimeFormat(options.locale, {
+    dateStyle: "medium",
+    timeZone: options.timeZone,
+  }).format(date);
+}
+
+/** The time of day of an instant in a specific timezone. */
+export function formatZonedTime(
+  value: string | Date | null | undefined,
+  options: {locale: string; timeZone: string; fallback?: string},
+): string {
+  if (!value) return options.fallback ?? FALLBACK;
+
+  const date = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(date.getTime())) return options.fallback ?? FALLBACK;
+
+  return new Intl.DateTimeFormat(options.locale, {
+    timeStyle: "short",
+    timeZone: options.timeZone,
+  }).format(date);
+}

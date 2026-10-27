@@ -32,7 +32,7 @@ const navItems: ReadonlyArray<{
   {key: "purchasing", read: "purchasing:read"},
   {key: "sales", read: "order:read"},
   {key: "reports", read: "report:read"},
-  {key: "team", read: "member:read"},
+  {key: "team", read: "team:read"},
   {key: "settings", read: "organization:read"},
 ];
 

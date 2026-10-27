@@ -40,6 +40,10 @@ export function mapDomainError(error: unknown): ActionErrorKey {
       return "missingPrice";
     case "LAST_SITE":
       return "lastSite";
+    case "EMPLOYEE_UNAVAILABLE":
+      return "invalidState";
+    case "SHIFT_CONFLICT":
+      return "conflict";
     default:
       return "generic";
   }

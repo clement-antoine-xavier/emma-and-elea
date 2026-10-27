@@ -25,6 +25,7 @@ decision.
 | [0014](0014-post-ledger-changes-in-one-transaction.md) | Post ledger changes as one repository transaction | Accepted | 2026-10-27 |
 | [0015](0015-separate-dispatch-stock-from-daily-sales.md) | Record dispatches in the stock ledger and daily sales separately | Accepted | 2026-10-27 |
 | [0016](0016-forecast-from-daily-sales.md) | Forecast from daily sales and keep plans as snapshots | Accepted | 2026-10-27 |
+| [0017](0017-schedule-against-local-availability.md) | Schedule shifts against local availability and approved absences | Accepted | 2026-10-27 |
 
 ## Creating a new ADR
 

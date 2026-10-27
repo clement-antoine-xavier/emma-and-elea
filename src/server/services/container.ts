@@ -16,6 +16,7 @@ import {recipeRepository} from "@/server/repositories/recipe.repository";
 import {productionRepository} from "@/server/repositories/production.repository";
 import {reportRepository} from "@/server/repositories/report.repository";
 import {salesRepository} from "@/server/repositories/sales.repository";
+import {scheduleRepository} from "@/server/repositories/schedule.repository";
 import {siteRepository} from "@/server/repositories/site.repository";
 import {stockRepository} from "@/server/repositories/stock.repository";
 import {supplierRepository} from "@/server/repositories/supplier.repository";
@@ -35,6 +36,7 @@ import {createPurchasingService} from "./purchasing.service";
 import {createRateService} from "./rate.service";
 import {createRecipeService} from "./recipe.service";
 import {createReportService} from "./report.service";
+import {createScheduleService} from "./schedule.service";
 import {createSettingsService} from "./settings.service";
 import {createSiteService} from "./site.service";
 import {createStockService} from "./stock.service";
@@ -134,4 +136,9 @@ export const dailySalesService = createDailySalesService({
 export const reportService = createReportService({
   reportRepository,
   stockRepository,
+});
+
+export const scheduleService = createScheduleService({
+  scheduleRepository,
+  siteRepository,
 });

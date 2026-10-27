@@ -33,6 +33,8 @@ export type DomainErrorCode =
   | "INVALID_STATE_TRANSITION"
   | "INVALID_QUANTITY"
   | "UNBALANCED_POSTING"
+  | "EMPLOYEE_UNAVAILABLE"
+  | "SHIFT_CONFLICT"
   | "UNEXPECTED";
 
 export class DomainError extends Error {

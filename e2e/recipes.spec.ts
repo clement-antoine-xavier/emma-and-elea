@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { deleteOrganizationBySlug, deleteUserByEmail } from "./db";
-import { gotoHydrated } from "./helpers";
+import { clickNav, gotoHydrated } from "./helpers";
 
 const unique = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 const email = `e2e-recipes-${unique}@example.com`;
@@ -81,7 +81,7 @@ test("a recipe publishes a cost snapshot", async ({ page }) => {
   await expect(page).toHaveURL(/\/dashboard\/catalog\/items\//);
 
   // Supplier price for the flour.
-  await page.getByRole("link", { name: "Purchasing", exact: true }).click();
+  await clickNav(page, "Purchasing", "/dashboard/purchasing");
   await page.getByRole("link", { name: "Suppliers" }).click();
   const supplierForm = page
     .locator("form")

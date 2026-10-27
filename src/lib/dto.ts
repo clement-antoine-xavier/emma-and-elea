@@ -839,3 +839,90 @@ export type ProductionPlanDetailRecord = ProductionPlanSummaryRecord & {
   note: string | null;
   lines: ProductionPlanLineRecord[];
 };
+
+export type EmployeeAvailabilityRecord = {
+  id: string;
+  weekday: number;
+  startMinute: number;
+  endMinute: number;
+  validFrom: Date | null;
+  validTo: Date | null;
+};
+
+export type EmployeeProfileRecord = {
+  id: string;
+  memberId: string;
+  userId: string;
+  name: string;
+  email: string;
+  role: string;
+  siteId: string | null;
+  siteName: string | null;
+  timeZone: string | null;
+  jobTitle: string | null;
+  weeklyContractHours: string | null;
+  hiredOn: Date | null;
+  isActive: boolean;
+  availabilityCount: number;
+};
+
+export type EmployeeChoice = {
+  memberId: string;
+  name: string;
+  email: string;
+  role: string;
+  hasProfile: boolean;
+};
+
+export type EmployeeOption = {
+  id: string;
+  name: string;
+  jobTitle: string | null;
+  siteId: string | null;
+  weeklyContractHours: string | null;
+};
+
+export type AbsenceKindName = "VACATION" | "SICK" | "TRAINING" | "OTHER";
+
+export type AbsenceStatusName = "REQUESTED" | "APPROVED" | "REJECTED";
+
+export type AbsenceRecord = {
+  id: string;
+  employeeId: string;
+  employeeName: string;
+  kind: AbsenceKindName;
+  startsAt: Date;
+  endsAt: Date;
+  status: AbsenceStatusName;
+  note: string | null;
+  timeZone: string;
+};
+
+export type ShiftKindName =
+  | "PRODUCTION"
+  | "SALES"
+  | "DELIVERY"
+  | "CLEANING"
+  | "OTHER";
+
+export type AssignmentStatusName = "PLANNED" | "CONFIRMED" | "ABSENT";
+
+export type ShiftAssignmentRecord = {
+  id: string;
+  employeeId: string;
+  employeeName: string;
+  role: string | null;
+  status: AssignmentStatusName;
+};
+
+export type ShiftRecord = {
+  id: string;
+  siteId: string;
+  siteName: string;
+  timeZone: string;
+  startsAt: Date;
+  endsAt: Date;
+  kind: ShiftKindName;
+  note: string | null;
+  assignments: ShiftAssignmentRecord[];
+};
