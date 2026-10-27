@@ -1564,6 +1564,163 @@
       "lotRequired": "Choisissez un lot.",
       "reasonRequired": "Choisissez un motif de perte.",
       "itemRequired": "Choisissez un article."
+    },
+    "planningLink": "Planification",
+    "planning": {
+      "metadataTitle": "Planification · Emma & Éléa",
+      "title": "Planification de la production",
+      "intro": "Prévoyez les ventes au comptoir et les commandes confirmées, puis transformez-les en plan de production.",
+      "back": "Retour à la production",
+      "detailTitle": "Plan de production",
+      "noSiteTitle": "Aucun site",
+      "noSiteBody": "Créez un site dans les paramètres avant de planifier la production.",
+      "summary": {
+        "site": "Site",
+        "date": "Prévu pour",
+        "history": "Fenêtre d’historique",
+        "historyValue": "{days} jours ({from} → {to})",
+        "safety": "Marge de sécurité",
+        "status": "Statut",
+        "source": "Source",
+        "note": "Note",
+        "noNote": "Aucune note"
+      },
+      "eventTitle": "Événement pris en compte",
+      "eventBody": "Un événement local ajoute {uplift} aux prévisions du jour.",
+      "filters": {
+        "site": "Site",
+        "date": "Date",
+        "apply": "Afficher"
+      },
+      "forecast": {
+        "title": "Suggestions de prévision",
+        "intro": "Moyenne des ventes au comptoir ajustée par la marge de sécurité. Le stock existant est affiché mais non déduit.",
+        "emptyTitle": "Aucune prévision",
+        "emptyBody": "Saisissez les ventes quotidiennes pour construire une prévision.",
+        "columns": {
+          "item": "Article",
+          "recipe": "Recette",
+          "history": "Vendu sur la période",
+          "average": "Moyenne journalière",
+          "stock": "Stock disponible",
+          "suggested": "Suggéré"
+        }
+      },
+      "orders": {
+        "title": "Commandes confirmées",
+        "intro": "Lignes de commande non servies à cette date. Chacune devient une ligne de plan distincte.",
+        "emptyTitle": "Aucune commande à cette date",
+        "emptyBody": "Les commandes confirmées prévues aujourd’hui apparaissent ici.",
+        "noRecipe": "Aucune recette",
+        "columns": {
+          "order": "Commande",
+          "customer": "Client",
+          "item": "Article",
+          "quantity": "Quantité",
+          "recipe": "Recette"
+        }
+      },
+      "plans": {
+        "title": "Plans de cette date",
+        "intro": "Un seul plan ouvert par site et par jour. Les plans clôturés et annulés restent dans l’historique.",
+        "emptyTitle": "Aucun plan",
+        "emptyBody": "Créez le plan du jour à partir des sources ci-dessus.",
+        "open": "Ouvrir",
+        "columns": {
+          "date": "Date",
+          "status": "Statut",
+          "source": "Source",
+          "lines": "Lignes"
+        }
+      },
+      "openPlan": {
+        "title": "Un plan est déjà ouvert",
+        "body": "Modifiez-le ou clôturez-le avant de créer un autre plan pour cette journée.",
+        "action": "Ouvrir le plan"
+      },
+      "create": {
+        "title": "Créer le plan",
+        "intro": "Le plan reprend les sources sélectionnées. Vous pouvez ajuster les quantités avant de confirmer.",
+        "errorTitle": "Impossible de créer le plan.",
+        "forecast": "Inclure les prévisions",
+        "forecastHint": "{count} lignes suggérées.",
+        "orders": "Inclure les commandes",
+        "ordersHint": "{count} lignes de commande.",
+        "note": "Note",
+        "submit": "Créer le plan",
+        "chooseSource": "Choisissez au moins une source."
+      },
+      "validation": {
+        "siteRequired": "Choisissez un site.",
+        "dateInvalid": "Choisissez une date valide.",
+        "noteTooLong": "Cette note est trop longue.",
+        "itemRequired": "Choisissez un article.",
+        "quantityInvalid": "Saisissez une quantité supérieure à zéro.",
+        "lineRequired": "Choisissez une ligne."
+      },
+      "statuses": {
+        "DRAFT": "Brouillon",
+        "CONFIRMED": "Confirmé",
+        "CLOSED": "Clôturé",
+        "CANCELLED": "Annulé"
+      },
+      "sources": {
+        "FORECAST": "Prévisions",
+        "ORDERS": "Commandes",
+        "MANUAL": "Manuel",
+        "MIXED": "Prévisions et commandes"
+      },
+      "basis": {
+        "WEEKDAY": "Même jour de la semaine",
+        "AVERAGE": "Moyenne journalière",
+        "NONE": "Aucun historique"
+      },
+      "actions": {
+        "errorTitle": "Impossible de mettre à jour le plan.",
+        "confirm": "Confirmer le plan",
+        "close": "Clôturer le plan",
+        "cancel": "Annuler le plan",
+        "confirmTitle": "Confirmer ce plan ?",
+        "confirmBody": "Les lignes sont verrouillées et peuvent devenir des lots de production.",
+        "closeTitle": "Clôturer ce plan ?",
+        "closeBody": "Le plan devient en lecture seule. Les lots déjà créés restent liés.",
+        "cancelTitle": "Annuler ce plan ?",
+        "cancelBody": "Le plan reste dans la liste avec le statut annulé. Aucun lot n’est modifié.",
+        "cancelConfirm": "Annuler le plan",
+        "back": "Retour"
+      },
+      "lines": {
+        "errorTitle": "Impossible de mettre à jour les lignes du plan.",
+        "title": "Lignes du plan",
+        "intro": "Ajustez les quantités avant de confirmer, puis créez un lot depuis une ligne.",
+        "emptyTitle": "Aucune ligne",
+        "emptyBody": "Ajoutez une ligne ou créez un plan à partir des prévisions et des commandes.",
+        "columns": {
+          "item": "Article",
+          "recipe": "Recette",
+          "source": "Source",
+          "quantity": "Quantité",
+          "batch": "Lot"
+        },
+        "noRecipe": "Aucune recette",
+        "forecastOrManual": "Prévision / manuel",
+        "adjust": "Ajuster",
+        "remove": "Retirer",
+        "createBatch": "Créer le lot",
+        "updateTitle": "Ajuster une ligne",
+        "updateIntro": "Choisissez une ligne et saisissez la nouvelle quantité prévue.",
+        "fields": {
+          "line": "Ligne",
+          "quantity": "Quantité",
+          "item": "Article",
+          "note": "Note"
+        },
+        "chooseLine": "Choisir une ligne",
+        "updateSubmit": "Mettre à jour la quantité",
+        "addTitle": "Ajouter une ligne",
+        "addIntro": "Les ajouts manuels fusionnent avec la ligne de prévision existante pour le même article.",
+        "addSubmit": "Ajouter la ligne"
+      }
     }
   },
   "Sales": {

@@ -25,6 +25,7 @@ import {withTransaction} from "./transaction";
 export type ProductionBatchInput = {
   siteId: string;
   recipeVersionId: string;
+  productionPlanLineId?: string | null;
   plannedQuantity: string;
   unitId: string;
   plannedStartAt: Date | null;

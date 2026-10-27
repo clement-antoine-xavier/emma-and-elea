@@ -1564,6 +1564,163 @@
       "lotRequired": "Choose a lot.",
       "reasonRequired": "Choose a waste reason.",
       "itemRequired": "Choose an item."
+    },
+    "planningLink": "Planning",
+    "planning": {
+      "metadataTitle": "Production planning · Emma & Éléa",
+      "title": "Production planning",
+      "intro": "Forecast counter sales and confirmed orders, then turn them into a production plan.",
+      "back": "Back to production",
+      "detailTitle": "Production plan",
+      "noSiteTitle": "No site yet",
+      "noSiteBody": "Create a site in settings before planning production.",
+      "summary": {
+        "site": "Site",
+        "date": "Planned for",
+        "history": "History window",
+        "historyValue": "{days} days ({from} → {to})",
+        "safety": "Safety buffer",
+        "status": "Status",
+        "source": "Source",
+        "note": "Note",
+        "noNote": "No note"
+      },
+      "eventTitle": "Event uplift applied",
+      "eventBody": "A local event adds {uplift} to this day's forecast.",
+      "filters": {
+        "site": "Site",
+        "date": "Date",
+        "apply": "Show"
+      },
+      "forecast": {
+        "title": "Forecast suggestions",
+        "intro": "Average counter sales adjusted by the safety buffer. Stock on hand is shown but not deducted.",
+        "emptyTitle": "No forecast yet",
+        "emptyBody": "Record daily sales to build a forecast.",
+        "columns": {
+          "item": "Item",
+          "recipe": "Recipe",
+          "history": "Sold in window",
+          "average": "Daily average",
+          "stock": "Stock on hand",
+          "suggested": "Suggested"
+        }
+      },
+      "orders": {
+        "title": "Confirmed orders",
+        "intro": "Unfulfilled order lines due on this date. Each becomes its own plan line.",
+        "emptyTitle": "No orders for this date",
+        "emptyBody": "Confirmed orders due today appear here.",
+        "noRecipe": "No recipe",
+        "columns": {
+          "order": "Order",
+          "customer": "Customer",
+          "item": "Item",
+          "quantity": "Quantity",
+          "recipe": "Recipe"
+        }
+      },
+      "plans": {
+        "title": "Plans for this date",
+        "intro": "One open plan per site and day. Closed and cancelled plans stay for history.",
+        "emptyTitle": "No plan yet",
+        "emptyBody": "Create the day's plan from the sources above.",
+        "open": "Open",
+        "columns": {
+          "date": "Date",
+          "status": "Status",
+          "source": "Source",
+          "lines": "Lines"
+        }
+      },
+      "openPlan": {
+        "title": "An open plan already exists",
+        "body": "Edit it or close it before creating another plan for this day.",
+        "action": "Open plan"
+      },
+      "create": {
+        "title": "Create plan",
+        "intro": "The plan copies the selected sources. You can adjust quantities before confirming.",
+        "errorTitle": "Could not create the plan.",
+        "forecast": "Include forecast",
+        "forecastHint": "{count} suggested lines.",
+        "orders": "Include orders",
+        "ordersHint": "{count} order lines.",
+        "note": "Note",
+        "submit": "Create plan",
+        "chooseSource": "Choose at least one source."
+      },
+      "validation": {
+        "siteRequired": "Choose a site.",
+        "dateInvalid": "Choose a valid date.",
+        "noteTooLong": "This note is too long.",
+        "itemRequired": "Choose an item.",
+        "quantityInvalid": "Enter a quantity greater than zero.",
+        "lineRequired": "Choose a line."
+      },
+      "statuses": {
+        "DRAFT": "Draft",
+        "CONFIRMED": "Confirmed",
+        "CLOSED": "Closed",
+        "CANCELLED": "Cancelled"
+      },
+      "sources": {
+        "FORECAST": "Forecast",
+        "ORDERS": "Orders",
+        "MANUAL": "Manual",
+        "MIXED": "Forecast and orders"
+      },
+      "basis": {
+        "WEEKDAY": "Same weekday",
+        "AVERAGE": "Daily average",
+        "NONE": "No history"
+      },
+      "actions": {
+        "errorTitle": "Could not update the plan.",
+        "confirm": "Confirm plan",
+        "close": "Close plan",
+        "cancel": "Cancel plan",
+        "confirmTitle": "Confirm this plan?",
+        "confirmBody": "Lines are locked and can become production batches.",
+        "closeTitle": "Close this plan?",
+        "closeBody": "The plan becomes read-only. Batches already created stay linked.",
+        "cancelTitle": "Cancel this plan?",
+        "cancelBody": "The plan stays in the list as cancelled. No batch is changed.",
+        "cancelConfirm": "Cancel plan",
+        "back": "Back"
+      },
+      "lines": {
+        "errorTitle": "Could not update the plan lines.",
+        "title": "Plan lines",
+        "intro": "Adjust quantities before confirming, then create a batch from a line.",
+        "emptyTitle": "No lines yet",
+        "emptyBody": "Add a line or create a plan from forecast and orders.",
+        "columns": {
+          "item": "Item",
+          "recipe": "Recipe",
+          "source": "Source",
+          "quantity": "Quantity",
+          "batch": "Batch"
+        },
+        "noRecipe": "No recipe",
+        "forecastOrManual": "Forecast / manual",
+        "adjust": "Adjust",
+        "remove": "Remove",
+        "createBatch": "Create batch",
+        "updateTitle": "Adjust a line",
+        "updateIntro": "Choose a line and enter the new planned quantity.",
+        "fields": {
+          "line": "Line",
+          "quantity": "Quantity",
+          "item": "Item",
+          "note": "Note"
+        },
+        "chooseLine": "Choose a line",
+        "updateSubmit": "Update quantity",
+        "addTitle": "Add a line",
+        "addIntro": "Manual additions merge with the existing forecast line for the same item.",
+        "addSubmit": "Add line"
+      }
     }
   },
   "Sales": {

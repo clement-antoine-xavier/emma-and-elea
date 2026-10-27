@@ -37,6 +37,11 @@ export default async function ProductionPage() {
             actions={
               <HStack gap={2} wrap="wrap">
                 <Button
+                  label={t("planningLink")}
+                  variant="primary"
+                  href="/dashboard/production/planning"
+                />
+                <Button
                   label={t("wasteLink")}
                   variant="secondary"
                   href="/dashboard/production/waste"

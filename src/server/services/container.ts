@@ -4,10 +4,12 @@ import {costingRepository} from "@/server/repositories/costing.repository";
 import {customerRepository} from "@/server/repositories/customer.repository";
 import {dispatchRepository} from "@/server/repositories/dispatch.repository";
 import {equipmentRepository} from "@/server/repositories/equipment.repository";
+import {forecastRepository} from "@/server/repositories/forecast.repository";
 import {invitationRepository} from "@/server/repositories/invitation.repository";
 import {membershipRepository} from "@/server/repositories/membership.repository";
 import {orderRepository} from "@/server/repositories/order.repository";
 import {organizationSettingsRepository} from "@/server/repositories/organization-settings.repository";
+import {planningRepository} from "@/server/repositories/planning.repository";
 import {purchaseRepository} from "@/server/repositories/purchase.repository";
 import {rateRepository} from "@/server/repositories/rate.repository";
 import {recipeRepository} from "@/server/repositories/recipe.repository";
@@ -27,6 +29,7 @@ import {createInvitationService} from "./invitation.service";
 import {createOrderService} from "./order.service";
 import {organizationBootstrapService} from "./organization-bootstrap.container";
 import {createOrganizationService} from "./organization.service";
+import {createPlanningService} from "./planning.service";
 import {createProductionService} from "./production.service";
 import {createPurchasingService} from "./purchasing.service";
 import {createRateService} from "./rate.service";
@@ -93,6 +96,15 @@ export const recipeService = createRecipeService({
 export const productionService = createProductionService({
   productionRepository,
   costingRepository,
+});
+
+export const planningService = createPlanningService({
+  planningRepository,
+  forecastRepository,
+  stockRepository,
+  productionRepository,
+  settingsRepository: organizationSettingsRepository,
+  siteRepository,
 });
 
 export const customerService = createCustomerService({customerRepository});

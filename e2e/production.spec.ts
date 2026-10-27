@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { deleteOrganizationBySlug, deleteUserByEmail } from "./db";
-import { gotoHydrated } from "./helpers";
+import { clickNav, gotoHydrated, pickOption } from "./helpers";
 
 const unique = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 const email = `e2e-production-${unique}@example.com`;
@@ -64,7 +64,7 @@ test("a completed batch consumes lots and creates a traceable output", async ({
   await expect(page).toHaveURL(/\/dashboard\/catalog\/items\//);
 
   // Supplier and price.
-  await page.getByRole("link", { name: "Purchasing", exact: true }).click();
+  await clickNav(page, "Purchasing", "/dashboard/purchasing");
   await page.getByRole("link", { name: "Suppliers" }).click();
   const supplierForm = page
     .locator("form")
@@ -85,7 +85,7 @@ test("a completed batch consumes lots and creates a traceable output", async ({
   await page.getByRole("button", { name: "Add supplier price" }).click();
 
   // Receive 25 kg of flour.
-  await page.getByRole("link", { name: "Purchasing", exact: true }).click();
+  await clickNav(page, "Purchasing", "/dashboard/purchasing");
   await page.getByRole("link", { name: "New receipt" }).click();
   const receiptForm = page
     .locator("form")
@@ -220,4 +220,68 @@ test("a completed batch consumes lots and creates a traceable output", async ({
   await expect(
     page.getByRole("heading", { name: "Batch yields" }),
   ).toBeVisible();
+
+  // Daily sales feed the forecast, which creates a plan and then a batch.
+  const yesterday = new Date();
+  yesterday.setUTCHours(0, 0, 0, 0);
+  yesterday.setUTCDate(yesterday.getUTCDate() - 1);
+  const planDate = new Date(yesterday);
+  planDate.setUTCDate(planDate.getUTCDate() + 7);
+  const isoDate = (date: Date) => date.toISOString().slice(0, 10);
+
+  await page.getByRole("link", { name: "Sales", exact: true }).click();
+  await page.getByRole("link", { name: "Daily sales" }).click();
+  const dailySalesForm = page
+    .locator("form")
+    .filter({ has: page.getByRole("button", { name: "Save sales" }) });
+  await pickOption(
+    page,
+    dailySalesForm.getByRole("combobox", { name: "Item" }),
+    /Croissant production/,
+  );
+  await page.getByLabel("Business date").fill(isoDate(yesterday));
+  await dailySalesForm.getByLabel("Quantity sold").fill("10");
+  await dailySalesForm.getByLabel("Revenue").fill("16");
+  await page.getByRole("button", { name: "Save sales" }).click();
+  await expect(page.getByText("10 piece").first()).toBeVisible();
+
+  await page.getByRole("link", { name: "Production", exact: true }).click();
+  await page.getByRole("link", { name: "Planning" }).click();
+  await page.getByLabel("Date", { exact: true }).fill(isoDate(planDate));
+  await page.getByRole("button", { name: "Show" }).click();
+  await expect(
+    page.getByRole("heading", { name: "Forecast suggestions" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("row", { name: /Croissant production/ }).first(),
+  ).toBeVisible();
+
+  await page.getByRole("button", { name: "Create plan" }).click();
+  await expect(page).toHaveURL(/\/dashboard\/production\/planning\/.+/);
+  await expect(
+    page.getByRole("heading", { name: "Production plan" }),
+  ).toBeVisible();
+
+  const updateLineForm = page
+    .locator("form")
+    .filter({ has: page.getByRole("button", { name: "Update quantity" }) });
+  await pickOption(
+    page,
+    updateLineForm.getByRole("combobox", { name: "Line" }),
+    /Croissant production/,
+  );
+  await updateLineForm.getByLabel("Quantity").fill("30");
+  await page.getByRole("button", { name: "Update quantity" }).click();
+  await expect(page.getByText("30 piece").first()).toBeVisible();
+
+  await page.getByRole("button", { name: "Confirm plan" }).click();
+  await page
+    .getByRole("alertdialog")
+    .getByRole("button", { name: "Confirm plan" })
+    .click();
+  await expect(page.getByText("Confirmed").first()).toBeVisible();
+
+  await page.getByRole("button", { name: "Create batch" }).click();
+  await expect(page).toHaveURL(/\/dashboard\/production\/batches\/.+/);
+  await expect(page.getByText("30 piece").first()).toBeVisible();
 });

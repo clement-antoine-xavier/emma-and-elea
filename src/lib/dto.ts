@@ -754,3 +754,88 @@ export type DashboardKpis = {
   wasteCost30d: string;
   currency: string;
 };
+
+export type PlanStatusName = "DRAFT" | "CONFIRMED" | "CLOSED" | "CANCELLED";
+
+export type PlanSourceName = "FORECAST" | "ORDERS" | "MANUAL" | "MIXED";
+
+export type ForecastBasis = "WEEKDAY" | "AVERAGE" | "NONE";
+
+export type ForecastSuggestionRecord = {
+  itemId: string;
+  itemCode: string;
+  itemName: string;
+  recipeId: string;
+  recipeName: string;
+  historyQuantity: string;
+  averageQuantity: string;
+  suggestedQuantity: string;
+  unitId: string;
+  unitCode: string;
+  stockQuantity: string;
+  basis: ForecastBasis;
+};
+
+export type OrderDemandRecord = {
+  orderId: string;
+  orderNumber: string;
+  customerName: string;
+  orderLineId: string;
+  itemId: string;
+  itemCode: string;
+  itemName: string;
+  quantity: string;
+  unitId: string;
+  unitCode: string;
+  recipeId: string | null;
+  recipeName: string | null;
+};
+
+export type PlanningBoardRecord = {
+  siteId: string | null;
+  siteName: string | null;
+  plannedFor: Date;
+  historyFrom: Date;
+  historyTo: Date;
+  historyDays: number;
+  safetyPct: string;
+  eventUpliftPct: string | null;
+  suggestions: ForecastSuggestionRecord[];
+  orders: OrderDemandRecord[];
+  plans: ProductionPlanSummaryRecord[];
+  openPlanId: string | null;
+};
+
+export type ProductionPlanSummaryRecord = {
+  id: string;
+  siteId: string;
+  siteName: string;
+  plannedFor: Date;
+  status: PlanStatusName;
+  source: PlanSourceName;
+  lineCount: number;
+  createdAt: Date;
+};
+
+export type ProductionPlanLineRecord = {
+  id: string;
+  itemId: string;
+  itemCode: string;
+  itemName: string;
+  recipeId: string | null;
+  recipeName: string | null;
+  orderId: string | null;
+  orderNumber: string | null;
+  customerName: string | null;
+  plannedQuantity: string;
+  unitId: string;
+  unitCode: string;
+  note: string | null;
+  batchId: string | null;
+  batchCode: string | null;
+};
+
+export type ProductionPlanDetailRecord = ProductionPlanSummaryRecord & {
+  note: string | null;
+  lines: ProductionPlanLineRecord[];
+};

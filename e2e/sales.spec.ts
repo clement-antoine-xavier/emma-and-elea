@@ -1,25 +1,10 @@
 import { expect, test } from "@playwright/test";
-import type { Locator, Page } from "@playwright/test";
 import {
   deleteOrganizationBySlug,
   deleteUserByEmail,
   salesFacts,
 } from "./db";
-import { gotoHydrated } from "./helpers";
-
-/**
- * Astryx Selector renders its options in a popup that can open beyond the
- * viewport when the form sits at the bottom of a long page. Click through the
- * DOM so the option's React handler runs without Playwright's viewport check.
- */
-async function pick(page: Page, combobox: Locator, name: string | RegExp) {
-  await combobox.click();
-  await page
-    .locator('[role="listbox"]:visible')
-    .getByRole("option", { name })
-    .first()
-    .evaluate((element) => (element as HTMLElement).click());
-}
+import { clickNav, gotoHydrated, pickOption } from "./helpers";
 
 const unique = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 const email = `e2e-sales-${unique}@example.com`;
@@ -59,7 +44,7 @@ test("an order dispatch consumes lots and reports leave daily sales untouched", 
   await page.getByRole("button", { name: "Create item" }).click();
   await expect(page).toHaveURL(/\/dashboard\/catalog\/items\//);
 
-  await page.getByRole("link", { name: "Purchasing", exact: true }).click();
+  await clickNav(page, "Purchasing", "/dashboard/purchasing");
   await page.getByRole("link", { name: "Suppliers" }).click();
   const supplierForm = page
     .locator("form")
@@ -69,12 +54,12 @@ test("an order dispatch consumes lots and reports leave daily sales untouched", 
   await page.getByRole("button", { name: "Add supplier" }).click();
   await expect(page).toHaveURL(/\/dashboard\/purchasing\/suppliers\//);
 
-  await page.getByRole("link", { name: "Purchasing", exact: true }).click();
+  await clickNav(page, "Purchasing", "/dashboard/purchasing");
   await page.getByRole("link", { name: "New receipt" }).click();
   const receiptForm = page
     .locator("form")
     .filter({ has: page.getByRole("button", { name: "Create draft" }) });
-  await pick(
+  await pickOption(
     page,
     receiptForm.getByRole("combobox", { name: "Supplier" }),
     /Sales supplier/,
@@ -85,13 +70,13 @@ test("an order dispatch consumes lots and reports leave daily sales untouched", 
   const receiptLineForm = page
     .locator("form")
     .filter({ has: page.getByRole("button", { name: "Add line" }) });
-  await pick(
+  await pickOption(
     page,
     receiptLineForm.getByRole("combobox", { name: "Item" }),
     /SAL-FLOUR/,
   );
   await receiptLineForm.getByLabel("Quantity").fill("25");
-  await pick(
+  await pickOption(
     page,
     receiptLineForm.getByRole("combobox", { name: "Unit" }),
     /^kg/,
@@ -132,7 +117,7 @@ test("an order dispatch consumes lots and reports leave daily sales untouched", 
   const orderForm = page
     .locator("form")
     .filter({ has: page.getByRole("button", { name: "Create draft order" }) });
-  await pick(
+  await pickOption(
     page,
     orderForm.getByRole("combobox", { name: "Customer" }),
     /SALCLI/,
@@ -144,13 +129,13 @@ test("an order dispatch consumes lots and reports leave daily sales untouched", 
   const orderLineForm = page
     .locator("form")
     .filter({ has: page.getByRole("button", { name: "Add line" }) });
-  await pick(
+  await pickOption(
     page,
     orderLineForm.getByRole("combobox", { name: "Item" }),
     /SAL-FLOUR/,
   );
   await orderLineForm.getByLabel("Quantity").fill("2");
-  await pick(
+  await pickOption(
     page,
     orderLineForm.getByRole("combobox", { name: "Unit" }),
     /^kg/,
@@ -170,12 +155,12 @@ test("an order dispatch consumes lots and reports leave daily sales untouched", 
   const dispatchForm = page
     .locator("form")
     .filter({ has: page.getByRole("button", { name: "Create draft dispatch" }) });
-  await pick(
+  await pickOption(
     page,
     dispatchForm.getByRole("combobox", { name: "Customer" }),
     /SALCLI/,
   );
-  await pick(
+  await pickOption(
     page,
     dispatchForm.getByRole("combobox", { name: "Order" }),
     new RegExp(orderNumber),
@@ -186,7 +171,7 @@ test("an order dispatch consumes lots and reports leave daily sales untouched", 
   const dispatchLineForm = page
     .locator("form")
     .filter({ has: page.getByRole("button", { name: "Add line" }) });
-  await pick(
+  await pickOption(
     page,
     dispatchLineForm.getByRole("combobox", { name: "Lot" }),
     /Flour sales/,
@@ -217,7 +202,7 @@ test("an order dispatch consumes lots and reports leave daily sales untouched", 
   const dailyForm = page
     .locator("form")
     .filter({ has: page.getByRole("button", { name: "Save sales" }) });
-  await pick(
+  await pickOption(
     page,
     dailyForm.getByRole("combobox", { name: "Item" }),
     /SAL-FLOUR/,

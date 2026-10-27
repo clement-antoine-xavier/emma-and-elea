@@ -24,6 +24,7 @@ decision.
 | [0013](0013-use-cookie-based-locale-without-url-prefixes.md) | Use a locale cookie without URL prefixes | Accepted | 2026-10-27 |
 | [0014](0014-post-ledger-changes-in-one-transaction.md) | Post ledger changes as one repository transaction | Accepted | 2026-10-27 |
 | [0015](0015-separate-dispatch-stock-from-daily-sales.md) | Record dispatches in the stock ledger and daily sales separately | Accepted | 2026-10-27 |
+| [0016](0016-forecast-from-daily-sales.md) | Forecast from daily sales and keep plans as snapshots | Accepted | 2026-10-27 |
 
 ## Creating a new ADR
 
