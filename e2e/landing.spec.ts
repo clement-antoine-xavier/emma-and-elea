@@ -54,6 +54,36 @@ test.describe("landing page", () => {
     await expect(page.getByText("Le quotidien").first()).toBeVisible();
   });
 
+  test("shows the early-access offer and answers a common objection", async ({
+    page,
+  }) => {
+    await page.goto("/");
+
+    const pricing = page.locator("#pricing");
+    await expect(
+      pricing.getByRole("heading", {
+        name: "Start in early access. No credit card required.",
+      }),
+    ).toBeVisible();
+    await expect(pricing.getByText("Free", { exact: true })).toBeVisible();
+
+    const faq = page.locator("#faq");
+    await faq
+      .getByRole("button", { name: "Who owns my data?" })
+      .click();
+    await expect(
+      faq.getByText(
+        "Your recipes, costs and production records belong to your business.",
+        { exact: false },
+      ),
+    ).toBeVisible();
+
+    const finalCta = page.locator("#start");
+    await expect(
+      finalCta.getByRole("link", { name: "Create your account" }),
+    ).toHaveAttribute("href", /\/sign-up$/);
+  });
+
   test.describe("mobile navigation", () => {
     test.use({ viewport: { width: 390, height: 844 } });
 
@@ -65,11 +95,13 @@ test.describe("landing page", () => {
       await page.getByRole("button", { name: "Open navigation" }).click();
 
       const drawer = page.getByRole("dialog");
-      await expect(drawer.getByRole("link", { name: "Benefits" })).toBeVisible();
+      await expect(
+        drawer.getByRole("link", { name: "How it works" }),
+      ).toBeVisible();
 
-      await drawer.getByRole("link", { name: "Benefits" }).click();
+      await drawer.getByRole("link", { name: "How it works" }).click();
 
-      await expect(page).toHaveURL(/#benefits$/);
+      await expect(page).toHaveURL(/#how-it-works$/);
       await expect(drawer).not.toBeVisible();
     });
   });

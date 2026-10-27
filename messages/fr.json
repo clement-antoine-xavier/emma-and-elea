@@ -1,26 +1,30 @@
 {
   "Metadata": {
     "title": "Emma & Éléa — Production, coûts et traçabilité des métiers de bouche",
-    "description": "Une seule application pour les recettes, la production, les stocks, les équipes, les coûts et la traçabilité. Produire juste, vendre mieux et préserver vos marges."
+    "description": "Produire juste. Vendre mieux. Un seul espace pour les recettes, les coûts, la production, les stocks, les équipes et la traçabilité, pensé pour les métiers de bouche."
   },
   "LandingPage": {
     "nav": {
       "label": "Navigation Emma & Éléa",
       "product": "Produit",
-      "benefits": "Bénéfices",
-      "reality": "Le quotidien",
+      "howItWorks": "Fonctionnement",
+      "pricing": "Tarifs",
+      "faq": "FAQ",
       "preferences": "Langue et thème"
     },
     "hero": {
       "badge": "Pour les métiers de bouche",
       "title": "Produire juste. Vendre mieux.",
-      "intro": "Une seule application pour relier vos recettes, votre production, vos stocks, vos équipes, vos coûts et votre traçabilité — pour préserver vos marges, de la matière première au produit fini.",
+      "intro": "Un seul espace pour vos recettes, votre production, vos stocks, vos équipes et votre traçabilité — pour préserver vos marges, de la matière première au produit fini.",
       "primaryCta": "Créer votre compte",
-      "secondaryCta": "Découvrir la solution",
+      "secondaryCta": "Voir le fonctionnement",
+      "reassurance": "Gratuit pendant l’accès anticipé · Sans carte bancaire.",
       "audiences": "Boulangeries · Pâtisseries · Boucheries · Charcuteries · Traiteurs",
       "previewCaption": "Aperçu de l’application — données d’exemple.",
       "preview": {
-        "badge": "Aperçu",
+        "workspace": "Atelier · Emma & Éléa",
+        "date": "Mardi 27 octobre",
+        "badge": "Données d’exemple",
         "cost": {
           "title": "Coût de revient",
           "recipe": "Baguette tradition",
@@ -36,7 +40,6 @@
         },
         "production": {
           "title": "Production du jour",
-          "date": "Mardi 27 octobre",
           "item1": "Baguettes",
           "qty1": "120",
           "status1": "Planifié",
@@ -51,7 +54,6 @@
         },
         "stock": {
           "title": "Stocks & traçabilité",
-          "subtitle": "Alertes du jour",
           "item1": "Farine T65",
           "detail1": "Lot 2410 · DLC 12/11",
           "alert1": "DLC proche",
@@ -66,96 +68,140 @@
         }
       }
     },
-    "reality": {
-      "eyebrow": "Le quotidien",
-      "title": "Une trop grande partie de l’atelier repose encore sur la mémoire.",
-      "intro": "Production quotidienne exigeante, produits frais à durée de vie courte, coûts qui augmentent, main-d’œuvre difficile à recruter et pression sur les prix. Une grande partie de l’organisation repose encore sur des tableurs, des cahiers et des notes manuscrites — et les décisions se prennent à l’intuition.",
-      "problems": {
-        "costs": {
-          "title": "La hausse des coûts réduit les marges",
-          "body": "Farine, beurre, viande, énergie, salaires : les prix bougent, mais savoir quel produit devient moins rentable est plus difficile."
-        },
-        "waste": {
-          "title": "Le gaspillage coûte deux fois",
-          "body": "Produire trop fait perdre matières, temps et marge. Produire trop peu fait perdre des ventes et déçoit les clients."
-        },
-        "team": {
-          "title": "L’organisation de l’équipe ralentit",
-          "body": "Plannings, absences et surcharges prennent du temps au détriment de la production et de la gestion."
-        },
-        "stock": {
-          "title": "Stocks et traçabilité échappent au contrôle",
-          "body": "Des centaines de références, des DLC courtes, des ruptures, des achats en urgence et des lots à suivre de la réception au produit fini."
-        },
-        "profitability": {
-          "title": "La rentabilité réelle reste invisible",
-          "body": "Le chiffre d’affaires est connu. Le coût réel et la marge de chaque baguette, pièce de boucherie ou plat traiteur le sont rarement."
-        },
-        "tools": {
-          "title": "Les outils numériques sont trop complexes",
-          "body": "Des logiciels pensés pour la caisse, la comptabilité ou la grande distribution ajoutent formation et saisie manuelle au lieu de faire gagner du temps."
-        }
+    "trust": {
+      "badge": "Accès anticipé",
+      "items": {
+        "audience": "Pensé pour les entreprises alimentaires indépendantes",
+        "devices": "Ordinateur, tablette et mobile",
+        "payment": "Sans carte bancaire"
       }
     },
-    "product": {
-      "eyebrow": "La solution",
-      "title": "Un seul environnement, de la matière première au produit fini.",
-      "intro": "Emma & Éléa ne remplace pas votre savoir-faire : elle automatise la partie administrative et organisationnelle de la production. Vous passez d’une gestion réactive — « qu’est-ce qu’il manque aujourd’hui ? » — à une gestion anticipée : « que dois-je produire, avec quels ingrédients, avec quelle équipe, et à quelle marge ? ».",
-      "capabilities": {
-        "recipes": {
-          "title": "Recettes & coûts de revient",
-          "body": "Coût de revient automatique avec ingrédients, pertes, emballage et main-d’œuvre. Les marges se mettent à jour quand un prix d’achat change."
+    "problem": {
+      "eyebrow": "Le quotidien",
+      "title": "Vos marges se décident avant la première vente.",
+      "intro": "Coûts des matières qui montent, invendus et tableurs qui ne se parlent pas. Beaucoup de décisions se prennent encore à l’intuition.",
+      "withoutTitle": "Sans système",
+      "withoutHeading": "L’atelier repose sur la mémoire",
+      "withoutIntro": "Des notes, des fichiers et des calculs qui ne communiquent pas.",
+      "withTitle": "Avec Emma & Éléa",
+      "withHeading": "Un espace connecté",
+      "withIntro": "La recette, la journée de production et la marge partagent la même source de vérité.",
+      "pains": {
+        "costs": "Vous découvrez qu’un produit a perdu de la marge après la clôture du mois.",
+        "waste": "Les quantités sont estimées : certains jours vous vendez tout, d’autres vous jetez.",
+        "traceability": "Lots, DLC et inventaires vivent dans des cahiers."
+      },
+      "outcomes": {
+        "costs": "Chaque recette porte son coût réel et sa marge, mis à jour quand les prix d’achat changent.",
+        "quantity": "Quantités suggérées à partir de l’historique des ventes, des commandes, de la saisonnalité et des événements locaux.",
+        "traceability": "Stocks, lots et DLC dans un seul registre traçable."
+      },
+      "link": "Voir le fonctionnement"
+    },
+    "features": {
+      "eyebrow": "L’espace de travail",
+      "title": "Tout ce dont l’atelier a besoin, sans le tableur.",
+      "intro": "Six domaines connectés, une seule source de vérité — de la recette à la marge.",
+      "items": {
+        "costs": {
+          "title": "Connaître le coût réel de chaque produit",
+          "body": "Ingrédients, pertes, emballage et main-d’œuvre dans un seul coût de revient. Les marges se mettent à jour quand un prix d’achat change."
         },
         "production": {
-          "title": "Production & prévisions",
+          "title": "Produire la bonne quantité",
           "body": "Quantités suggérées à partir de l’historique des ventes, des commandes, de la saisonnalité, des jours de la semaine et des événements locaux."
         },
         "stock": {
-          "title": "Stocks & traçabilité",
+          "title": "Garder le stock et la traçabilité sous contrôle",
           "body": "Stock en temps réel, besoins en ingrédients, lots, DLC, alertes de réapprovisionnement et documents prêts en cas de contrôle."
         },
         "team": {
-          "title": "Équipes & plannings",
+          "title": "Mettre les bonnes personnes sur les bonnes tâches",
           "body": "Compétences, disponibilités et charge de travail au même endroit, avec les bonnes tâches aux bonnes personnes et les conflits visibles."
         },
         "margins": {
-          "title": "Marges & rentabilité",
+          "title": "Voir quels produits rapportent",
           "body": "Comparez les produits par rentabilité, volume et taux de perte, et décidez d’ajuster un prix, une recette ou un fournisseur."
         },
-        "simple": {
-          "title": "Simple par conception",
-          "body": "Rapide en atelier sur ordinateur, tablette ou mobile, avec une intégration progressive à la caisse, aux balances et aux imprimantes d’étiquettes."
+        "mobile": {
+          "title": "L’utiliser en atelier, pas seulement au bureau",
+          "body": "Rapide sur ordinateur, tablette ou mobile, avec une intégration progressive à la caisse, aux balances et aux imprimantes d’étiquettes."
         }
       }
     },
-    "benefits": {
-      "eyebrow": "Les bénéfices",
-      "title": "Moins d’incertitude. Plus de marge.",
-      "intro": "Des gains concrets, au rythme de l’atelier.",
+    "howItWorks": {
+      "eyebrow": "Fonctionnement",
+      "title": "D’une recette à une journée de production plus sereine.",
+      "intro": "Commencez par la recette que vous maîtrisez le mieux. Emma & Éléa relie le reste au fur et à mesure.",
+      "steps": {
+        "recipes": {
+          "title": "Ajoutez vos recettes",
+          "body": "Saisissez les ingrédients, les quantités et les prix d’achat. Le coût de revient inclut les pertes, l’emballage et la main-d’œuvre."
+        },
+        "production": {
+          "title": "Préparez votre production",
+          "body": "Utilisez l’historique des ventes, les commandes et la saisonnalité pour décider quoi produire. Les besoins en ingrédients et les tâches suivent."
+        },
+        "margin": {
+          "title": "Vivez la journée et vérifiez la marge",
+          "body": "Suivez les lots, le stock, les DLC et les pertes. Voyez ce qui s’est vendu, ce qui ne s’est pas vendu et ce qu’il faut ajuster."
+        }
+      }
+    },
+    "pricing": {
+      "eyebrow": "Tarifs",
+      "title": "Commencez en accès anticipé. Sans carte bancaire.",
+      "intro": "Emma & Éléa est en développement actif. Les entreprises en accès anticipé bénéficient d’un accès gratuit et participent directement aux prochaines évolutions.",
+      "assurances": {
+        "payment": "Aucune coordonnée bancaire demandée",
+        "cancel": "Arrêtez l’utilisation à tout moment",
+        "team": "Un lien direct avec l’équipe qui construit le produit"
+      },
+      "plan": {
+        "badge": "Accès anticipé",
+        "price": "Gratuit",
+        "period": "pendant l’accueil des premières entreprises",
+        "includes": "L’accès anticipé comprend",
+        "features": {
+          "recipes": "Recettes et coûts de revient",
+          "production": "Planification de la production",
+          "stock": "Stocks et traçabilité",
+          "team": "Équipes et rôles",
+          "margins": "Marges et rentabilité"
+        },
+        "cta": "Créer votre compte",
+        "reassurance": "Sans carte bancaire."
+      },
+      "note": "Les offres payantes ne sont pas encore disponibles. Vous connaîtrez les tarifs avant d’avoir à payer."
+    },
+    "faq": {
+      "eyebrow": "Questions",
+      "title": "Ce que les entreprises demandent avant de commencer.",
+      "intro": "Quelques réponses claires sur l’accès, la mise en route et vos données.",
       "items": {
-        "produce": {
-          "title": "Produire juste",
-          "body": "Réduire les invendus grâce à une meilleure prévision des quantités."
+        "card": {
+          "question": "Faut-il une carte bancaire pour commencer ?",
+          "answer": "Non. L’accès anticipé est gratuit et aucune coordonnée bancaire n’est demandée."
         },
-        "margins": {
-          "title": "Protéger les marges",
-          "body": "Connaître le coût réel et la rentabilité de chaque produit."
+        "setup": {
+          "question": "Combien de temps prend la mise en route ?",
+          "answer": "Commencez par une recette. Ajoutez les ingrédients, les quantités et les prix d’achat, et Emma & Éléa calcule le premier coût de revient. Vous ajouterez le reste à votre rythme."
         },
-        "time": {
-          "title": "Gagner du temps",
-          "body": "Automatiser les calculs, les plannings, les alertes et les besoins en matières premières."
+        "tools": {
+          "question": "Emma & Éléa remplace-t-elle ma caisse ou ma comptabilité ?",
+          "answer": "Non. Elle fonctionne à côté et se concentre sur les recettes, la production, les coûts, les stocks et la traçabilité. L’intégration à la caisse, aux balances et aux imprimantes d’étiquettes est progressive."
         },
-        "team": {
-          "title": "Mieux organiser l’équipe",
-          "body": "Répartir la charge de travail et limiter les erreurs d’organisation."
+        "mobile": {
+          "question": "Puis-je l’utiliser sur tablette ou téléphone en atelier ?",
+          "answer": "Oui. L’espace est conçu pour ordinateur, tablette et mobile : la production, les pertes et les inventaires se saisissent là où le travail se fait."
         },
-        "losses": {
-          "title": "Réduire les pertes",
-          "body": "Suivre les DLC, les stocks et les invendus."
+        "data": {
+          "question": "À qui appartiennent mes données ?",
+          "answer": "Vos recettes, vos coûts et vos registres de production appartiennent à votre entreprise. L’accès est basé sur les rôles et nous ne vendons pas vos données. Les détails d’hébergement et de sécurité seront publiés avant les offres payantes."
         },
-        "compliance": {
-          "title": "Faciliter la conformité",
-          "body": "Centraliser la traçabilité et les informations de production."
+        "cancel": {
+          "question": "Puis-je arrêter ou exporter mes données ?",
+          "answer": "Vous pouvez arrêter d’utiliser l’espace à tout moment pendant l’accès anticipé. Avant le passage aux offres payantes, nous publierons des conditions claires d’annulation et d’export."
         }
       }
     },
@@ -164,20 +210,23 @@
       "title": "Prêt à produire juste ?",
       "intro": "Commencez par vos recettes et vos coûts de revient. Le reste suit : production, stocks, équipes et traçabilité, au même endroit.",
       "primaryCta": "Créer votre compte",
-      "secondaryCta": "Découvrir la solution",
-      "audiences": "Pensé pour les boulangeries, pâtisseries, boucheries, charcuteries et traiteurs."
+      "secondaryCta": "Voir le fonctionnement",
+      "reassurance": "Gratuit pendant l’accès anticipé · Sans carte bancaire."
     },
     "footer": {
       "tagline": "Produire juste, vendre mieux et préserver vos marges.",
-      "productTitle": "Explorer",
+      "earlyAccess": "Accès anticipé",
+      "exploreTitle": "Explorer",
       "product": "Produit",
-      "benefits": "Bénéfices",
-      "reality": "Le quotidien",
+      "howItWorks": "Fonctionnement",
+      "pricing": "Tarifs",
+      "faq": "FAQ",
       "accountTitle": "Compte",
-      "signIn": "Accéder à votre compte",
+      "signIn": "Se connecter",
       "signUp": "Créer un compte",
-      "audienceTitle": "Pour qui",
-      "audience": "Boulangeries, pâtisseries, boucheries, charcuteries, traiteurs et métiers de l’alimentation artisanale.",
+      "trustTitle": "Confiance",
+      "dataSecurity": "Données et sécurité",
+      "earlyAccessLink": "Accès anticipé",
       "copyright": "© 2026 Emma & Éléa",
       "madeFor": "Conçu pour les métiers de bouche."
     }

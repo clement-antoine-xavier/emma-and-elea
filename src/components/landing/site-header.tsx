@@ -26,11 +26,14 @@ export function SiteHeader() {
             <Link href="#product" isStandalone onClick={closeMobileNav}>
               {t('product')}
             </Link>
-            <Link href="#benefits" isStandalone onClick={closeMobileNav}>
-              {t('benefits')}
+            <Link href="#how-it-works" isStandalone onClick={closeMobileNav}>
+              {t('howItWorks')}
             </Link>
-            <Link href="#reality" isStandalone onClick={closeMobileNav}>
-              {t('reality')}
+            <Link href="#pricing" isStandalone onClick={closeMobileNav}>
+              {t('pricing')}
+            </Link>
+            <Link href="#faq" isStandalone onClick={closeMobileNav}>
+              {t('faq')}
             </Link>
             <Divider />
             <Stack gap={2}>
@@ -41,22 +44,25 @@ export function SiteHeader() {
               <ThemeSwitcher />
             </Stack>
             <Divider />
-            <AuthStatus />
+            <AuthStatus showPrimaryCta />
           </Stack>
         ) : (
           <>
             <TopNavItem label={t('product')} href="#product" />
-            <TopNavItem label={t('benefits')} href="#benefits" />
-            <TopNavItem label={t('reality')} href="#reality" />
+            <TopNavItem label={t('howItWorks')} href="#how-it-works" />
+            <TopNavItem label={t('pricing')} href="#pricing" />
+            <TopNavItem label={t('faq')} href="#faq" />
           </>
         )
       }
       endContent={
-        isMobile ? null : (
+        isMobile ? (
+          <AuthStatus ctaOnly />
+        ) : (
           <HStack gap={2} align="center">
             <LocaleSwitcher />
             <ThemeSwitcher />
-            <AuthStatus />
+            <AuthStatus showPrimaryCta />
           </HStack>
         )
       }

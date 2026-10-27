@@ -17,30 +17,27 @@ export function Hero() {
     <Section
       id="top"
       variant="muted"
-      paddingBlock={10}
+      paddingBlock={8}
       paddingInline={6}
       dividers={['bottom']}>
       <Center axis="horizontal">
-        <Stack width="100%" maxWidth={1120} gap={10}>
-          <Stack gap={6} hAlign="center">
-            <Badge variant="yellow" label={t('badge')} />
-            <Stack gap={3} hAlign="center" maxWidth={780}>
-              <Heading
-                level={1}
-                type="display-2"
-                justify="center"
-                textWrap="balance">
-                {t('title')}
-              </Heading>
-              <Text
-                type="large"
-                color="secondary"
-                justify="center"
-                textWrap="balance">
-                {t('intro')}
-              </Text>
-            </Stack>
-            <HStack gap={3} wrap="wrap" justify="center">
+        <Grid
+          columns={{minWidth: 340, max: 2, repeat: 'fit'}}
+          gap={8}
+          align="center"
+          width="100%"
+          maxWidth={1120}>
+          <Stack gap={6} justify="center">
+            <HStack>
+              <Badge variant="yellow" label={t('badge')} />
+            </HStack>
+            <Heading level={1} type="display-2" textWrap="balance">
+              {t('title')}
+            </Heading>
+            <Text type="large" color="secondary" textWrap="balance">
+              {t('intro')}
+            </Text>
+            <HStack gap={3} wrap="wrap">
               <Button
                 href="/sign-up"
                 variant="primary"
@@ -48,27 +45,28 @@ export function Hero() {
                 endContent={<Icon icon="chevronRight" size="sm" />}
               />
               <Button
-                href="#product"
+                href="#how-it-works"
                 variant="secondary"
                 label={t('secondaryCta')}
               />
             </HStack>
-            <Text type="supporting" color="secondary" justify="center">
-              {t('audiences')}
-            </Text>
+            <Stack gap={1}>
+              <Text type="supporting" color="secondary">
+                {t('reassurance')}
+              </Text>
+              <Text type="supporting" color="secondary">
+                {t('audiences')}
+              </Text>
+            </Stack>
           </Stack>
 
-          <Stack gap={3}>
-            <Grid
-              columns={{minWidth: 260, max: 3, repeat: 'fit'}}
-              gap={4}>
-              <ProductPreview />
-            </Grid>
+          <Stack gap={3} justify="center">
+            <ProductPreview />
             <Text type="supporting" color="secondary" justify="center">
               {t('previewCaption')}
             </Text>
           </Stack>
-        </Stack>
+        </Grid>
       </Center>
     </Section>
   );

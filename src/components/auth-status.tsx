@@ -8,21 +8,57 @@ import {useTranslations} from 'next-intl';
 import {useRouter} from 'next/navigation';
 import {authClient} from '@/lib/auth-client';
 
-export function AuthStatus() {
+export function AuthStatus({
+  showPrimaryCta = false,
+  ctaOnly = false,
+}: {
+  showPrimaryCta?: boolean;
+  ctaOnly?: boolean;
+} = {}) {
   const router = useRouter();
   const t = useTranslations('Auth.status');
   const {data: session, isPending} = authClient.useSession();
 
   if (isPending) {
-    return <Text type="supporting">{t('checking')}</Text>;
+    return ctaOnly ? null : <Text type="supporting">{t('checking')}</Text>;
   }
 
   if (!session) {
+    if (ctaOnly) {
+      return (
+        <Button
+          href="/sign-up"
+          variant="primary"
+          size="sm"
+          label={t('createAccount')}
+        />
+      );
+    }
+
     return (
       <HStack gap={3} align="center" wrap="wrap">
         <Link href="/sign-in">{t('signIn')}</Link>
-        <Link href="/sign-up">{t('createAccount')}</Link>
+        {showPrimaryCta ? (
+          <Button
+            href="/sign-up"
+            variant="primary"
+            label={t('createAccount')}
+          />
+        ) : (
+          <Link href="/sign-up">{t('createAccount')}</Link>
+        )}
       </HStack>
+    );
+  }
+
+  if (ctaOnly) {
+    return (
+      <Button
+        href="/dashboard"
+        variant="secondary"
+        size="sm"
+        label={t('dashboard')}
+      />
     );
   }
 

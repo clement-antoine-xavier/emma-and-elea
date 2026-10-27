@@ -1,26 +1,30 @@
 {
   "Metadata": {
     "title": "Emma & Éléa — Production, costs and traceability for artisan food businesses",
-    "description": "One app for recipes, production, stock, teams, costs and traceability. Produce just right, sell better and protect your margins."
+    "description": "Produce just right. Sell better. One workspace for recipes, costs, production, stock, teams and traceability, built for artisan food businesses."
   },
   "LandingPage": {
     "nav": {
       "label": "Emma & Éléa navigation",
       "product": "Product",
-      "benefits": "Benefits",
-      "reality": "The reality",
+      "howItWorks": "How it works",
+      "pricing": "Pricing",
+      "faq": "FAQ",
       "preferences": "Language & theme"
     },
     "hero": {
       "badge": "For artisan food businesses",
       "title": "Produce just right. Sell better.",
-      "intro": "One app that connects your recipes, production, stock, teams, costs and traceability — so you can protect your margins from raw material to finished product.",
+      "intro": "One workspace for recipes, production, stock, teams and traceability — so bakeries, pastry shops, butcher shops and caterers can protect their margins from raw material to finished product.",
       "primaryCta": "Create your account",
       "secondaryCta": "See how it works",
+      "reassurance": "Free during early access · No credit card required.",
       "audiences": "Bakeries · Pastry shops · Butcher shops · Delicatessens · Caterers",
       "previewCaption": "Product preview — sample data.",
       "preview": {
-        "badge": "Preview",
+        "workspace": "Atelier · Emma & Éléa",
+        "date": "Tuesday, 27 October",
+        "badge": "Sample data",
         "cost": {
           "title": "Cost price",
           "recipe": "Traditional baguette",
@@ -36,7 +40,6 @@
         },
         "production": {
           "title": "Today’s production",
-          "date": "Tuesday, 27 October",
           "item1": "Baguettes",
           "qty1": "120",
           "status1": "Planned",
@@ -51,7 +54,6 @@
         },
         "stock": {
           "title": "Stock & traceability",
-          "subtitle": "Today’s alerts",
           "item1": "T65 flour",
           "detail1": "Lot 2410 · best before 12/11",
           "alert1": "Use soon",
@@ -66,96 +68,140 @@
         }
       }
     },
-    "reality": {
-      "eyebrow": "The daily reality",
-      "title": "Too much of the workshop still runs on memory.",
-      "intro": "Demanding daily production, fresh products with short shelf lives, rising costs, hard-to-recruit staff and price pressure. Much of the organisation still lives in spreadsheets, notebooks and handwritten notes — so decisions get made on intuition.",
-      "problems": {
-        "costs": {
-          "title": "Rising costs erode margins",
-          "body": "Flour, butter, meat, energy, wages: prices move, but which product is becoming less profitable is harder to see."
-        },
-        "waste": {
-          "title": "Food waste costs twice",
-          "body": "Producing too much loses materials, time and margin. Producing too little loses sales and disappoints customers."
-        },
-        "team": {
-          "title": "Team organisation slows you down",
-          "body": "Schedules, absences and workload shifts take time away from production and from running the business."
-        },
-        "stock": {
-          "title": "Stock and traceability escape control",
-          "body": "Hundreds of references, short shelf lives, stock-outs, emergency purchases and batches to track from receipt to finished product."
-        },
-        "profitability": {
-          "title": "Real profitability stays invisible",
-          "body": "Turnover is known. The real cost and margin of each baguette, cut of meat or caterer’s dish often is not."
-        },
-        "tools": {
-          "title": "Digital tools are too complex",
-          "body": "Software built for checkout, accounting or large-scale retail adds training and manual entry instead of saving time."
-        }
+    "trust": {
+      "badge": "In early access",
+      "items": {
+        "audience": "Built for independent food businesses",
+        "devices": "Computer, tablet and mobile",
+        "payment": "No credit card required"
       }
     },
-    "product": {
-      "eyebrow": "The solution",
-      "title": "One workspace, from raw material to finished product.",
-      "intro": "Emma & Éléa does not replace your know-how. It automates the administrative and organisational side of production, so you can move from “what are we missing today?” to “what should I produce, with which ingredients, with which team, and at what margin?”",
-      "capabilities": {
-        "recipes": {
-          "title": "Recipes & cost prices",
-          "body": "Automatic cost prices including ingredients, losses, packaging and labour. Margins update when a purchase price changes."
+    "problem": {
+      "eyebrow": "The daily reality",
+      "title": "Your margins are decided before the first sale.",
+      "intro": "Rising ingredient costs, unsold stock and disconnected spreadsheets. Most decisions are still made on intuition.",
+      "withoutTitle": "Without a system",
+      "withoutHeading": "The workshop runs on memory",
+      "withoutIntro": "Notes, files and calculations that do not talk to each other.",
+      "withTitle": "With Emma & Éléa",
+      "withHeading": "One connected workspace",
+      "withIntro": "The recipe, the production day and the margin share the same source of truth.",
+      "pains": {
+        "costs": "You discover a product lost margin after the month closes.",
+        "waste": "Production quantities are guessed, so some days you sell out and others you throw away.",
+        "traceability": "Batches, expiry dates and stock counts live in notebooks."
+      },
+      "outcomes": {
+        "costs": "Every recipe carries its real cost and margin, updated when purchase prices change.",
+        "quantity": "Suggested quantities based on sales history, orders, seasonality and local events.",
+        "traceability": "Stock, batches and expiry dates in one traceable record."
+      },
+      "link": "See how it works"
+    },
+    "features": {
+      "eyebrow": "The workspace",
+      "title": "Everything the workshop needs, without the spreadsheet.",
+      "intro": "Six connected areas, one source of truth — from the recipe to the margin.",
+      "items": {
+        "costs": {
+          "title": "Know what each product really costs",
+          "body": "Ingredients, losses, packaging and labour in one cost price. Margins update when a purchase price changes."
         },
         "production": {
-          "title": "Production & forecasting",
-          "body": "Suggested quantities based on sales history, orders, seasonality, days of the week and local events."
+          "title": "Produce the right quantity",
+          "body": "Suggested quantities from sales history, orders, seasonality, days of the week and local events."
         },
         "stock": {
-          "title": "Stock & traceability",
+          "title": "Keep stock and traceability under control",
           "body": "Real-time stock, ingredient requirements, batches, expiry dates, replenishment alerts and inspection-ready records."
         },
         "team": {
-          "title": "Teams & schedules",
-          "body": "Skills, availability and workload in one place, with tasks assigned to the right people and conflicts made visible."
+          "title": "Put the right people on the right tasks",
+          "body": "Skills, availability and workload in one place, with the right tasks assigned to the right people and conflicts made visible."
         },
         "margins": {
-          "title": "Margins & profitability",
+          "title": "See which products make money",
           "body": "Compare products by profitability, volume and loss rate, and decide whether to adjust a price, a recipe or a supplier."
         },
-        "simple": {
-          "title": "Simple by design",
-          "body": "Fast in the workshop on computer, tablet or mobile, with progressive integration into checkout, scales and label printers."
+        "mobile": {
+          "title": "Use it in the workshop, not just the office",
+          "body": "Fast on computer, tablet or mobile, with progressive integration into checkout, scales and label printers."
         }
       }
     },
-    "benefits": {
-      "eyebrow": "The benefits",
-      "title": "Less guesswork. More margin.",
-      "intro": "Concrete gains, at the pace of the workshop.",
+    "howItWorks": {
+      "eyebrow": "How it works",
+      "title": "From one recipe to a calmer production day.",
+      "intro": "Start with the recipe you know best. Emma & Éléa connects the rest as you go.",
+      "steps": {
+        "recipes": {
+          "title": "Add your recipes",
+          "body": "Enter ingredients, quantities and purchase prices. The cost price includes losses, packaging and labour."
+        },
+        "production": {
+          "title": "Set your production",
+          "body": "Use sales history, orders and seasonality to decide what to make. Ingredient requirements and tasks follow."
+        },
+        "margin": {
+          "title": "Run the day and check the margin",
+          "body": "Track batches, stock, expiry and waste. See what sold, what did not, and what to adjust next time."
+        }
+      }
+    },
+    "pricing": {
+      "eyebrow": "Pricing",
+      "title": "Start in early access. No credit card required.",
+      "intro": "Emma & Éléa is in active development. Early-access businesses get free access and a direct say in what ships next.",
+      "assurances": {
+        "payment": "No payment details required",
+        "cancel": "Stop using the workspace at any time",
+        "team": "Direct line to the team building the product"
+      },
+      "plan": {
+        "badge": "Early access",
+        "price": "Free",
+        "period": "while we onboard the first businesses",
+        "includes": "Early access includes",
+        "features": {
+          "recipes": "Recipes & cost prices",
+          "production": "Production planning",
+          "stock": "Stock & traceability",
+          "team": "Teams & roles",
+          "margins": "Margins & profitability"
+        },
+        "cta": "Create your account",
+        "reassurance": "No credit card required."
+      },
+      "note": "Paid plans are not live yet. You will see pricing before you are asked to pay."
+    },
+    "faq": {
+      "eyebrow": "Questions",
+      "title": "What businesses ask before starting.",
+      "intro": "A few clear answers about access, setup and your data.",
       "items": {
-        "produce": {
-          "title": "Produce just right",
-          "body": "Reduce unsold items through better quantity forecasting."
+        "card": {
+          "question": "Do I need a credit card to start?",
+          "answer": "No. Early access is free and no payment details are required."
         },
-        "margins": {
-          "title": "Protect margins",
-          "body": "Know the real cost and profitability of every product."
+        "setup": {
+          "question": "How long does setup take?",
+          "answer": "Start with one recipe. Add your ingredients, quantities and purchase prices, and Emma & Éléa calculates the first cost price. You can add the rest at your own pace."
         },
-        "time": {
-          "title": "Save time",
-          "body": "Automate calculations, schedules, alerts and raw material requirements."
+        "tools": {
+          "question": "Does Emma & Éléa replace my POS or accounting software?",
+          "answer": "No. It sits alongside them and focuses on recipes, production, costs, stock and traceability. Integration with checkout, scales and label printers is progressive."
         },
-        "team": {
-          "title": "Organise the team better",
-          "body": "Distribute workload and limit organisational errors."
+        "mobile": {
+          "question": "Can I use it on a tablet or phone in the workshop?",
+          "answer": "Yes. The workspace is designed for computer, tablet and mobile, so production, waste and stock counts can be recorded where the work happens."
         },
-        "losses": {
-          "title": "Reduce losses",
-          "body": "Track use-by dates, stock and unsold items."
+        "data": {
+          "question": "Who owns my data?",
+          "answer": "Your recipes, costs and production records belong to your business. Access is role-based, and we do not sell your data. Hosting and security details will be published before paid plans start."
         },
-        "compliance": {
-          "title": "Make compliance easier",
-          "body": "Centralise traceability and production information."
+        "cancel": {
+          "question": "Can I stop using it or export my data?",
+          "answer": "You can stop using the workspace at any time during early access. Before paid plans start, we will publish clear cancellation and export terms."
         }
       }
     },
@@ -164,20 +210,23 @@
       "title": "Ready to produce just right?",
       "intro": "Start with your recipes and cost prices. The rest follows: production, stock, teams and traceability, in one place.",
       "primaryCta": "Create your account",
-      "secondaryCta": "Explore the product",
-      "audiences": "Built for bakeries, pastry shops, butcher shops, delicatessens and caterers."
+      "secondaryCta": "See how it works",
+      "reassurance": "Free during early access · No credit card required."
     },
     "footer": {
       "tagline": "Produce just right, sell better and protect your margins.",
-      "productTitle": "Explore",
+      "earlyAccess": "In early access",
+      "exploreTitle": "Explore",
       "product": "Product",
-      "benefits": "Benefits",
-      "reality": "The reality",
+      "howItWorks": "How it works",
+      "pricing": "Pricing",
+      "faq": "FAQ",
       "accountTitle": "Account",
-      "signIn": "Access your account",
+      "signIn": "Sign in",
       "signUp": "Create an account",
-      "audienceTitle": "Who it’s for",
-      "audience": "Bakeries, pastry shops, butcher shops, delicatessens, caterers and artisan food businesses.",
+      "trustTitle": "Trust",
+      "dataSecurity": "Data & security",
+      "earlyAccessLink": "Early access",
       "copyright": "© 2026 Emma & Éléa",
       "madeFor": "Made for artisan food businesses."
     }
