@@ -41,6 +41,7 @@ test("an employee profile, availability and shift assignment work together", asy
 
   await clickNav(page, "Team", "/dashboard/team");
   await page.getByRole("link", { name: "Employees" }).click();
+  await page.getByRole("button", { name: "Add an employee profile" }).click();
   const employeeForm = page
     .locator("form")
     .filter({ has: page.getByRole("button", { name: "Create profile" }) });

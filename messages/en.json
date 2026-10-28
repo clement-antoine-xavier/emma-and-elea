@@ -469,6 +469,26 @@
         "DELIVERED": "Delivered"
       },
       "supportNote": "Platform support access. Impersonate a tenant to see its data."
+    },
+    "assistant": {
+      "trigger": "Ask Emma or Éléa",
+      "title": "Assistant",
+      "personaLabel": "Choose an assistant",
+      "newChat": "New chat",
+      "emptyHint": "Ask about today’s priorities, a record, or a task you want to prepare.",
+      "placeholder": "Ask {name}…",
+      "thinking": "Thinking…",
+      "approval": {
+        "badge": "Approval required",
+        "approve": "Approve",
+        "reject": "Reject"
+      },
+      "errors": {
+        "load": "Could not load the conversation.",
+        "send": "The assistant could not answer.",
+        "approval": "The action could not be completed.",
+        "title": "Something went wrong"
+      }
     }
   },
   "Team": {
@@ -800,7 +820,7 @@
     "metadataTitle": "Settings · Emma & Éléa",
     "title": "Settings",
     "intro": "Your business, sites, rates and equipment.",
-  "railTitle": "Sections",
+    "railTitle": "Sections",
     "backToSettings": "Back to settings",
     "manageTitle": "Manage",
     "cards": {
@@ -2417,7 +2437,9 @@
     "alertsTitle": "Stock alerts",
     "alertsIntro": "Items at or below their minimum stock level.",
     "emptyAlertsTitle": "No stock alerts",
-    "emptyAlertsBody": "Every item is above its minimum."
+    "emptyAlertsBody": "Every item is above its minimum.",
+    "opsEyebrow": "Operations",
+    "opsIntro": "Batch yields and stock alerts from {from} to {to}."
   },
   "Consent": {
     "metadataTitle": "Authorize access · Emma & Éléa",

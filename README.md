@@ -8,6 +8,7 @@ Next.js 16 App Router app with Astryx UI, Prisma ORM 7, and Better Auth.
 - Astryx 0.7.4 (Butter theme) + Recharts 3.10 for the dashboard charts
 - Prisma ORM 7.10.1 + PostgreSQL 18
 - Better Auth 1.7.14 (email/password, admin, organization, MCP OAuth)
+- OpenAI Agents SDK 0.21 for the in-app assistants
 - next-intl 4.14.9 (English and French, locale from the `NEXT_LOCALE` cookie)
 - Zod 4 + React Hook Form 7 for forms
 
@@ -67,6 +68,19 @@ batches, allocates lots FEFO, records waste and exposes lot traceability.
 | `BETTER_AUTH_URL` | Public app URL used by Better Auth |
 | `MCP_RESOURCE_URL` | Public URL of the MCP endpoint (defaults to `$BETTER_AUTH_URL/mcp`) |
 | `API_RESOURCE_URL` | Public base URL of the REST API (defaults to `$BETTER_AUTH_URL/api`) |
+| `OPENAI_API_KEY` | Server-only key for the in-app assistants; leave empty to disable them |
+| `ASSISTANT_ENABLED` | Set to `true` to show Emma and Éléa in the dashboard |
+| `ASSISTANT_MODEL` | Model used by both personas (defaults to `gpt-5.4`) |
+| `ASSISTANT_EMMA_MODEL` / `ASSISTANT_ELEA_MODEL` | Optional per-persona model overrides |
+| `OPENAI_BASE_URL` | Optional OpenAI-compatible gateway base URL |
+| `ASSISTANT_USE_RESPONSES` | `true` for the Responses API, `false` for Chat Completions; defaults to Responses only on api.openai.com |
+| `OPENAI_AGENTS_TRACING_DISABLED` | Set to `1` to keep prompts and tool results out of OpenAI tracing |
+| `ASSISTANT_MAX_TURNS` / `ASSISTANT_DAILY_TOKEN_BUDGET` | Guardrails for a run |
+| `ASSISTANT_RETENTION_DAYS` | Conversation retention window (defaults to 30) |
+
+Real values belong in `.env` (gitignored). `.env.example` contains placeholders
+only; never put a real key in a committed file, a Docker build argument or a
+workflow.
 
 Inside Docker, Compose overrides `DATABASE_URL` to use the `postgres` service hostname.
 
@@ -78,6 +92,7 @@ docker compose down              # stop it
 npm run db:migrate               # create and apply a migration
 npm run db:generate              # regenerate the Prisma client
 npm run db:seed                  # add demo catalogue data (see below)
+npm run db:prune-assistant       # expire stale approvals and old assistant chats
 npm run db:studio                # open Prisma Studio
 ```
 
@@ -208,7 +223,30 @@ The protected-resource documents live on the app origin (RFC 9728), not under
 URLs in production; they are the token audiences and must match what clients
 call.
 
-## Backend architecture
+## In-app assistants
+
+The dashboard exposes two assistants behind `ASSISTANT_ENABLED`:
+
+- **Emma** — customers, orders, deliveries, daily sales and revenue.
+- **Éléa** — production, planning, stock, purchasing, recipes/costs, reports and
+  the team.
+
+They use the OpenAI Agents SDK with in-process tools that call the same services
+as the pages and Server Actions. The authenticated session actor supplies the
+organization; no tool accepts an organization id. A capability is registered only
+when the member holds every required permission, and the service still runs
+`assertPermission`.
+
+Drafts are created immediately. Posting a receipt, dispatch or stock count,
+starting or completing a batch, publishing a recipe and deciding an absence
+pause the run for an approval card. Approvals expire after ten minutes and are
+recorded in `agent_approval`.
+
+The stream endpoint is `POST /dashboard/assistant/stream` (SSE). It is outside
+`/api/**` on purpose: it uses the session cookie, not an OAuth bearer token. See
+[ADR-0023](docs/adr/0023-add-in-app-assistants.md).
+
+
 
 The backend is layered: entry point → service → repository → Prisma.
 
@@ -279,6 +317,12 @@ Build and run the app, migrations, and PostgreSQL together:
 ```bash
 docker compose up --build -d
 ```
+
+Compose reads `.env` both for `${...}` interpolation and as the app service's
+`env_file`, so every key documented above (including the assistant keys) reaches
+the container without being duplicated in `docker-compose.yml`. The explicit
+`environment` entries for `DATABASE_URL`, `BETTER_AUTH_URL` and the resource URLs
+win over the file.
 
 Compose starts three services on the `postgres-network` network:
 

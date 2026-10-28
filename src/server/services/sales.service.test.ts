@@ -523,11 +523,12 @@ describe("report service", () => {
     });
   });
 
-  it("returns only stock alerts in the report view", async () => {
+  it("returns only non-financial sections to sales", async () => {
     const report = await service().getReports(actorFor("sales"));
 
     expect(report.alerts).toHaveLength(1);
-    expect(report.summary.wasteRatePct).toBe("10");
+    expect(report.summary).toBeNull();
+    expect(report.margins).toEqual([]);
   });
 
   it("rejects roles without report:read", async () => {

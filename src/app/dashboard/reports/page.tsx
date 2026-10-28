@@ -55,90 +55,109 @@ export default async function ReportsPage() {
     reportService.getReports(actor),
   ]);
 
-  const {summary, margins, yields, alerts} = report;
+  const {summary, margins, yields, alerts, can, from, to} = report;
+  const dateRange = {
+    from: formatBusinessDate(from, {locale}),
+    to: formatBusinessDate(to, {locale}),
+  };
 
   return (
     <PageShell
-      eyebrow={t("summaryTitle")}
+      eyebrow={can.finance ? t("summaryTitle") : t("opsEyebrow")}
       title={t("title")}
-      intro={t("intro", {
-        from: formatBusinessDate(summary.from, {locale}),
-        to: formatBusinessDate(summary.to, {locale}),
-      })}
+      intro={
+        can.finance
+          ? t("intro", dateRange)
+          : t("opsIntro", dateRange)
+      }
       hasHeaderDivider
     >
-      <Grid columns={{minWidth: 220, max: 4}} gap={4}>
-        <MetricCard
-          label={t("wasteCost")}
-          value={formatMoney(summary.wasteCost, {
-            locale,
-            currency: summary.currency,
-          })}
-        />
-        <MetricCard
-          label={t("productionCost")}
-          value={formatMoney(summary.productionCost, {
-            locale,
-            currency: summary.currency,
-          })}
-        />
-        <MetricCard
-          label={t("wasteRate")}
-          value={formatPercent(summary.wasteRatePct, {locale})}
-        />
-        <MetricCard
-          label={t("alertsCount")}
-          value={String(alerts.length)}
-        />
-      </Grid>
-
-      <Divider />
-
-      <Band title={t("marginsTitle")} intro={t("marginsIntro")}>
-        {margins.length === 0 ? (
-          <Card padding={4}>
-            <EmptyState
-              title={t("emptyMarginsTitle")}
-              description={t("emptyMarginsBody")}
-              isCompact
+      {summary ? (
+        <>
+          <Grid columns={{minWidth: 220, max: 4}} gap={4}>
+            <MetricCard
+              label={t("wasteCost")}
+              value={formatMoney(summary.wasteCost, {
+                locale,
+                currency: summary.currency,
+              })}
             />
-          </Card>
-        ) : (
-          <ProductMarginsTable margins={margins} />
-        )}
-      </Band>
-
-      <Divider />
-
-      <Band title={t("yieldsTitle")} intro={t("yieldsIntro")}>
-        {yields.length === 0 ? (
-          <Card padding={4}>
-            <EmptyState
-              title={t("emptyYieldsTitle")}
-              description={t("emptyYieldsBody")}
-              isCompact
+            <MetricCard
+              label={t("productionCost")}
+              value={formatMoney(summary.productionCost, {
+                locale,
+                currency: summary.currency,
+              })}
             />
-          </Card>
-        ) : (
-          <BatchYieldsTable yields={yields} />
-        )}
-      </Band>
-
-      <Divider />
-
-      <Band title={t("alertsTitle")} intro={t("alertsIntro")}>
-        {alerts.length === 0 ? (
-          <Card padding={4}>
-            <EmptyState
-              title={t("emptyAlertsTitle")}
-              description={t("emptyAlertsBody")}
-              isCompact
+            <MetricCard
+              label={t("wasteRate")}
+              value={formatPercent(summary.wasteRatePct, {locale})}
             />
-          </Card>
-        ) : (
-          <StockLevelsTable levels={alerts} />
-        )}
-      </Band>
+            <MetricCard
+              label={t("alertsCount")}
+              value={String(alerts.length)}
+            />
+          </Grid>
+
+          <Divider />
+        </>
+      ) : null}
+
+      {can.finance ? (
+        <>
+          <Band title={t("marginsTitle")} intro={t("marginsIntro")}>
+            {margins.length === 0 ? (
+              <Card padding={4}>
+                <EmptyState
+                  title={t("emptyMarginsTitle")}
+                  description={t("emptyMarginsBody")}
+                  isCompact
+                />
+              </Card>
+            ) : (
+              <ProductMarginsTable margins={margins} />
+            )}
+          </Band>
+
+          <Divider />
+        </>
+      ) : null}
+
+      {can.production ? (
+        <>
+          <Band title={t("yieldsTitle")} intro={t("yieldsIntro")}>
+            {yields.length === 0 ? (
+              <Card padding={4}>
+                <EmptyState
+                  title={t("emptyYieldsTitle")}
+                  description={t("emptyYieldsBody")}
+                  isCompact
+                />
+              </Card>
+            ) : (
+              <BatchYieldsTable yields={yields} />
+            )}
+          </Band>
+
+          {can.stock ? <Divider /> : null}
+        </>
+      ) : null}
+
+      {can.stock ? (
+        <Band title={t("alertsTitle")} intro={t("alertsIntro")}>
+          {alerts.length === 0 ? (
+            <Card padding={4}>
+              <EmptyState
+                title={t("emptyAlertsTitle")}
+                description={t("emptyAlertsBody")}
+                isCompact
+              />
+            </Card>
+          ) : (
+            <StockLevelsTable levels={alerts} />
+          )}
+        </Band>
+      ) : null}
     </PageShell>
   );
 }

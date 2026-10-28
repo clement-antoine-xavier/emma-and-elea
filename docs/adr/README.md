@@ -31,6 +31,7 @@ decision.
 | [0020](0020-expose-mcp-through-better-auth-oauth.md) | Expose MCP through Better Auth OAuth | Accepted | 2026-10-27 |
 | [0021](0021-expose-a-rest-api-as-a-second-oauth-resource.md) | Expose a REST API as a second OAuth resource | Accepted | 2026-10-27 |
 | [0022](0022-consolidate-settings-into-one-route.md) | Consolidate settings into one route with a section rail | Accepted | 2026-10-28 |
+| [0023](0023-add-in-app-assistants.md) | Add in-app assistants with the OpenAI Agents SDK | Accepted | 2026-10-28 |
 
 ## Creating a new ADR
 

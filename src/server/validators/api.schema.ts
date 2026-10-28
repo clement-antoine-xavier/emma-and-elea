@@ -182,4 +182,5 @@ export const dailySalesSchema = dailySalesInputSchema(apiValidation.sales);
 export const dailySalesFiltersSchema = listFiltersSchema.extend({
   from: optionalIsoDateString("Date must be YYYY-MM-DD.").optional(),
   to: optionalIsoDateString("Date must be YYYY-MM-DD.").optional(),
+  siteId: z.string().trim().optional(),
 });

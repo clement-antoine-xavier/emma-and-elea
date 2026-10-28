@@ -42,6 +42,8 @@ model User {
   oauthaccesstokens  OauthAccessToken[]
   oauthconsents      OauthConsent[]
 
+  agentConversations AgentConversation[]
+
   @@unique([email])
   @@map("user")
 }
@@ -159,6 +161,9 @@ model Organization {
   // Phase 3
   stockCounts     StockCount[]
   stockCountLines StockCountLine[]
+
+  agentConversations AgentConversation[]
+  agentApprovals     AgentApproval[]
 
   @@unique([slug])
   @@map("organization")
@@ -1813,4 +1818,96 @@ model OauthClientAssertion {
   expiresAt DateTime
 
   @@map("oauthClientAssertion")
+}
+
+// ---------------------------------------------------------------------------
+// In-app AI assistants (ADR-0023)
+// ---------------------------------------------------------------------------
+
+enum AgentPersona {
+  EMMA
+  ELEA
+}
+
+enum AgentApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  EXECUTED
+  FAILED
+  EXPIRED
+}
+
+model AgentConversation {
+  id             String       @id @default(cuid(2))
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  userId         String
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  persona        AgentPersona
+  title          String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  messages AgentMessage[]
+  runs     AgentRun[]
+
+  @@index([organizationId, userId, updatedAt])
+  @@index([userId, persona, updatedAt])
+  @@map("agent_conversation")
+}
+
+model AgentMessage {
+  seq            Int               @id @default(autoincrement())
+  id             String            @unique @default(cuid(2))
+  conversationId String
+  conversation   AgentConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  item           Json
+  createdAt      DateTime          @default(now())
+
+  @@index([conversationId, seq])
+  @@map("agent_message")
+}
+
+model AgentRun {
+  id             String            @id @default(cuid(2))
+  conversationId String
+  conversation   AgentConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  persona        AgentPersona
+  model          String
+  status         String            @default("RUNNING")
+  state          String?           @db.Text
+  inputTokens    Int               @default(0)
+  outputTokens   Int               @default(0)
+  traceId        String?
+  errorCode      String?
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+
+  approvals AgentApproval[]
+
+  @@index([conversationId, createdAt])
+  @@map("agent_run")
+}
+
+model AgentApproval {
+  id             String              @id @default(cuid(2))
+  runId          String
+  run            AgentRun            @relation(fields: [runId], references: [id], onDelete: Cascade)
+  organizationId String
+  organization   Organization        @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  userId         String
+  callId         String
+  toolName       String
+  arguments      Json
+  preview        Json
+  status         AgentApprovalStatus @default(PENDING)
+  decidedBy      String?
+  decidedAt      DateTime?
+  expiresAt      DateTime
+  executedAt     DateTime?
+
+  @@index([runId, status])
+  @@index([organizationId, status, expiresAt])
+  @@map("agent_approval")
 }

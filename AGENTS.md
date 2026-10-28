@@ -47,6 +47,7 @@ Layered: entry point → service → repository → Prisma. See ADR-0012.
 - `npm run db:generate` — regenerate the Prisma client.
 - `npm run db:seed` — add idempotent demo data to one organization (`-- --org=<slug>` when several exist).
 - `npm run db:backfill-sites` — create a default site for organizations that have none.
+- `npm run db:prune-assistant` — expire stale assistant approvals and delete old assistant conversations.
 - `npm run db:studio` — open Prisma Studio.
 - `npm run auth:generate` — add/refresh Better Auth models in the Prisma schema.
 - `npm run auth:create-admin -- --email … --password … --name …` — create an admin user.
@@ -181,7 +182,23 @@ Better Auth **1.7.13** with the Prisma adapter, email/password auth, and the `ad
 
 <!-- END:better-auth -->
 
+## In-app assistants
+
+Two personas, Emma (revenue and customers) and Éléa (production and operations), use the OpenAI Agents SDK. See ADR-0023.
+
+- Runtime: `src/server/agents/` (`config.ts`, `context.ts`, `capabilities/`, `tools/`, `personas/`, `runner.ts`, `approvals/`).
+- Capability catalogue: `src/server/agents/capabilities/catalog.ts` is pure metadata; `index.ts` maps names to tools. A capability is registered only when the member holds every required permission.
+- Tools call services with the session `OrganizationActor`; no tool accepts an organization id. Services still run `assertPermission`.
+- Drafts run immediately. Postings, publications and decisions use `needsApproval`; the approval card is built server-side by `approvals/preview.ts`.
+- Route: `POST /dashboard/assistant/stream` (SSE, session cookie, origin check, rate limit). It is outside `/api/**` on purpose.
+- UI: `src/components/assistant/assistant-drawer.tsx`, mounted in the dashboard side nav.
+- Persistence: `agent_conversation`, `agent_message`, `agent_run`, `agent_approval`. Prune with `npm run db:prune-assistant`.
+- Config: `.env` only (`OPENAI_API_KEY`, `ASSISTANT_ENABLED`, `ASSISTANT_MODEL`, guardrails). `.env.example` holds placeholders.
+
+<!-- END:assistant -->
+
 <!-- BEGIN:mcp -->
+
 
 ## MCP server
 

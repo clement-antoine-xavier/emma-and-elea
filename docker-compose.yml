@@ -42,6 +42,10 @@ services:
     build:
       context: .
       target: runner
+    # Pass the whole local .env to the container. Compose also reads this file
+    # for ${...} interpolation. Explicit `environment` values below win over it.
+    env_file:
+      - .env
     environment:
       DATABASE_URL: postgresql://postgres:postgres@postgres:5432/emma_and_elea?schema=public
       BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:?Set BETTER_AUTH_SECRET in .env}

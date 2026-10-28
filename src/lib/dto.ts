@@ -751,7 +751,7 @@ export type DashboardKpis = {
   batchesToday: number;
   lowStockCount: number;
   expiringLotsCount: number;
-  wasteCost30d: string;
+  wasteCost30d: string | null;
   currency: string;
 };
 

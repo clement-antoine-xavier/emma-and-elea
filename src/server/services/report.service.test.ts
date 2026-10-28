@@ -93,24 +93,27 @@ describe("report service", () => {
     });
   });
 
-  it("builds the report window and keeps low-stock alerts", async () => {
+  it("builds the window and hides every cost section from sales", async () => {
     const {service, reportRepository} = dependencies();
 
     const result = await service.getReports(actorFor("sales"));
 
-    expect(result.summary.from).toEqual(new Date("2026-09-27T23:59:59.999Z"));
-    expect(result.summary.to).toEqual(new Date("2026-10-27T23:59:59.999Z"));
-    expect(result.margins).toHaveLength(1);
+    expect(result.from).toEqual(new Date("2026-09-27T23:59:59.999Z"));
+    expect(result.to).toEqual(new Date("2026-10-27T23:59:59.999Z"));
+    expect(result.summary).toBeNull();
+    expect(result.margins).toEqual([]);
     expect(result.yields).toHaveLength(1);
     expect(result.alerts).toEqual([lowStock]);
-    expect(reportRepository.summary).toHaveBeenCalledWith(
-      "org_1",
-      expect.any(Date),
-      expect.any(Date),
-    );
+    expect(result.can).toEqual({
+      finance: false,
+      production: true,
+      stock: true,
+    });
+    expect(reportRepository.productMargins).not.toHaveBeenCalled();
+    expect(reportRepository.summary).not.toHaveBeenCalled();
   });
 
-  it("passes the summary through with its window", async () => {
+  it("passes the finance summary and margins through with the window", async () => {
     const {service} = dependencies();
 
     const result = await service.getReports(actorFor("owner"));
@@ -120,7 +123,11 @@ describe("report service", () => {
       productionCost: "40",
       wasteRatePct: "12.5",
       currency: "EUR",
+      from: new Date("2026-09-27T23:59:59.999Z"),
+      to: new Date("2026-10-27T23:59:59.999Z"),
     });
+    expect(result.margins).toHaveLength(1);
+    expect(result.can.finance).toBe(true);
   });
 
   it("counts below-minimum levels in the KPIs", async () => {
@@ -135,12 +142,31 @@ describe("report service", () => {
     });
   });
 
-  it("allows the reserved accountant and auditor to read reports", async () => {
+  it("redacts waste cost from KPIs without finance access", async () => {
     const {service} = dependencies();
 
-    await expect(
-      service.getReports(actorFor("accountant")),
-    ).resolves.toBeDefined();
-    await expect(service.getReports(actorFor("auditor"))).resolves.toBeDefined();
+    await expect(service.getKpis(actorFor("sales"))).resolves.toEqual({
+      batchesToday: 3,
+      lowStockCount: 1,
+      expiringLotsCount: 2,
+      wasteCost30d: null,
+      currency: "EUR",
+    });
+  });
+
+  it("gives the accountant finance and the auditor operations only", async () => {
+    const {service} = dependencies();
+
+    const accountant = await service.getReports(actorFor("accountant"));
+    expect(accountant.can.finance).toBe(true);
+    expect(accountant.summary).not.toBeNull();
+    expect(accountant.margins).toHaveLength(1);
+
+    const auditor = await service.getReports(actorFor("auditor"));
+    expect(auditor.can.finance).toBe(false);
+    expect(auditor.summary).toBeNull();
+    expect(auditor.margins).toEqual([]);
+    expect(auditor.yields).toHaveLength(1);
+    expect(auditor.alerts).toEqual([lowStock]);
   });
 });

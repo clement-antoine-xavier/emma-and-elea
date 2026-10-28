@@ -469,6 +469,26 @@
         "DELIVERED": "Livrée"
       },
       "supportNote": "Accès support plateforme. Prenez l'identité d'un tenant pour voir ses données."
+    },
+    "assistant": {
+      "trigger": "Demander à Emma ou Éléa",
+      "title": "Assistant",
+      "personaLabel": "Choisir un assistant",
+      "newChat": "Nouvelle conversation",
+      "emptyHint": "Posez une question sur les priorités du jour, un enregistrement ou une tâche à préparer.",
+      "placeholder": "Demandez à {name}…",
+      "thinking": "Réflexion…",
+      "approval": {
+        "badge": "Validation requise",
+        "approve": "Valider",
+        "reject": "Refuser"
+      },
+      "errors": {
+        "load": "Impossible de charger la conversation.",
+        "send": "L’assistant n’a pas pu répondre.",
+        "approval": "L’action n’a pas pu être terminée.",
+        "title": "Une erreur est survenue"
+      }
     }
   },
   "Team": {
@@ -2417,7 +2437,9 @@
     "alertsTitle": "Alertes de stock",
     "alertsIntro": "Articles au niveau ou en dessous de leur stock minimum.",
     "emptyAlertsTitle": "Aucune alerte de stock",
-    "emptyAlertsBody": "Tous les articles sont au-dessus de leur minimum."
+    "emptyAlertsBody": "Tous les articles sont au-dessus de leur minimum.",
+    "opsEyebrow": "Opérations",
+    "opsIntro": "Rendements des lots et alertes de stock du {from} au {to}."
   },
   "Consent": {
     "metadataTitle": "Autoriser l'accès · Emma & Éléa",

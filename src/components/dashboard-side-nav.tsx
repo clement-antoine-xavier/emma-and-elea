@@ -27,6 +27,8 @@ import {
 import {useTranslations} from "next-intl";
 import {usePathname} from "next/navigation";
 import {AuthStatus} from "@/components/auth-status";
+import {AssistantDrawer} from "@/components/assistant/assistant-drawer";
+import type {AssistantPersona} from "@/lib/assistant";
 import {LocaleSwitcher} from "@/components/locale-switcher";
 import {ThemeSwitcher} from "@/components/theme-switcher";
 import {
@@ -85,7 +87,15 @@ function isSelected(pathname: string, item: DashboardNavItem): boolean {
  * Account controls only fit the expanded rail. The collapsed rail is icons
  * only, so the section disappears until the nav is expanded again.
  */
-function SideNavAccount({roleLabel}: {roleLabel: string}) {
+function SideNavAccount({
+  roleLabel,
+  assistantEnabled,
+  assistantPersonas,
+}: {
+  roleLabel: string;
+  assistantEnabled: boolean;
+  assistantPersonas: AssistantPersona[];
+}) {
   const t = useTranslations("Dashboard.nav");
   const {isCollapsed} = useSideNavCollapse();
 
@@ -96,6 +106,9 @@ function SideNavAccount({roleLabel}: {roleLabel: string}) {
   return (
     <SideNavSection title={t("account")} isHeaderHidden>
       <Stack gap={3} align="start">
+        {assistantEnabled ? (
+          <AssistantDrawer availablePersonas={assistantPersonas} />
+        ) : null}
         <Badge label={roleLabel} variant="purple" />
         <LocaleSwitcher />
         <ThemeSwitcher />
@@ -109,10 +122,14 @@ export function DashboardSideNav({
   items,
   roleLabel,
   brand,
+  assistantEnabled,
+  assistantPersonas,
 }: {
   items: DashboardNavItem[];
   roleLabel: string;
   brand: string;
+  assistantEnabled: boolean;
+  assistantPersonas: AssistantPersona[];
 }) {
   const t = useTranslations("Dashboard.nav");
   const pathname = usePathname();
@@ -144,7 +161,13 @@ export function DashboardSideNav({
           headingHref="/dashboard"
         />
       }
-      footer={<SideNavAccount roleLabel={roleLabel} />}
+      footer={
+        <SideNavAccount
+          roleLabel={roleLabel}
+          assistantEnabled={assistantEnabled}
+          assistantPersonas={assistantPersonas}
+        />
+      }
     >
       {visible.has("overview") ? (
         <SideNavSection title={t("label")} isHeaderHidden>

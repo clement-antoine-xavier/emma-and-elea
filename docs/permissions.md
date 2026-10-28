@@ -92,6 +92,9 @@ Additional rules:
 
 - Staff and Sales see **sale prices**, never purchase prices, recipe costs or
   margins.
+- The reports page shows cost, margin, waste-cost and production-cost sections
+  only to roles with `report:finance`. Other report readers see batch yields and
+  stock alerts.
 - Accountant and Auditor never write.
 - An Admin cannot change, demote or remove an Owner; only an Owner can.
 - A member cannot change their own role or remove themselves.
