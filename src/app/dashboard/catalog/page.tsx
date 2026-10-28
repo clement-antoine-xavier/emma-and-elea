@@ -1,17 +1,15 @@
 import type {Metadata} from "next";
 import {Button} from "@astryxdesign/core/Button";
 import {Card} from "@astryxdesign/core/Card";
-import {Center} from "@astryxdesign/core/Center";
 import {EmptyState} from "@astryxdesign/core/EmptyState";
 import {HStack} from "@astryxdesign/core/HStack";
-import {Section} from "@astryxdesign/core/Section";
 import {Stack} from "@astryxdesign/core/Stack";
-import {Text} from "@astryxdesign/core/Text";
 import {getTranslations} from "next-intl/server";
-import {PageHeader} from "@/components/page-header";
-import {CatalogFilters} from "@/components/catalog/catalog-filters";
+import {PageShell} from "@/components/layout/page-shell";
+import {ListToolbar} from "@/components/list/list-toolbar";
 import {ItemTable} from "@/components/catalog/item-table";
 import {ListPagination} from "@/components/list-pagination";
+import {ITEM_TYPES} from "@/server/validators/catalog.schema";
 import {requirePermission} from "@/server/auth/actor";
 import {catalogService, settingsService} from "@/server/services/container";
 
@@ -32,8 +30,12 @@ export default async function CatalogPage({
   searchParams,
 }: CatalogSearchParams) {
   const actor = await requirePermission("catalog:read");
-  const t = await getTranslations("Catalog");
-  const params = await searchParams;
+  const [t, tFilters, tTypes, params] = await Promise.all([
+    getTranslations("Catalog"),
+    getTranslations("Catalog.filters"),
+    getTranslations("Catalog.types"),
+    searchParams,
+  ]);
   const [view, settingsView] = await Promise.all([
     catalogService.getCatalogView(actor, params),
     settingsService.getSettings(actor),
@@ -50,67 +52,87 @@ export default async function CatalogPage({
   }
 
   return (
-    <Section padding={6} minHeight="100%">
-      <Center axis="horizontal">
-        <Stack gap={6} maxWidth={1120} width="100%">
-          <PageHeader
-            title={t("title")}
-            intro={t("intro")}
-            actions={
-              <HStack gap={2} wrap="wrap">
-                <Button
-                  label={t("categoriesLink")}
-                  variant="secondary"
-                  href="/dashboard/catalog/categories"
-                />
-                {view.canWrite ? (
-                  <Button
-                    label={t("newItem")}
-                    variant="primary"
-                    href="/dashboard/catalog/items/new"
-                  />
-                ) : null}
-              </HStack>
-            }
+    <PageShell
+      title={t("title")}
+      intro={t("intro")}
+      actions={
+        <HStack gap={2} wrap="wrap">
+          <Button
+            label={t("categoriesLink")}
+            variant="secondary"
+            href="/dashboard/catalog/categories"
+          />
+          {view.canWrite ? (
+            <Button
+              label={t("newItem")}
+              variant="primary"
+              href="/dashboard/catalog/items/new"
+            />
+          ) : null}
+        </HStack>
+      }
+    >
+      <ListToolbar
+        search={{
+          value: view.filters.search,
+          label: tFilters("search"),
+          placeholder: tFilters("searchPlaceholder"),
+        }}
+        scope={{
+          key: "includeArchived",
+          label: tFilters("scope"),
+          value: view.filters.includeArchived ? "true" : "",
+          options: [
+            {value: "", label: tFilters("activeView")},
+            {value: "true", label: tFilters("allView")},
+          ],
+        }}
+        filters={[
+          {
+            key: "type",
+            label: tFilters("type"),
+            value: view.filters.type ?? "",
+            allLabel: tFilters("allTypes"),
+            options: ITEM_TYPES.map((itemType) => ({
+              value: itemType,
+              label: tTypes(itemType),
+            })),
+          },
+          {
+            key: "categoryId",
+            label: tFilters("category"),
+            value: view.filters.categoryId ?? "",
+            allLabel: tFilters("allCategories"),
+            options: view.categories.map((category) => ({
+              value: category.id,
+              label: category.name,
+            })),
+          },
+        ]}
+        summary={t("count", {count: view.page.total})}
+      />
+
+      {view.page.items.length === 0 ? (
+        <Card padding={4}>
+          <EmptyState title={t("emptyTitle")} description={t("emptyBody")} />
+        </Card>
+      ) : (
+        <Stack gap={4}>
+          <ItemTable
+            items={view.page.items}
+            currency={settingsView.settings.currency}
           />
 
-          <CatalogFilters
-            initialSearch={view.filters.search}
-            initialType={view.filters.type}
-            initialCategoryId={view.filters.categoryId}
-            initialIncludeArchived={view.filters.includeArchived}
-            categories={view.categories}
+          <ListPagination
+            page={view.page.page}
+            pageSize={view.page.pageSize}
+            total={view.page.total}
+            searchParams={paginationParams}
+            label={t("paginationLabel")}
           />
-
-          {view.page.items.length === 0 ? (
-            <Card padding={4}>
-              <EmptyState
-                title={t("emptyTitle")}
-                description={t("emptyBody")}
-              />
-            </Card>
-          ) : (
-            <Stack gap={4}>
-              <ItemTable
-                items={view.page.items}
-                currency={settingsView.settings.currency}
-              />
-
-              <ListPagination
-                page={view.page.page}
-                pageSize={view.page.pageSize}
-                total={view.page.total}
-                searchParams={paginationParams}
-                label={t("paginationLabel")}
-              />
-            </Stack>
-          )}
-
-          <Text type="supporting" color="secondary">
-            {t("count", {count: view.page.total})}
-          </Text>
         </Stack>
-      </Center>
-    </Section>
+      )}
+
+    </PageShell>
   );
 }

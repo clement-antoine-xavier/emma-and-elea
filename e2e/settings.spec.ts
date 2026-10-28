@@ -32,12 +32,13 @@ test("onboarding creates the first site and settings manage the reference data",
   // The first site is visible and editable.
   await page.getByRole("link", { name: "Settings" }).click();
   await expect(page).toHaveURL(/\/dashboard\/settings$/);
-  await page.getByRole("link", { name: "Manage sites" }).click();
-  await expect(page).toHaveURL(/\/dashboard\/settings\/sites$/);
+  await page.getByRole("link", { name: "Sites", exact: true }).click();
+  await expect(page).toHaveURL(/\/dashboard\/settings\?section=sites$/);
   await expect(page.getByText("Atelier Test")).toBeVisible();
   await expect(page.getByText("TST", { exact: true })).toBeVisible();
 
   // Create a second site.
+  await page.getByRole("button", { name: "Add a site" }).click();
   const siteForm = page
     .locator("form")
     .filter({ has: page.getByRole("button", { name: "Add site" }) });
@@ -48,9 +49,8 @@ test("onboarding creates the first site and settings manage the reference data",
   await expect(page.getByText("Boutique Test")).toBeVisible();
 
   // Create a labour rate and an energy tariff.
-  await page.getByRole("link", { name: "Back to settings" }).click();
-  await page.getByRole("link", { name: "Manage rates" }).click();
-  await expect(page).toHaveURL(/\/dashboard\/settings\/rates$/);
+  await page.getByRole("link", { name: "Labour and energy" }).click();
+  await expect(page).toHaveURL(/\/dashboard\/settings\?section=rates$/);
 
   const labourForm = page
     .locator("form")
@@ -68,15 +68,18 @@ test("onboarding creates the first site and settings manage the reference data",
   await expect(page.getByText("Electricity").last()).toBeVisible();
 
   // Create equipment.
-  await page.getByRole("link", { name: "Back to settings" }).click();
-  await page.getByRole("link", { name: "Manage equipment" }).click();
-  await expect(page).toHaveURL(/\/dashboard\/settings\/equipment$/);
+  await page.getByRole("link", { name: "Equipment", exact: true }).click();
+  await expect(page).toHaveURL(/\/dashboard\/settings\?section=equipment$/);
 
+  await page.getByRole("button", { name: "Add equipment" }).click();
   const equipmentForm = page
     .locator("form")
     .filter({ has: page.getByRole("button", { name: "Add equipment" }) });
   await equipmentForm.getByLabel("Name").fill("Four test");
   await equipmentForm.getByLabel("Power").fill("3.5");
-  await page.getByRole("button", { name: "Add equipment" }).click();
+  await page
+    .getByRole("dialog")
+    .getByRole("button", { name: "Add equipment" })
+    .click();
   await expect(page.getByText("Four test")).toBeVisible();
 });

@@ -12,6 +12,7 @@ import {getTranslations} from "next-intl/server";
 import {getActorContext} from "@/server/auth/actor";
 import {invitationService} from "@/server/services/container";
 import {isOrgRole} from "@/lib/permissions";
+import {PropertyList} from "@/components/layout/property-list";
 import {AcceptInvitationButton} from "@/components/accept-invitation-button";
 import {AuthStatus} from "@/components/auth-status";
 
@@ -41,64 +42,83 @@ export default async function AcceptInvitationPage({
   const roleLabel = isOrgRole(invitation.role)
     ? tRoles(`${invitation.role}.label`)
     : invitation.role;
+  const inviter = invitation.inviter.name || invitation.inviter.email;
 
   return (
     <Center minHeight="100vh" padding={8}>
-      <Card padding={6} width="100%" maxWidth={520}>
-        <Stack gap={4}>
-          <Stack gap={1}>
-            <Heading level={1}>
-              {t("title", {organization: invitation.organization.name})}
-            </Heading>
-            <Text type="supporting">
-              {t("intro", {
-                inviter:
-                  invitation.inviter.name || invitation.inviter.email,
-                email: invitation.email,
-                organization: invitation.organization.name,
-                role: roleLabel,
-              })}
-            </Text>
-          </Stack>
+      <Stack gap={4} width="100%" maxWidth={520}>
+        <HStack justify="between" align="center" wrap="wrap">
+          <Link href="/">{t("home")}</Link>
+        </HStack>
 
-          {state === "accepted" ? (
-            <Banner status="info" title={t("accepted")} />
-          ) : state === "unavailable" ? (
-            <Banner status="info" title={t("cancelled")} />
-          ) : state === "expired" ? (
-            <Banner status="warning" title={t("expired")} />
-          ) : state === "unauthenticated" ? (
-            <Stack gap={3}>
-              <Text>{t("signInPrompt", {email: invitation.email})}</Text>
-              <HStack gap={3} wrap="wrap">
-                <Button
-                  href={`/sign-in?next=/accept-invitation/${invitation.id}`}
-                  variant="primary"
-                  label={t("signIn")}
+        <Card padding={6}>
+          <Stack gap={5}>
+            <Stack gap={1}>
+              <Text type="label" color="accent">
+                {invitation.organization.name}
+              </Text>
+              <Heading level={1}>
+                {t("title", {organization: invitation.organization.name})}
+              </Heading>
+              <Text type="supporting">
+                {t("intro", {
+                  inviter,
+                  email: invitation.email,
+                  organization: invitation.organization.name,
+                  role: roleLabel,
+                })}
+              </Text>
+            </Stack>
+
+            <PropertyList
+              columns="single"
+              labelPosition="start"
+              items={[
+                {label: t("fields.email"), value: invitation.email},
+                {label: t("fields.role"), value: roleLabel},
+                {label: t("fields.inviter"), value: inviter},
+              ]}
+            />
+
+            {state === "accepted" ? (
+              <Banner status="info" title={t("accepted")} />
+            ) : state === "unavailable" ? (
+              <Banner status="info" title={t("cancelled")} />
+            ) : state === "expired" ? (
+              <Banner status="warning" title={t("expired")} />
+            ) : state === "unauthenticated" ? (
+              <Stack gap={3}>
+                <Text>{t("signInPrompt", {email: invitation.email})}</Text>
+                <HStack gap={3} wrap="wrap">
+                  <Button
+                    href={`/sign-in?next=/accept-invitation/${invitation.id}`}
+                    variant="primary"
+                    label={t("signIn")}
+                  />
+                  <Button
+                    href={`/sign-up?next=/accept-invitation/${invitation.id}`}
+                    variant="secondary"
+                    label={t("signUp")}
+                  />
+                </HStack>
+              </Stack>
+            ) : state === "wrong-account" ? (
+              <Stack gap={3}>
+                <Banner
+                  status="warning"
+                  title={t("wrongAccount", {email: invitation.email})}
                 />
-                <Button
-                  href={`/sign-up?next=/accept-invitation/${invitation.id}`}
-                  variant="secondary"
-                  label={t("signUp")}
-                />
-              </HStack>
-            </Stack>
-          ) : state === "wrong-account" ? (
-            <Stack gap={3}>
-              <Banner
-                status="warning"
-                title={t("wrongAccount", {email: invitation.email})}
-              />
-              <AuthStatus />
-            </Stack>
-          ) : (
-            <Stack gap={3}>
-              <AcceptInvitationButton invitationId={invitation.id} />
-              <Link href="/">{t("decline")}</Link>
-            </Stack>
-          )}
-        </Stack>
-      </Card>
+                <AuthStatus />
+              </Stack>
+            ) : (
+              <Stack gap={3}>
+                <AcceptInvitationButton invitationId={invitation.id} />
+                <Link href="/">{t("decline")}</Link>
+              </Stack>
+            )}
+          </Stack>
+        </Card>
+      </Stack>
     </Center>
   );
 }

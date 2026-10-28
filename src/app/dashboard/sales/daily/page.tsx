@@ -1,10 +1,7 @@
 import type {Metadata} from "next";
 import {Button} from "@astryxdesign/core/Button";
-import {Center} from "@astryxdesign/core/Center";
-import {Section} from "@astryxdesign/core/Section";
-import {Stack} from "@astryxdesign/core/Stack";
 import {getTranslations} from "next-intl/server";
-import {PageHeader} from "@/components/page-header";
+import {PageShell} from "@/components/layout/page-shell";
 import {DailySalesManager} from "@/components/sales/daily-sales-manager";
 import {requirePermission} from "@/server/auth/actor";
 import {dailySalesService} from "@/server/services/container";
@@ -27,28 +24,23 @@ export default async function DailySalesPage() {
   ]);
 
   return (
-    <Section padding={6} minHeight="100%">
-      <Center axis="horizontal">
-        <Stack gap={6} maxWidth={1120} width="100%">
-          <PageHeader
-            title={t("pageTitle")}
-            intro={t("pageIntro")}
-            actions={
-              <Button
-                label={t("backToSales")}
-                variant="secondary"
-                href="/dashboard/sales"
-              />
-            }
-          />
-          <DailySalesManager
-            rows={view.rows}
-            sites={options.sites}
-            items={options.items}
-            canWrite={view.canWrite}
-          />
-        </Stack>
-      </Center>
-    </Section>
+    <PageShell
+      title={t("pageTitle")}
+      intro={t("pageIntro")}
+      actions={
+        <Button
+          label={t("backToSales")}
+          variant="secondary"
+          href="/dashboard/sales"
+        />
+      }
+    >
+      <DailySalesManager
+        rows={view.rows}
+        sites={options.sites}
+        items={options.items}
+        canWrite={view.canWrite}
+      />
+    </PageShell>
   );
 }

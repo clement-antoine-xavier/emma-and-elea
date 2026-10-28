@@ -31,14 +31,15 @@ test("catalog manages categories, items and allergens", async ({ page }) => {
   await expect(page.getByText("No items yet")).toBeVisible();
 
   await page.getByRole("link", { name: "Categories" }).click();
+  await page.getByRole("button", { name: "Add a category" }).click();
   const categoryForm = page
     .locator("form")
     .filter({ has: page.getByRole("button", { name: "Add category" }) });
   await categoryForm.getByLabel("Name").fill("Matières premières");
   await page.getByRole("button", { name: "Add category" }).click();
   await expect(page.getByText("Matières premières")).toBeVisible();
-  await expect(categoryForm.getByLabel("Name")).toHaveValue("");
 
+  await page.getByRole("button", { name: "Add a category" }).click();
   await categoryForm.getByLabel("Name").fill("Farines");
   await categoryForm.getByRole("combobox", { name: "Parent category" }).click();
   await page.getByRole("option", { name: "Matières premières" }).click();
@@ -95,8 +96,8 @@ test("catalog manages categories, items and allergens", async ({ page }) => {
 
   // Search keeps the list usable as the catalog grows.
   await page.getByRole("link", { name: "Catalog", exact: true }).click();
-  await page.getByLabel("Search").fill("Croissant");
-  await page.getByRole("button", { name: "Apply filters" }).click();
+  await page.getByRole("textbox", {name: "Search"}).fill("Croissant");
+  await page.getByRole("textbox", {name: "Search"}).press("Enter");
   const itemTable = page.getByRole("group", { name: "Table" });
   await expect(itemTable.getByText("Croissant d’épreuve")).toBeVisible();
   await expect(itemTable.getByText("Farine d’épreuve")).toHaveCount(0);

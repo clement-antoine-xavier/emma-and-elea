@@ -1,15 +1,13 @@
 import type {Metadata} from "next";
 import {Button} from "@astryxdesign/core/Button";
 import {Card} from "@astryxdesign/core/Card";
-import {Center} from "@astryxdesign/core/Center";
 import {EmptyState} from "@astryxdesign/core/EmptyState";
 import {HStack} from "@astryxdesign/core/HStack";
-import {Section} from "@astryxdesign/core/Section";
 import {Stack} from "@astryxdesign/core/Stack";
 import {getTranslations} from "next-intl/server";
-import {PageHeader} from "@/components/page-header";
+import {PageShell} from "@/components/layout/page-shell";
+import {ListToolbar} from "@/components/list/list-toolbar";
 import {ListPagination} from "@/components/list-pagination";
-import {ReceiptFilters} from "@/components/purchasing/receipt-filters";
 import {ReceiptTable} from "@/components/purchasing/receipt-table";
 import {requirePermission} from "@/server/auth/actor";
 import {purchasingService} from "@/server/services/container";
@@ -31,8 +29,12 @@ export default async function PurchasingPage({
   searchParams,
 }: PurchasingSearchParams) {
   const actor = await requirePermission("purchasing:read");
-  const t = await getTranslations("Purchasing");
-  const params = await searchParams;
+  const [t, tFilters, tStatus, params] = await Promise.all([
+    getTranslations("Purchasing"),
+    getTranslations("Purchasing.filters"),
+    getTranslations("Purchasing.statuses"),
+    searchParams,
+  ]);
   const view = await purchasingService.getReceipts(actor, params);
 
   const paginationParams: Record<string, string> = {};
@@ -40,56 +42,62 @@ export default async function PurchasingPage({
   if (view.filters.status) paginationParams.status = view.filters.status;
 
   return (
-    <Section padding={6} minHeight="100%">
-      <Center axis="horizontal">
-        <Stack gap={6} maxWidth={1120} width="100%">
-          <PageHeader
-            title={t("title")}
-            intro={t("intro")}
-            actions={
-              <HStack gap={2} wrap="wrap">
-                <Button
-                  label={t("suppliersLink")}
-                  variant="secondary"
-                  href="/dashboard/purchasing/suppliers"
-                />
-                {view.canWrite ? (
-                  <Button
-                    label={t("newReceipt")}
-                    variant="primary"
-                    href="/dashboard/purchasing/receipts/new"
-                  />
-                ) : null}
-              </HStack>
-            }
+    <PageShell
+      title={t("title")}
+      intro={t("intro")}
+      actions={
+        <HStack gap={2} wrap="wrap">
+          <Button
+            label={t("suppliersLink")}
+            variant="secondary"
+            href="/dashboard/purchasing/suppliers"
           />
+          {view.canWrite ? (
+            <Button
+              label={t("newReceipt")}
+              variant="primary"
+              href="/dashboard/purchasing/receipts/new"
+            />
+          ) : null}
+        </HStack>
+      }
+    >
+      <ListToolbar
+        search={{
+          value: view.filters.search,
+          label: tFilters("search"),
+          placeholder: tFilters("searchPlaceholder"),
+        }}
+        scope={{
+          key: "status",
+          label: tFilters("status"),
+          value: view.filters.status ?? "",
+          options: [
+            {value: "", label: tFilters("allView")},
+            {value: "DRAFT", label: tStatus("DRAFT")},
+            {value: "POSTED", label: tStatus("POSTED")},
+            {value: "CANCELLED", label: tStatus("CANCELLED")},
+          ],
+        }}
+        summary={t("count", {count: view.page.total})}
+      />
 
-          <ReceiptFilters
-            initialSearch={view.filters.search}
-            initialStatus={view.filters.status}
+      {view.page.items.length === 0 ? (
+        <Card padding={4}>
+          <EmptyState title={t("emptyTitle")} description={t("emptyBody")} />
+        </Card>
+      ) : (
+        <Stack gap={4}>
+          <ReceiptTable receipts={view.page.items} />
+          <ListPagination
+            page={view.page.page}
+            pageSize={view.page.pageSize}
+            total={view.page.total}
+            searchParams={paginationParams}
+            label={t("paginationLabel")}
           />
-
-          {view.page.items.length === 0 ? (
-            <Card padding={4}>
-              <EmptyState
-                title={t("emptyTitle")}
-                description={t("emptyBody")}
-              />
-            </Card>
-          ) : (
-            <Stack gap={4}>
-              <ReceiptTable receipts={view.page.items} />
-              <ListPagination
-                page={view.page.page}
-                pageSize={view.page.pageSize}
-                total={view.page.total}
-                searchParams={paginationParams}
-                label={t("paginationLabel")}
-              />
-            </Stack>
-          )}
         </Stack>
-      </Center>
-    </Section>
+      )}
+    </PageShell>
   );
 }

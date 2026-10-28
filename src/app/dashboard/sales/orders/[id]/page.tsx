@@ -2,15 +2,11 @@ import type {Metadata} from "next";
 import {Badge} from "@astryxdesign/core/Badge";
 import {Button} from "@astryxdesign/core/Button";
 import {Card} from "@astryxdesign/core/Card";
-import {Center} from "@astryxdesign/core/Center";
-import {Grid} from "@astryxdesign/core/Grid";
-import {HStack} from "@astryxdesign/core/HStack";
-import {Section} from "@astryxdesign/core/Section";
-import {Stack} from "@astryxdesign/core/Stack";
-import {Text} from "@astryxdesign/core/Text";
 import {notFound} from "next/navigation";
 import {getLocale, getTranslations} from "next-intl/server";
-import {PageHeader} from "@/components/page-header";
+import {PageShell} from "@/components/layout/page-shell";
+import {DetailShell} from "@/components/layout/detail-shell";
+import {PropertyList} from "@/components/layout/property-list";
 import {OrderDetail} from "@/components/sales/order-detail";
 import {formatBusinessDate, formatMoney} from "@/lib/format";
 import {requirePermission} from "@/server/auth/actor";
@@ -34,17 +30,6 @@ export async function generateMetadata({
   };
 }
 
-function Definition({label, value}: {label: string; value: string}) {
-  return (
-    <Stack gap={1}>
-      <Text type="label" color="secondary">
-        {label}
-      </Text>
-      <Text>{value}</Text>
-    </Stack>
-  );
-}
-
 export default async function OrderDetailPage({params}: OrderParams) {
   const {id} = await params;
   const actor = await requirePermission("order:read");
@@ -52,76 +37,80 @@ export default async function OrderDetailPage({params}: OrderParams) {
 
   if (!view) notFound();
 
-  const [options, tStatuses, locale] = await Promise.all([
+  const [options, tStatuses, locale, tPage] = await Promise.all([
     orderService.getOptions(actor),
     getTranslations("Sales.statuses"),
     getLocale(),
+    getTranslations("Sales.orderPage"),
   ]);
-  const tPage = await getTranslations("Sales.orderPage");
 
   return (
-    <Section padding={6} minHeight="100%">
-      <Center axis="horizontal">
-        <Stack gap={6} maxWidth={1120} width="100%">
-          <PageHeader
-            title={view.order.number}
-            intro={`${view.order.customerName} · ${view.order.siteName}`}
-            actions={
-              <Button
-                label={tPage("back")}
-                variant="secondary"
-                href="/dashboard/sales"
-              />
-            }
-          />
-
+    <PageShell
+      title={view.order.number}
+      intro={`${view.order.customerName} · ${view.order.siteName}`}
+      actions={
+        <Button
+          label={tPage("back")}
+          variant="secondary"
+          href="/dashboard/sales"
+        />
+      }
+      contentWidth={1280}
+    >
+      <DetailShell
+        asideLabel={tPage("status")}
+        aside={
           <Card padding={5}>
-            <Grid columns={{minWidth: 180, max: 3}} gap={4}>
-              <Stack gap={1}>
-                <Text type="label" color="secondary">
-                  {tPage("status")}
-                </Text>
-                <HStack gap={2}>
-                  <Badge
-                    label={tStatuses(view.order.status)}
-                    variant={
-                      view.order.status === "DELIVERED"
-                        ? "success"
-                        : view.order.status === "CANCELLED"
-                          ? "neutral"
-                          : "warning"
-                    }
-                  />
-                </HStack>
-              </Stack>
-              <Definition
-                label={tPage("requestedFor")}
-                value={formatBusinessDate(view.order.requestedFor, {locale})}
-              />
-              <Definition
-                label={tPage("total")}
-                value={formatMoney(view.order.totalAmount, {
-                  locale,
-                  currency: view.order.currency,
-                })}
-              />
-              <Definition
-                label={tPage("note")}
-                value={view.order.note ?? tPage("noNote")}
-              />
-            </Grid>
+            <PropertyList
+              columns="single"
+              labelPosition="start"
+              items={[
+                {
+                  label: tPage("status"),
+                  value: (
+                    <Badge
+                      label={tStatuses(view.order.status)}
+                      variant={
+                        view.order.status === "DELIVERED"
+                          ? "success"
+                          : view.order.status === "CANCELLED"
+                            ? "neutral"
+                            : "warning"
+                      }
+                    />
+                  ),
+                },
+                {
+                  label: tPage("requestedFor"),
+                  value: formatBusinessDate(view.order.requestedFor, {
+                    locale,
+                  }),
+                },
+                {
+                  label: tPage("total"),
+                  value: formatMoney(view.order.totalAmount, {
+                    locale,
+                    currency: view.order.currency,
+                  }),
+                },
+                {
+                  label: tPage("note"),
+                  value: view.order.note ?? tPage("noNote"),
+                },
+              ]}
+            />
           </Card>
-
-          <OrderDetail
-            order={view.order}
-            options={{
-              items: options.items,
-              units: options.units,
-            }}
-            canWrite={view.canWrite}
-          />
-        </Stack>
-      </Center>
-    </Section>
+        }
+      >
+        <OrderDetail
+          order={view.order}
+          options={{
+            items: options.items,
+            units: options.units,
+          }}
+          canWrite={view.canWrite}
+        />
+      </DetailShell>
+    </PageShell>
   );
 }

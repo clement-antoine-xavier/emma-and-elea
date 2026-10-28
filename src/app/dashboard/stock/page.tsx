@@ -1,16 +1,17 @@
 import type {Metadata} from "next";
-import {Banner} from "@astryxdesign/core/Banner";
+import {Badge} from "@astryxdesign/core/Badge";
 import {Button} from "@astryxdesign/core/Button";
 import {Card} from "@astryxdesign/core/Card";
-import {Center} from "@astryxdesign/core/Center";
 import {EmptyState} from "@astryxdesign/core/EmptyState";
 import {HStack} from "@astryxdesign/core/HStack";
-import {Section} from "@astryxdesign/core/Section";
+import {List, ListItem} from "@astryxdesign/core/List";
 import {Stack} from "@astryxdesign/core/Stack";
 import {Heading, Text} from "@astryxdesign/core/Text";
-import {getTranslations} from "next-intl/server";
-import {PageHeader} from "@/components/page-header";
+import {getLocale, getTranslations} from "next-intl/server";
+import {PageShell} from "@/components/layout/page-shell";
+import {DetailShell} from "@/components/layout/detail-shell";
 import {StockLevelsTable} from "@/components/stock/stock-levels-table";
+import {formatQuantity} from "@/lib/format";
 import {requirePermission} from "@/server/auth/actor";
 import {stockService} from "@/server/services/container";
 
@@ -25,57 +26,87 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function StockPage() {
   const actor = await requirePermission("stock:read");
-  const t = await getTranslations("Stock");
+  const [t, locale] = await Promise.all([
+    getTranslations("Stock"),
+    getLocale(),
+  ]);
   const {levels, alerts} = await stockService.getLevels(actor);
 
   return (
-    <Section padding={6} minHeight="100%">
-      <Center axis="horizontal">
-        <Stack gap={6} maxWidth={1120} width="100%">
-          <PageHeader
-            title={t("title")}
-            intro={t("intro")}
-            actions={
-              <HStack gap={2} wrap="wrap">
-                <Button
-                  label={t("countsLink")}
-                  variant="secondary"
-                  href="/dashboard/stock/counts"
-                />
-                <Button
-                  label={t("lotsLink")}
-                  variant="secondary"
-                  href="/dashboard/stock/lots"
-                />
-              </HStack>
-            }
+    <PageShell
+      title={t("title")}
+      intro={t("intro")}
+      actions={
+        <HStack gap={2} wrap="wrap">
+          <Button
+            label={t("countsLink")}
+            variant="secondary"
+            href="/dashboard/stock/counts"
           />
-
-          {alerts.length > 0 ? (
-            <Banner
-              status="warning"
-              title={t("alerts.title")}
-              description={t("alerts.body", {count: alerts.length})}
-            />
-          ) : null}
-
-          <Stack gap={3}>
+          <Button
+            label={t("lotsLink")}
+            variant="secondary"
+            href="/dashboard/stock/lots"
+          />
+        </HStack>
+      }
+    >
+      <DetailShell
+        asideLabel={t("alerts.title")}
+        aside={
+          alerts.length > 0 ? (
+            <Stack gap={4}>
+              <Stack gap={1}>
+                <Heading level={2}>{t("alerts.title")}</Heading>
+                <Text type="supporting">
+                  {t("alerts.body", {count: alerts.length})}
+                </Text>
+              </Stack>
+              <List hasDividers density="compact">
+                {alerts.slice(0, 8).map((alert) => (
+                  <ListItem
+                    key={`${alert.siteId}:${alert.itemId}`}
+                    label={alert.itemName}
+                    description={`${alert.siteName} · ${formatQuantity(
+                      alert.quantity,
+                      {locale},
+                    )} ${alert.unitCode} / ${formatQuantity(
+                      alert.minStockQuantity,
+                      {locale},
+                    )} ${alert.unitCode}`}
+                    endContent={
+                      <Badge variant="warning" label={t("low")} />
+                    }
+                  />
+                ))}
+              </List>
+            </Stack>
+          ) : (
+            <Stack gap={1}>
+              <Heading level={2}>{t("alerts.title")}</Heading>
+              <Text type="supporting">{t("alerts.none")}</Text>
+            </Stack>
+          )
+        }
+      >
+        <Stack gap={3}>
+          <Stack gap={1}>
             <Heading level={2}>{t("levelsTitle")}</Heading>
             <Text type="supporting">{t("levelsIntro")}</Text>
-
-            {levels.length === 0 ? (
-              <Card padding={4}>
-                <EmptyState
-                  title={t("emptyTitle")}
-                  description={t("emptyBody")}
-                />
-              </Card>
-            ) : (
-              <StockLevelsTable levels={levels} />
-            )}
           </Stack>
+
+          {levels.length === 0 ? (
+            <Card padding={4}>
+              <EmptyState
+                title={t("emptyTitle")}
+                description={t("emptyBody")}
+              />
+            </Card>
+          ) : (
+            <StockLevelsTable levels={levels} />
+          )}
         </Stack>
-      </Center>
-    </Section>
+      </DetailShell>
+    </PageShell>
   );
 }

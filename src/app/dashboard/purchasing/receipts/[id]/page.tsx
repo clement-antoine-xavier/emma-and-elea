@@ -1,14 +1,14 @@
 import type {Metadata} from "next";
 import {Badge} from "@astryxdesign/core/Badge";
 import {Button} from "@astryxdesign/core/Button";
-import {Center} from "@astryxdesign/core/Center";
-import {HStack} from "@astryxdesign/core/HStack";
-import {Section} from "@astryxdesign/core/Section";
-import {Stack} from "@astryxdesign/core/Stack";
+import {Card} from "@astryxdesign/core/Card";
 import {notFound} from "next/navigation";
-import {getTranslations} from "next-intl/server";
-import {PageHeader} from "@/components/page-header";
+import {getLocale, getTranslations} from "next-intl/server";
+import {PageShell} from "@/components/layout/page-shell";
+import {DetailShell} from "@/components/layout/detail-shell";
+import {PropertyList} from "@/components/layout/property-list";
 import {ReceiptDetail} from "@/components/purchasing/receipt-detail";
+import {formatBusinessDate, formatMoney} from "@/lib/format";
 import {requirePermission} from "@/server/auth/actor";
 import {purchasingService} from "@/server/services/container";
 
@@ -25,7 +25,11 @@ export async function generateMetadata({
   const view = await purchasingService.getReceipt(actor, id);
   const t = await getTranslations("Purchasing");
 
-  return {title: view ? `${view.receipt.number} · ${t("title")}` : t("metadataTitle")};
+  return {
+    title: view
+      ? `${view.receipt.number} · ${t("title")}`
+      : t("metadataTitle"),
+  };
 }
 
 export default async function ReceiptDetailPage({params}: ReceiptParams) {
@@ -35,45 +39,84 @@ export default async function ReceiptDetailPage({params}: ReceiptParams) {
 
   if (!view) notFound();
 
-  const t = await getTranslations("Purchasing");
-  const tStatuses = await getTranslations("Purchasing.statuses");
-  const options = await purchasingService.getFormOptions(actor);
+  const [options, t, tStatuses, tDetail, locale] = await Promise.all([
+    purchasingService.getFormOptions(actor),
+    getTranslations("Purchasing"),
+    getTranslations("Purchasing.statuses"),
+    getTranslations("Purchasing.detail"),
+    getLocale(),
+  ]);
 
   return (
-    <Section padding={6} minHeight="100%">
-      <Center axis="horizontal">
-        <Stack gap={6} maxWidth={1120} width="100%">
-          <PageHeader
-            title={view.receipt.number}
-            intro={`${view.receipt.supplierName} · ${view.receipt.siteName}`}
-            actions={
-              <HStack gap={2} wrap="wrap">
-                <Badge
-                  label={tStatuses(view.receipt.status)}
-                  variant={
-                    view.receipt.status === "POSTED"
-                      ? "success"
-                      : view.receipt.status === "CANCELLED"
-                        ? "neutral"
-                        : "warning"
-                  }
-                />
-                <Button
-                  label={t("backToReceipts")}
-                  variant="secondary"
-                  href="/dashboard/purchasing"
-                />
-              </HStack>
-            }
-          />
-          <ReceiptDetail
-            receipt={view.receipt}
-            items={options.items}
-            units={options.units}
-            canWrite={view.canWrite}
-          />
-        </Stack>
-      </Center>
-    </Section>
+    <PageShell
+      title={view.receipt.number}
+      intro={`${view.receipt.supplierName} · ${view.receipt.siteName}`}
+      actions={
+        <Button
+          label={t("backToReceipts")}
+          variant="secondary"
+          href="/dashboard/purchasing"
+        />
+      }
+      contentWidth={1280}
+    >
+      <DetailShell
+        asideLabel={tDetail("linesTitle")}
+        aside={
+          <Card padding={5}>
+            <PropertyList
+              columns="single"
+              labelPosition="start"
+              items={[
+                {
+                  label: tDetail("linesTitle"),
+                  value: (
+                    <Badge
+                      label={tStatuses(view.receipt.status)}
+                      variant={
+                        view.receipt.status === "POSTED"
+                          ? "success"
+                          : view.receipt.status === "CANCELLED"
+                            ? "neutral"
+                            : "warning"
+                      }
+                    />
+                  ),
+                },
+                {
+                  label: tDetail("supplier"),
+                  value: view.receipt.supplierName,
+                },
+                {label: tDetail("site"), value: view.receipt.siteName},
+                {
+                  label: tDetail("reference"),
+                  value: view.receipt.supplierReference ?? "—",
+                },
+                {
+                  label: tDetail("receivedAt"),
+                  value: view.receipt.receivedAt
+                    ? formatBusinessDate(view.receipt.receivedAt, {locale})
+                    : "—",
+                },
+                {
+                  label: tDetail("total"),
+                  value: formatMoney(view.receipt.totalAmount, {
+                    locale,
+                    currency: view.receipt.currency,
+                  }),
+                },
+              ]}
+            />
+          </Card>
+        }
+      >
+        <ReceiptDetail
+          receipt={view.receipt}
+          items={options.items}
+          units={options.units}
+          canWrite={view.canWrite}
+        />
+      </DetailShell>
+    </PageShell>
   );
 }

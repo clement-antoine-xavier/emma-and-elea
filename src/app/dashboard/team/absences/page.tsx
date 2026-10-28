@@ -1,11 +1,8 @@
 import type {Metadata} from "next";
 import {Button} from "@astryxdesign/core/Button";
-import {Center} from "@astryxdesign/core/Center";
 import {HStack} from "@astryxdesign/core/HStack";
-import {Section} from "@astryxdesign/core/Section";
-import {Stack} from "@astryxdesign/core/Stack";
 import {getTranslations} from "next-intl/server";
-import {PageHeader} from "@/components/page-header";
+import {PageShell} from "@/components/layout/page-shell";
 import {AbsenceManager} from "@/components/team/absence-manager";
 import {can} from "@/lib/permissions";
 import {requirePermission} from "@/server/auth/actor";
@@ -27,47 +24,42 @@ export default async function AbsencesPage() {
   const canSeeTeam = can(actor.role, "team:read");
 
   return (
-    <Section padding={6} minHeight="100%">
-      <Center axis="horizontal">
-        <Stack gap={6} maxWidth={1120} width="100%">
-          <PageHeader
-            title={t("pageTitle")}
-            intro={t("pageIntro")}
-            actions={
-              <HStack gap={2} wrap="wrap">
-                {canSeeTeam ? (
-                  <Button
-                    label={t("scheduleLink")}
-                    variant="secondary"
-                    href="/dashboard/team/schedule"
-                  />
-                ) : null}
-                {canSeeTeam ? (
-                  <Button
-                    label={t("employeesLink")}
-                    variant="secondary"
-                    href="/dashboard/team/employees"
-                  />
-                ) : null}
-                {canSeeTeam ? (
-                  <Button
-                    label={t("back")}
-                    variant="secondary"
-                    href="/dashboard/team"
-                  />
-                ) : null}
-              </HStack>
-            }
-          />
-          <AbsenceManager
-            absences={view.absences}
-            employees={view.employees}
-            canRequest={view.canRequest}
-            canDecide={view.canDecide}
-            currentEmployee={view.currentEmployee}
-          />
-        </Stack>
-      </Center>
-    </Section>
+    <PageShell
+      title={t("pageTitle")}
+      intro={t("pageIntro")}
+      actions={
+        <HStack gap={2} wrap="wrap">
+          {canSeeTeam ? (
+            <Button
+              label={t("scheduleLink")}
+              variant="secondary"
+              href="/dashboard/team/schedule"
+            />
+          ) : null}
+          {canSeeTeam ? (
+            <Button
+              label={t("employeesLink")}
+              variant="secondary"
+              href="/dashboard/team/employees"
+            />
+          ) : null}
+          {canSeeTeam ? (
+            <Button
+              label={t("back")}
+              variant="secondary"
+              href="/dashboard/team"
+            />
+          ) : null}
+        </HStack>
+      }
+    >
+      <AbsenceManager
+        absences={view.absences}
+        employees={view.employees}
+        canRequest={view.canRequest}
+        canDecide={view.canDecide}
+        currentEmployee={view.currentEmployee}
+      />
+    </PageShell>
   );
 }

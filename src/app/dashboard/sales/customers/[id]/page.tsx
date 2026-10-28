@@ -2,14 +2,11 @@ import type {Metadata} from "next";
 import {Banner} from "@astryxdesign/core/Banner";
 import {Button} from "@astryxdesign/core/Button";
 import {Card} from "@astryxdesign/core/Card";
-import {Center} from "@astryxdesign/core/Center";
-import {Grid} from "@astryxdesign/core/Grid";
-import {Section} from "@astryxdesign/core/Section";
-import {Stack} from "@astryxdesign/core/Stack";
-import {Text} from "@astryxdesign/core/Text";
 import {notFound} from "next/navigation";
 import {getTranslations} from "next-intl/server";
-import {PageHeader} from "@/components/page-header";
+import {PageShell} from "@/components/layout/page-shell";
+import {DetailShell} from "@/components/layout/detail-shell";
+import {PropertyList} from "@/components/layout/property-list";
 import {CustomerEditForm} from "@/components/sales/customer-edit-form";
 import {requirePermission} from "@/server/auth/actor";
 import {customerService} from "@/server/services/container";
@@ -34,17 +31,6 @@ export async function generateMetadata({
   };
 }
 
-function Definition({label, value}: {label: string; value: string}) {
-  return (
-    <Stack gap={1}>
-      <Text type="label" color="secondary">
-        {label}
-      </Text>
-      <Text>{value}</Text>
-    </Stack>
-  );
-}
-
 export default async function CustomerDetailPage({params}: CustomerParams) {
   const {id} = await params;
   const actor = await requirePermission("customer:read");
@@ -57,65 +43,66 @@ export default async function CustomerDetailPage({params}: CustomerParams) {
   const tPage = await getTranslations("Sales.customerPage");
   const customer = view.customer;
 
+  const facts = [
+    {label: t("fields.type"), value: tTypes(customer.type)},
+    {
+      label: t("fields.contactName"),
+      value: customer.contactName ?? "—",
+    },
+    {label: t("fields.email"), value: customer.email ?? "—"},
+    {label: t("fields.phone"), value: customer.phone ?? "—"},
+    {label: t("fields.city"), value: customer.city ?? "—"},
+    {label: t("fields.vatNumber"), value: customer.vatNumber ?? "—"},
+    {label: t("fields.note"), value: customer.note ?? "—"},
+  ];
+
   return (
-    <Section padding={6} minHeight="100%">
-      <Center axis="horizontal">
-        <Stack gap={6} maxWidth={1120} width="100%">
-          <PageHeader
-            title={customer.name}
-            intro={customer.code ?? tPage("noCode")}
-            actions={
-              <Button
-                label={tPage("back")}
-                variant="secondary"
-                href="/dashboard/sales/customers"
-              />
-            }
-          />
+    <PageShell
+      title={customer.name}
+      intro={customer.code ?? tPage("noCode")}
+      actions={
+        <Button
+          label={tPage("back")}
+          variant="secondary"
+          href="/dashboard/sales/customers"
+        />
+      }
+      contentWidth={1080}
+    >
+      {customer.isArchived ? (
+        <Banner
+          status="warning"
+          title={tPage("archivedTitle")}
+          description={tPage("archivedBody")}
+        />
+      ) : null}
 
-          {customer.isArchived ? (
-            <Banner
-              status="warning"
-              title={tPage("archivedTitle")}
-              description={tPage("archivedBody")}
+      <DetailShell
+        asideLabel={t("fields.type")}
+        aside={
+          <Card padding={5}>
+            <PropertyList
+              columns="single"
+              labelPosition="start"
+              items={[
+                {
+                  label: t("fields.type"),
+                  value: tTypes(customer.type),
+                },
+                ...facts.slice(1, 4),
+              ]}
             />
-          ) : null}
-
-          {view.canWrite ? (
-            <CustomerEditForm customer={customer} />
-          ) : (
-            <Card padding={5}>
-              <Grid columns={{minWidth: 180, max: 3}} gap={4}>
-                <Definition label={t("fields.type")} value={tTypes(customer.type)} />
-                <Definition
-                  label={t("fields.contactName")}
-                  value={customer.contactName ?? "—"}
-                />
-                <Definition
-                  label={t("fields.email")}
-                  value={customer.email ?? "—"}
-                />
-                <Definition
-                  label={t("fields.phone")}
-                  value={customer.phone ?? "—"}
-                />
-                <Definition
-                  label={t("fields.city")}
-                  value={customer.city ?? "—"}
-                />
-                <Definition
-                  label={t("fields.vatNumber")}
-                  value={customer.vatNumber ?? "—"}
-                />
-                <Definition
-                  label={t("fields.note")}
-                  value={customer.note ?? "—"}
-                />
-              </Grid>
-            </Card>
-          )}
-        </Stack>
-      </Center>
-    </Section>
+          </Card>
+        }
+      >
+        {view.canWrite ? (
+          <CustomerEditForm customer={customer} />
+        ) : (
+          <Card padding={5}>
+            <PropertyList items={facts} />
+          </Card>
+        )}
+      </DetailShell>
+    </PageShell>
   );
 }

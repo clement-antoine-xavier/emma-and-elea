@@ -52,18 +52,18 @@ test("edits, archives, filters and paginates the catalog", async ({page}) => {
   await expect(page).toHaveURL(/\/dashboard\/catalog$/);
 
   // It disappears from the default list and reappears with archived rows.
-  await page.getByLabel("Search").fill("Edited flour");
-  await page.getByRole("button", {name: "Apply filters"}).click();
+  await page.getByRole("textbox", {name: "Search"}).fill("Edited flour");
+  await page.getByRole("textbox", {name: "Search"}).press("Enter");
   const table = page.getByRole("group", {name: "Table"});
   await expect(table.getByText("Edited flour")).toHaveCount(0);
 
-  await page.getByLabel("Include archived").click();
-  await page.getByRole("button", {name: "Apply filters"}).click();
+  await page.getByRole("radio", {name: "All"}).click();
   await expect(table.getByText("Edited flour")).toBeVisible();
   await expect(table.getByText("Archived").first()).toBeVisible();
 
   // A category with a child cannot be archived; the empty child can.
   await page.getByRole("link", {name: "Categories"}).click();
+  await page.getByRole("button", {name: "Add a category"}).click();
   const categoryForm = page
     .locator("form")
     .filter({has: page.getByRole("button", {name: "Add category"})});
@@ -74,6 +74,7 @@ test("edits, archives, filters and paginates the catalog", async ({page}) => {
     page.getByRole("cell", {name: "Guard parent", exact: true}).first(),
   ).toBeVisible();
 
+  await page.getByRole("button", {name: "Add a category"}).click();
   await categoryForm.getByLabel("Name").fill("Guard child");
   await categoryForm.getByRole("combobox", {name: "Parent category"}).click();
   await page.getByRole("option", {name: "Guard parent"}).click();

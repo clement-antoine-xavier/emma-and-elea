@@ -232,6 +232,17 @@
     }
   },
   "Auth": {
+    "split": {
+      "badge": "Emma & Éléa",
+      "title": "L’atelier derrière chaque belle vitrine.",
+      "intro": "Recettes, production, stock, ventes et traçabilité au même endroit, de la matière première au produit fini.",
+      "points": {
+        "recipes": "Chiffrez chaque recette et chaque lot",
+        "stock": "Suivez les lots, les pertes et les dates limites",
+        "team": "Pilotez production, ventes et plannings ensemble"
+      },
+      "home": "Retour à l’accueil"
+    },
     "fields": {
       "name": "Nom",
       "email": "E-mail",
@@ -338,6 +349,17 @@
       "siteCodeHint": "2 à 8 lettres majuscules ou chiffres. Il préfixe les numéros de lot."
     },
     "submit": "Créer l’espace",
+    "home": "Retour à l’accueil",
+    "aside": {
+      "title": "Ce que vous mettez en place",
+      "intro": "Deux minutes de configuration, puis l’espace est à vous. Tout reste modifiable dans les Réglages.",
+      "workspaceTitle": "Votre espace de travail",
+      "workspaceBody": "Le nom de l’entreprise et l’adresse avec laquelle l’équipe se connecte.",
+      "siteTitle": "Votre premier site",
+      "siteBody": "Là où le stock se trouve et où la production a lieu. Son code préfixe chaque numéro de lot.",
+      "teamTitle": "Votre équipe, ensuite",
+      "teamBody": "Invitez vos collègues et choisissez ce que chaque rôle peut voir et modifier."
+    },
     "errors": {
       "bannerTitle": "Impossible de créer l’espace",
       "slugTaken": "Cette adresse d’espace est déjà utilisée. Essayez-en une autre.",
@@ -717,6 +739,12 @@
     "metadataTitle": "Invitation · Emma & Éléa",
     "title": "Rejoindre {organization}",
     "intro": "{inviter} a invité {email} à rejoindre {organization} en tant que {role}.",
+    "home": "Retour à l’accueil",
+    "fields": {
+      "email": "Adresse invitée",
+      "role": "Rôle",
+      "inviter": "Invité par"
+    },
     "accept": "Accepter l’invitation",
     "decline": "Plus tard",
     "signInPrompt": "Connectez-vous ou créez un compte avec {email} pour accepter.",
@@ -772,6 +800,7 @@
     "metadataTitle": "Paramètres · Emma & Éléa",
     "title": "Paramètres",
     "intro": "Votre entreprise, vos sites, vos taux et vos équipements.",
+    "railTitle": "Sections",
     "backToSettings": "Retour aux paramètres",
     "manageTitle": "Gérer",
     "cards": {
@@ -1030,6 +1059,9 @@
       "allTypes": "Tous les types",
       "category": "Catégorie",
       "allCategories": "Toutes les catégories",
+      "scope": "Afficher",
+      "activeView": "Actifs",
+      "allView": "Tous",
       "archived": "Inclure les archivés",
       "apply": "Appliquer les filtres"
     },
@@ -1232,6 +1264,7 @@
     "backToList": "Retour aux fournisseurs",
     "active": "Actif",
     "archived": "Archivé",
+    "statusTitle": "Statut",
     "columns": {
       "code": "Code",
       "name": "Nom",
@@ -1311,6 +1344,7 @@
     "backToReceipts": "Retour aux achats",
     "open": "Ouvrir",
     "paginationLabel": "Pagination des réceptions",
+    "count": "{count, plural, =0 {Aucune réception} one {# réception} other {# réceptions}}",
     "emptyTitle": "Aucune réception",
     "emptyBody": "Créez un brouillon de réception quand une livraison arrive.",
     "filters": {
@@ -1318,6 +1352,7 @@
       "searchPlaceholder": "Numéro ou fournisseur",
       "status": "Statut",
       "allStatuses": "Tous les statuts",
+      "allView": "Toutes",
       "apply": "Appliquer les filtres"
     },
     "statuses": {
@@ -1418,7 +1453,8 @@
     "backToStock": "Retour au stock",
     "alerts": {
       "title": "Alertes de réapprovisionnement",
-      "body": "{count, plural, one {# article est sous son stock minimum.} other {# articles sont sous leur stock minimum.}}"
+      "body": "{count, plural, one {# article est sous son stock minimum.} other {# articles sont sous leur stock minimum.}}",
+      "none": "Tous les articles sont au-dessus de leur minimum."
     },
     "levelsTitle": "Niveaux de stock",
     "levelsIntro": "Seuls les lots disponibles avec une quantité restante sont comptés.",
@@ -1439,6 +1475,7 @@
       "title": "Lots",
       "intro": "Chaque quantité en stock appartient à un lot. Ouvrez un lot pour voir son registre.",
       "paginationLabel": "Pagination des lots",
+      "count": "{count, plural, =0 {Aucun lot} one {# lot} other {# lots}}",
       "emptyTitle": "Aucun lot",
       "emptyBody": "Validez une réception ou terminez un lot de production pour créer des lots.",
       "open": "Ouvrir",
@@ -1460,6 +1497,9 @@
       "filters": {
         "search": "Rechercher",
         "searchPlaceholder": "Lot, nom ou code d’article",
+        "scope": "Afficher",
+        "availableView": "Restants",
+        "allView": "Tous les lots",
         "includeEmpty": "Inclure les lots vides",
         "apply": "Appliquer les filtres"
       }
@@ -2058,6 +2098,13 @@
       "dispatches": "Expéditions",
       "daily": "Ventes quotidiennes"
     },
+    "count": "{count, plural, =0 {Aucune commande} one {# commande} other {# commandes}}",
+    "filters": {
+      "search": "Rechercher",
+      "searchPlaceholder": "Numéro de commande ou client",
+      "status": "Statut",
+      "allStatuses": "Tous les statuts"
+    },
     "types": {
       "BUSINESS": "Entreprise",
       "INDIVIDUAL": "Particulier"
@@ -2207,6 +2254,13 @@
       "pageTitle": "Expéditions",
       "pageIntro": "Préparez les livraisons depuis des lots traçables et validez-les dans le journal de stock.",
       "backToSales": "Retour aux ventes",
+      "count": "{count, plural, =0 {Aucune expédition} one {# expédition} other {# expéditions}}",
+      "filters": {
+        "search": "Rechercher",
+        "searchPlaceholder": "Numéro, client ou commande",
+        "scope": "Statut",
+        "allView": "Toutes"
+      },
       "createTitle": "Nouvelle expédition",
       "createIntro": "Créez une expédition brouillon, puis ajoutez les lots envoyés.",
       "errorTitle": "Impossible de créer l’expédition.",

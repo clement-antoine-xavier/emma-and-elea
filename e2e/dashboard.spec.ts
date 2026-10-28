@@ -50,7 +50,7 @@ test("shows the operations dashboard and switches the period", async ({
   await expect(page.getByText("No orders yet.")).toBeVisible();
   await expect(page.getByText("No planned batches.")).toBeVisible();
 
-  await page.getByRole("button", {name: "7 days"}).click();
+  await page.getByRole("radio", {name: "7 days"}).click();
   await expect(page).toHaveURL(/period=7/);
   await expect(page.getByText("Last 7 days").first()).toBeVisible();
 

@@ -1,11 +1,8 @@
 import type {Metadata} from "next";
 import {Button} from "@astryxdesign/core/Button";
-import {Center} from "@astryxdesign/core/Center";
-import {Section} from "@astryxdesign/core/Section";
-import {Stack} from "@astryxdesign/core/Stack";
 import {notFound} from "next/navigation";
 import {getTranslations} from "next-intl/server";
-import {PageHeader} from "@/components/page-header";
+import {PageShell} from "@/components/layout/page-shell";
 import {SiteEditForm} from "@/components/settings/site-edit-form";
 import {requirePermission} from "@/server/auth/actor";
 import {siteService} from "@/server/services/container";
@@ -35,23 +32,19 @@ export default async function SiteDetailPage({params}: SiteParams) {
   if (!site) notFound();
 
   return (
-    <Section padding={6} minHeight="100%">
-      <Center axis="horizontal">
-        <Stack gap={6} maxWidth={720} width="100%">
-          <PageHeader
-            title={site.name}
-            intro={t("detailIntro", {code: site.code})}
-            actions={
-              <Button
-                label={t("backToList")}
-                variant="secondary"
-                href="/dashboard/settings/sites"
-              />
-            }
-          />
-          <SiteEditForm site={site} />
-        </Stack>
-      </Center>
-    </Section>
+    <PageShell
+      title={site.name}
+      intro={t("detailIntro", {code: site.code})}
+      contentWidth={720}
+      actions={
+        <Button
+          label={t("backToList")}
+          variant="secondary"
+          href="/dashboard/settings?section=sites"
+        />
+      }
+    >
+      <SiteEditForm site={site} />
+    </PageShell>
   );
 }

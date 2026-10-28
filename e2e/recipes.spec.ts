@@ -28,7 +28,7 @@ test("a recipe publishes a cost snapshot", async ({ page }) => {
 
   // Costing references: one labour rate, one equipment, one tariff.
   await page.getByRole("link", { name: "Settings" }).click();
-  await page.getByRole("link", { name: "Manage rates" }).click();
+  await page.getByRole("link", { name: "Labour and energy" }).click();
   const labourForm = page
     .locator("form")
     .filter({ has: page.getByRole("button", { name: "Add labour rate" }) });
@@ -41,14 +41,17 @@ test("a recipe publishes a cost snapshot", async ({ page }) => {
   await energyForm.getByLabel("Price per kWh").fill("0.2516");
   await page.getByRole("button", { name: "Add energy tariff" }).click();
 
-  await page.getByRole("link", { name: "Back to settings" }).click();
-  await page.getByRole("link", { name: "Manage equipment" }).click();
+  await page.getByRole("link", { name: "Equipment", exact: true }).click();
+  await page.getByRole("button", { name: "Add equipment" }).click();
   const equipmentForm = page
     .locator("form")
     .filter({ has: page.getByRole("button", { name: "Add equipment" }) });
   await equipmentForm.getByLabel("Name").fill("Four recette");
   await equipmentForm.getByLabel("Power").fill("3.5");
-  await page.getByRole("button", { name: "Add equipment" }).click();
+  await page
+    .getByRole("dialog")
+    .getByRole("button", { name: "Add equipment" })
+    .click();
 
   // Two items: a raw material and the finished product.
   await page.getByRole("link", { name: "Catalog", exact: true }).click();
@@ -83,6 +86,7 @@ test("a recipe publishes a cost snapshot", async ({ page }) => {
   // Supplier price for the flour.
   await clickNav(page, "Purchasing", "/dashboard/purchasing");
   await page.getByRole("link", { name: "Suppliers" }).click();
+  await page.getByRole("button", { name: "Add a supplier" }).click();
   const supplierForm = page
     .locator("form")
     .filter({ has: page.getByRole("button", { name: "Add supplier" }) });
@@ -104,6 +108,7 @@ test("a recipe publishes a cost snapshot", async ({ page }) => {
 
   // Recipe, yield, one line and one operation.
   await page.getByRole("link", { name: "Recipes", exact: true }).click();
+  await page.getByRole("button", { name: "New recipe" }).click();
   const recipeForm = page
     .locator("form")
     .filter({ has: page.getByRole("button", { name: "Create recipe" }) });

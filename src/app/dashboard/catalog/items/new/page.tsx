@@ -1,10 +1,7 @@
 import type {Metadata} from "next";
 import {Button} from "@astryxdesign/core/Button";
-import {Center} from "@astryxdesign/core/Center";
-import {Section} from "@astryxdesign/core/Section";
-import {Stack} from "@astryxdesign/core/Stack";
 import {getTranslations} from "next-intl/server";
-import {PageHeader} from "@/components/page-header";
+import {PageShell} from "@/components/layout/page-shell";
 import {ItemForm} from "@/components/catalog/item-form";
 import {requirePermission} from "@/server/auth/actor";
 import {catalogService} from "@/server/services/container";
@@ -25,22 +22,18 @@ export default async function NewItemPage() {
     await catalogService.getItemFormOptions(actor);
 
   return (
-    <Section padding={6} minHeight="100%">
-      <Center axis="horizontal">
-        <Stack gap={6} maxWidth={760} width="100%">
-          <PageHeader
-            title={t("newItem")}
-            actions={
-              <Button
-                label={t("backToCatalog")}
-                variant="secondary"
-                href="/dashboard/catalog"
-              />
-            }
-          />
-          <ItemForm mode="create" units={units} categories={categories} />
-        </Stack>
-      </Center>
-    </Section>
+    <PageShell
+      title={t("newItem")}
+      contentWidth={760}
+      actions={
+        <Button
+          label={t("backToCatalog")}
+          variant="secondary"
+          href="/dashboard/catalog"
+        />
+      }
+    >
+      <ItemForm mode="create" units={units} categories={categories} />
+    </PageShell>
   );
 }

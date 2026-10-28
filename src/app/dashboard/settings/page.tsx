@@ -1,17 +1,24 @@
 import type {Metadata} from "next";
-import {Button} from "@astryxdesign/core/Button";
 import {Card} from "@astryxdesign/core/Card";
-import {Center} from "@astryxdesign/core/Center";
-import {Grid} from "@astryxdesign/core/Grid";
-import {Section} from "@astryxdesign/core/Section";
+import {List, ListItem} from "@astryxdesign/core/List";
 import {Stack} from "@astryxdesign/core/Stack";
 import {Heading, Text} from "@astryxdesign/core/Text";
 import {getTranslations} from "next-intl/server";
-import {PageHeader} from "@/components/page-header";
+import {PageShell} from "@/components/layout/page-shell";
+import {PropertyList} from "@/components/layout/property-list";
 import {OrganizationSettingsForm} from "@/components/settings/organization-settings-form";
-import {can} from "@/lib/permissions";
+import {SiteManager} from "@/components/settings/site-manager";
+import {LabourRateManager} from "@/components/settings/labour-rate-manager";
+import {EnergyTariffManager} from "@/components/settings/energy-tariff-manager";
+import {EquipmentManager} from "@/components/settings/equipment-manager";
+import {can, type Permission} from "@/lib/permissions";
 import {requirePermission} from "@/server/auth/actor";
-import {settingsService} from "@/server/services/container";
+import {
+  equipmentService,
+  rateService,
+  settingsService,
+  siteService,
+} from "@/server/services/container";
 
 // Session data keeps this route blocking until it is moved to a streamed shell.
 export const instant = false;
@@ -22,118 +29,186 @@ export async function generateMetadata(): Promise<Metadata> {
   return {title: t("metadataTitle")};
 }
 
-function Definition({label, value}: {label: string; value: string}) {
-  return (
-    <Stack gap={1}>
-      <Text type="label" color="secondary">
-        {label}
-      </Text>
-      <Text>{value}</Text>
-    </Stack>
-  );
+type SettingsSection = "organization" | "sites" | "rates" | "equipment";
+
+const SECTION_PERMISSION: Record<SettingsSection, Permission> = {
+  organization: "organization:read",
+  sites: "site:read",
+  rates: "cost:read",
+  equipment: "equipment:read",
+};
+
+const SECTIONS: SettingsSection[] = [
+  "organization",
+  "sites",
+  "rates",
+  "equipment",
+];
+
+function isSection(value: string): value is SettingsSection {
+  return (SECTIONS as string[]).includes(value);
 }
 
-export default async function SettingsPage() {
+export default async function SettingsPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const actor = await requirePermission("organization:read");
   const t = await getTranslations("Settings");
   const tOrganization = await getTranslations("Settings.organization");
-  const {settings, canUpdate} = await settingsService.getSettings(actor);
+  const tSites = await getTranslations("Sites");
+  const tRates = await getTranslations("Rates");
+  const tEquipment = await getTranslations("Equipment");
+  const params = await searchParams;
 
-  const cards = [
-    {
-      key: "sites",
-      href: "/dashboard/settings/sites",
-      visible: can(actor.role, "site:read"),
-    },
-    {
-      key: "rates",
-      href: "/dashboard/settings/rates",
-      visible: can(actor.role, "cost:read"),
-    },
-    {
-      key: "equipment",
-      href: "/dashboard/settings/equipment",
-      visible: can(actor.role, "equipment:read"),
-    },
-  ] as const;
+  const requested = Array.isArray(params.section)
+    ? params.section[0]
+    : params.section;
+  const section =
+    requested && isSection(requested) && can(actor.role, SECTION_PERMISSION[requested])
+      ? requested
+      : "organization";
+
+  const sectionLabel: Record<SettingsSection, string> = {
+    organization: t("organization.title"),
+    sites: t("cards.sites.title"),
+    rates: t("cards.rates.title"),
+    equipment: t("cards.equipment.title"),
+  };
+
+  const settingsView =
+    section === "organization"
+      ? await settingsService.getSettings(actor)
+      : null;
+  const sitesView =
+    section === "sites" ? await siteService.getSites(actor) : null;
+  const ratesView =
+    section === "rates" ? await rateService.getRates(actor) : null;
+  const equipmentView =
+    section === "equipment"
+      ? await equipmentService.getEquipment(actor)
+      : null;
+  const sitesForPanel =
+    section === "rates" || section === "equipment"
+      ? (await siteService.getSites(actor)).sites
+      : [];
+
+  const visibleSections = SECTIONS.filter((entry) =>
+    can(actor.role, SECTION_PERMISSION[entry]),
+  );
 
   return (
-    <Section padding={6} minHeight="100%">
-      <Center axis="horizontal">
-        <Stack gap={6} maxWidth={1120} width="100%">
-          <PageHeader title={t("title")} intro={t("intro")} />
-
-          {canUpdate ? (
-            <OrganizationSettingsForm settings={settings} />
-          ) : (
-            <Card padding={5}>
-              <Stack gap={4}>
-                <Stack gap={1}>
-                  <Heading level={2}>{tOrganization("title")}</Heading>
-                  <Text type="supporting">{tOrganization("intro")}</Text>
-                </Stack>
-                <Grid columns={{minWidth: 200, max: 3}} gap={4}>
-                  <Definition
-                    label={tOrganization("fields.currency")}
-                    value={settings.currency}
-                  />
-                  <Definition
-                    label={tOrganization("fields.overheadPct")}
-                    value={`${settings.overheadPct} %`}
-                  />
-                  <Definition
-                    label={tOrganization("fields.forecastHistoryDays")}
-                    value={String(settings.forecastHistoryDays)}
-                  />
-                  <Definition
-                    label={tOrganization("fields.forecastSafetyPct")}
-                    value={`${settings.forecastSafetyPct} %`}
-                  />
-                  <Definition
-                    label={tOrganization("fields.defaultShelfLifeDays")}
-                    value={
-                      settings.defaultShelfLifeDays === null
-                        ? tOrganization("notSet")
-                        : String(settings.defaultShelfLifeDays)
-                    }
-                  />
-                  <Definition
-                    label={tOrganization("fields.lotNumberPattern")}
-                    value={settings.lotNumberPattern}
-                  />
-                </Grid>
-              </Stack>
-            </Card>
-          )}
-
-          <Stack gap={3}>
-            <Heading level={2}>{t("manageTitle")}</Heading>
-            <Grid columns={{minWidth: 260, max: 3}} gap={4}>
-              {cards
-                .filter((card) => card.visible)
-                .map((card) => (
-                  <Card key={card.key} padding={5}>
-                    <Stack gap={3}>
-                      <Stack gap={1}>
-                        <Heading level={3}>
-                          {t(`cards.${card.key}.title`)}
-                        </Heading>
-                        <Text color="secondary">
-                          {t(`cards.${card.key}.body`)}
-                        </Text>
-                      </Stack>
-                      <Button
-                        label={t(`cards.${card.key}.action`)}
-                        variant="secondary"
-                        href={card.href}
-                      />
-                    </Stack>
-                  </Card>
-                ))}
-            </Grid>
-          </Stack>
+    <PageShell
+      title={t("title")}
+      intro={t("intro")}
+      startLabel={t("railTitle")}
+      start={
+        <Stack gap={3} padding={4}>
+          <Text type="label" color="secondary">
+            {t("railTitle")}
+          </Text>
+          <List density="compact" hasDividers edge="flush">
+            {visibleSections.map((entry) => (
+              <ListItem
+                key={entry}
+                label={sectionLabel[entry]}
+                href={`/dashboard/settings?section=${entry}`}
+                isSelected={entry === section}
+              />
+            ))}
+          </List>
         </Stack>
-      </Center>
-    </Section>
+      }
+    >
+      {section !== "organization" ? (
+        <Stack gap={1}>
+          <Heading level={2}>
+            {section === "sites"
+              ? tSites("title")
+              : section === "rates"
+                ? tRates("title")
+                : tEquipment("title")}
+          </Heading>
+          <Text type="supporting">
+            {section === "sites"
+              ? tSites("intro", {organization: actor.organization.name})
+              : section === "rates"
+                ? tRates("intro")
+                : tEquipment("intro")}
+          </Text>
+        </Stack>
+      ) : null}
+
+      {section === "organization" && settingsView ? (
+        settingsView.canUpdate ? (
+          <OrganizationSettingsForm settings={settingsView.settings} />
+        ) : (
+          <Card padding={5}>
+            <PropertyList
+              items={[
+                {
+                  label: tOrganization("fields.currency"),
+                  value: settingsView.settings.currency,
+                },
+                {
+                  label: tOrganization("fields.overheadPct"),
+                  value: `${settingsView.settings.overheadPct} %`,
+                },
+                {
+                  label: tOrganization("fields.forecastHistoryDays"),
+                  value: String(settingsView.settings.forecastHistoryDays),
+                },
+                {
+                  label: tOrganization("fields.forecastSafetyPct"),
+                  value: `${settingsView.settings.forecastSafetyPct} %`,
+                },
+                {
+                  label: tOrganization("fields.defaultShelfLifeDays"),
+                  value:
+                    settingsView.settings.defaultShelfLifeDays === null
+                      ? tOrganization("notSet")
+                      : String(settingsView.settings.defaultShelfLifeDays),
+                },
+                {
+                  label: tOrganization("fields.lotNumberPattern"),
+                  value: settingsView.settings.lotNumberPattern,
+                },
+              ]}
+            />
+          </Card>
+        )
+      ) : null}
+
+      {section === "sites" && sitesView ? (
+        <SiteManager
+          sites={sitesView.sites}
+          canWrite={sitesView.canWrite}
+        />
+      ) : null}
+
+      {section === "rates" && ratesView ? (
+        <Stack gap={6}>
+          <LabourRateManager
+            rates={ratesView.labourRates}
+            sites={sitesForPanel}
+            canWrite={ratesView.canWrite}
+          />
+          <EnergyTariffManager
+            tariffs={ratesView.energyTariffs}
+            sites={sitesForPanel}
+            canWrite={ratesView.canWrite}
+          />
+        </Stack>
+      ) : null}
+
+      {section === "equipment" && equipmentView ? (
+        <EquipmentManager
+          equipment={equipmentView.equipment}
+          sites={sitesForPanel}
+          canWrite={equipmentView.canWrite}
+        />
+      ) : null}
+    </PageShell>
   );
 }

@@ -7,6 +7,7 @@ import {Badge} from "@astryxdesign/core/Badge";
 import {Banner} from "@astryxdesign/core/Banner";
 import {Button} from "@astryxdesign/core/Button";
 import {Card} from "@astryxdesign/core/Card";
+import {Dialog, DialogHeader} from "@astryxdesign/core/Dialog";
 import {EmptyState} from "@astryxdesign/core/EmptyState";
 import {FormLayout} from "@astryxdesign/core/FormLayout";
 import {HStack} from "@astryxdesign/core/HStack";
@@ -41,6 +42,7 @@ export function SiteManager({
   const router = useRouter();
   const [pendingId, setPendingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [createOpen, setCreateOpen] = useState(false);
 
   const schema = useMemo(
     () => createSiteSchema((key) => tValidation(key)),
@@ -77,6 +79,7 @@ export function SiteManager({
     }
 
     reset();
+    setCreateOpen(false);
     router.refresh();
   }
 
@@ -101,14 +104,20 @@ export function SiteManager({
   return (
     <Stack gap={6}>
       {canWrite ? (
-        <Card padding={5}>
+        <Dialog
+          isOpen={createOpen}
+          onOpenChange={setCreateOpen}
+          width={520}
+          purpose="form"
+        >
+          <DialogHeader
+            title={t("createTitle")}
+            subtitle={t("createIntro")}
+            onOpenChange={setCreateOpen}
+          />
+          <Card padding={0}>
           <form onSubmit={handleSubmit(onSubmit)} noValidate>
             <Stack gap={4}>
-              <Stack gap={1}>
-                <Heading level={2}>{t("createTitle")}</Heading>
-                <Text type="supporting">{t("createIntro")}</Text>
-              </Stack>
-
               {errors.root?.message ? (
                 <Banner
                   status="error"
@@ -162,11 +171,15 @@ export function SiteManager({
               />
             </Stack>
           </form>
-        </Card>
+          </Card>
+        </Dialog>
       ) : null}
 
       <Stack gap={3}>
-        <Heading level={2}>{t("listTitle")}</Heading>
+        <HStack justify="between" align="end" wrap="wrap" gap={3}>
+          <Heading level={2}>{t("listTitle")}</Heading>
+          <Button variant="primary" label={t("createTitle")} onClick={() => setCreateOpen(true)} />
+        </HStack>
 
         {error ? (
           <Banner status="error" title={t("errorTitle")} description={error} />

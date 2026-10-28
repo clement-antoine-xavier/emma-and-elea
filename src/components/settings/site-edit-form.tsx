@@ -135,7 +135,7 @@ export function SiteEditForm({site}: {site: SiteRecord}) {
             <Button
               label={t("backToList")}
               variant="secondary"
-              href="/dashboard/settings/sites"
+              href="/dashboard/settings?section=sites"
             />
           </HStack>
         </Stack>

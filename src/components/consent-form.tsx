@@ -4,7 +4,9 @@ import {useState} from "react";
 import {Banner} from "@astryxdesign/core/Banner";
 import {Button} from "@astryxdesign/core/Button";
 import {Card} from "@astryxdesign/core/Card";
+import {Divider} from "@astryxdesign/core/Divider";
 import {HStack} from "@astryxdesign/core/HStack";
+import {List, ListItem} from "@astryxdesign/core/List";
 import {Stack} from "@astryxdesign/core/Stack";
 import {Heading, Text} from "@astryxdesign/core/Text";
 import {useTranslations} from "next-intl";
@@ -75,48 +77,49 @@ export function ConsentForm({
   }
 
   return (
-    <Card padding={6} width="100%">
-      <Stack gap={5}>
-        <Stack gap={1}>
-          <Heading level={1}>{t("title")}</Heading>
-          <Text type="supporting">
-            {t("subtitle", {client: clientName})}
-          </Text>
-        </Stack>
-
-        {error ? (
-          <Banner
-            status="error"
-            title={t("errors.title")}
-            description={error}
-          />
-        ) : null}
-
-        <Stack gap={2}>
-          <Text weight="medium">{t("accountLabel")}</Text>
-          <Text type="supporting">
-            {t("accountValue", {organization: organizationName})}
-          </Text>
-        </Stack>
-
-        <Stack gap={2}>
-          <Text weight="medium">{t("scopesLabel")}</Text>
-          <Stack gap={1} as="ul">
-            {scopes.map((scope) => (
-              <li key={scope}>
-                <Text type="supporting">
-                  {isKnownScope(scope) ? tScopes(scope) : scope}
-                </Text>
-              </li>
-            ))}
+    <Card padding={0} width="100%">
+      <Stack gap={0}>
+        <Stack gap={5} padding={6}>
+          <Stack gap={1}>
+            <Heading level={1}>{t("title")}</Heading>
+            <Text type="supporting">{t("subtitle", {client: clientName})}</Text>
           </Stack>
+
+          {error ? (
+            <Banner
+              status="error"
+              title={t("errors.title")}
+              description={error}
+            />
+          ) : null}
+
+          <Stack gap={2}>
+            <Text weight="medium">{t("accountLabel")}</Text>
+            <Text type="supporting">
+              {t("accountValue", {organization: organizationName})}
+            </Text>
+          </Stack>
+
+          <Stack gap={2}>
+            <Text weight="medium">{t("scopesLabel")}</Text>
+            <List hasDividers density="compact">
+              {scopes.map((scope) => (
+                <ListItem
+                  key={scope}
+                  label={isKnownScope(scope) ? tScopes(scope) : scope}
+                />
+              ))}
+            </List>
+          </Stack>
+
+          {clientUri ? (
+            <Text type="supporting">{t("clientLink", {uri: clientUri})}</Text>
+          ) : null}
         </Stack>
 
-        {clientUri ? (
-          <Text type="supporting">{t("clientLink", {uri: clientUri})}</Text>
-        ) : null}
+        <Divider />
 
-        <HStack gap={3} justify="end" wrap="wrap">
+        <HStack gap={3} justify="end" wrap="wrap" padding={4}>
           <Button
             type="button"
             variant="secondary"

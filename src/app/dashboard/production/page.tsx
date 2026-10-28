@@ -1,11 +1,8 @@
 import type {Metadata} from "next";
 import {Button} from "@astryxdesign/core/Button";
-import {Center} from "@astryxdesign/core/Center";
 import {HStack} from "@astryxdesign/core/HStack";
-import {Section} from "@astryxdesign/core/Section";
-import {Stack} from "@astryxdesign/core/Stack";
 import {getTranslations} from "next-intl/server";
-import {PageHeader} from "@/components/page-header";
+import {PageShell} from "@/components/layout/page-shell";
 import {ProductionManager} from "@/components/production/production-manager";
 import {requirePermission} from "@/server/auth/actor";
 import {productionService} from "@/server/services/container";
@@ -28,39 +25,34 @@ export default async function ProductionPage() {
   ]);
 
   return (
-    <Section padding={6} minHeight="100%">
-      <Center axis="horizontal">
-        <Stack gap={6} maxWidth={1120} width="100%">
-          <PageHeader
-            title={t("title")}
-            intro={t("intro")}
-            actions={
-              <HStack gap={2} wrap="wrap">
-                <Button
-                  label={t("planningLink")}
-                  variant="primary"
-                  href="/dashboard/production/planning"
-                />
-                <Button
-                  label={t("wasteLink")}
-                  variant="secondary"
-                  href="/dashboard/production/waste"
-                />
-                <Button
-                  label={t("recipesLink")}
-                  variant="secondary"
-                  href="/dashboard/recipes"
-                />
-              </HStack>
-            }
+    <PageShell
+      title={t("title")}
+      intro={t("intro")}
+      actions={
+        <HStack gap={2} wrap="wrap">
+          <Button
+            label={t("planningLink")}
+            variant="primary"
+            href="/dashboard/production/planning"
           />
-          <ProductionManager
-            batches={view.batches}
-            options={options}
-            canWrite={view.canWrite}
+          <Button
+            label={t("wasteLink")}
+            variant="secondary"
+            href="/dashboard/production/waste"
           />
-        </Stack>
-      </Center>
-    </Section>
+          <Button
+            label={t("recipesLink")}
+            variant="secondary"
+            href="/dashboard/recipes"
+          />
+        </HStack>
+      }
+    >
+      <ProductionManager
+        batches={view.batches}
+        options={options}
+        canWrite={view.canWrite}
+      />
+    </PageShell>
   );
 }

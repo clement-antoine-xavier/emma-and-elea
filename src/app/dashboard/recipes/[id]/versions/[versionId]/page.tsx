@@ -2,15 +2,14 @@ import type {Metadata} from "next";
 import {Banner} from "@astryxdesign/core/Banner";
 import {Button} from "@astryxdesign/core/Button";
 import {Card} from "@astryxdesign/core/Card";
-import {Center} from "@astryxdesign/core/Center";
-import {Grid} from "@astryxdesign/core/Grid";
 import {HStack} from "@astryxdesign/core/HStack";
-import {Section} from "@astryxdesign/core/Section";
 import {Stack} from "@astryxdesign/core/Stack";
 import {Heading, Text} from "@astryxdesign/core/Text";
 import {notFound} from "next/navigation";
 import {getTranslations} from "next-intl/server";
-import {PageHeader} from "@/components/page-header";
+import {PageShell} from "@/components/layout/page-shell";
+import {DetailShell} from "@/components/layout/detail-shell";
+import {PropertyList} from "@/components/layout/property-list";
 import {CostBreakdown} from "@/components/recipes/cost-breakdown";
 import {PublishVersionButton} from "@/components/recipes/publish-version-button";
 import {RecipeLinesManager} from "@/components/recipes/recipe-lines-manager";
@@ -41,17 +40,6 @@ export async function generateMetadata({
   };
 }
 
-function Definition({label, value}: {label: string; value: string}) {
-  return (
-    <Stack gap={1}>
-      <Text type="label" color="secondary">
-        {label}
-      </Text>
-      <Text>{value}</Text>
-    </Stack>
-  );
-}
-
 export default async function RecipeVersionPage({params}: VersionParams) {
   const {id, versionId} = await params;
   const actor = await requirePermission("recipe:read");
@@ -66,28 +54,70 @@ export default async function RecipeVersionPage({params}: VersionParams) {
   const canEdit = view.canWrite && isDraft;
 
   return (
-    <Section padding={6} minHeight="100%">
-      <Center axis="horizontal">
-        <Stack gap={6} maxWidth={1120} width="100%">
-          <PageHeader
-            title={`${view.version.recipeName} · v${view.version.versionNumber}`}
-            intro={`${view.version.recipeCode} · ${t(
-              `statuses.${view.version.status}`,
-            )}`}
-            actions={
-              <HStack gap={2} wrap="wrap">
-                <Button
-                  label={t("backToRecipe")}
-                  variant="secondary"
-                  href={`/dashboard/recipes/${id}`}
-                />
-                {isDraft && view.canPublish ? (
-                  <PublishVersionButton versionId={view.version.id} />
-                ) : null}
-              </HStack>
-            }
+    <PageShell
+      title={`${view.version.recipeName} · v${view.version.versionNumber}`}
+      intro={`${view.version.recipeCode} · ${t(`statuses.${view.version.status}`)}`}
+      actions={
+        <HStack gap={2} wrap="wrap">
+          <Button
+            label={t("backToRecipe")}
+            variant="secondary"
+            href={`/dashboard/recipes/${id}`}
           />
-
+          {isDraft && view.canPublish ? (
+            <PublishVersionButton versionId={view.version.id} />
+          ) : null}
+        </HStack>
+      }
+      contentWidth={1280}
+    >
+      <DetailShell
+        asideLabel={tVersion("fields.yieldQuantity")}
+        aside={
+          <Card padding={5}>
+            <PropertyList
+              columns="single"
+              labelPosition="start"
+              items={[
+                {
+                  label: tVersion("fields.yieldQuantity"),
+                  value: `${view.version.yieldQuantity} ${view.version.yieldUnitCode}`,
+                },
+                {
+                  label: tVersion("fields.portionCount"),
+                  value:
+                    view.version.portionCount === null
+                      ? "—"
+                      : String(view.version.portionCount),
+                },
+                {
+                  label: tVersion("fields.prepMinutes"),
+                  value:
+                    view.version.prepMinutes === null
+                      ? "—"
+                      : String(view.version.prepMinutes),
+                },
+                {
+                  label: tVersion("fields.cookMinutes"),
+                  value:
+                    view.version.cookMinutes === null
+                      ? "—"
+                      : String(view.version.cookMinutes),
+                },
+                {
+                  label: tVersion("fields.changeNote"),
+                  value: view.version.changeNote ?? "—",
+                },
+                {
+                  label: tVersion("fields.instructions"),
+                  value: view.version.instructions ?? "—",
+                },
+              ]}
+            />
+          </Card>
+        }
+      >
+        <Stack gap={6}>
           {view.version.status === "PUBLISHED" ? (
             <Banner
               status="success"
@@ -101,48 +131,7 @@ export default async function RecipeVersionPage({params}: VersionParams) {
               version={view.version}
               units={options.units}
             />
-          ) : (
-            <Card padding={5}>
-              <Grid columns={{minWidth: 180, max: 3}} gap={4}>
-                <Definition
-                  label={tVersion("fields.yieldQuantity")}
-                  value={`${view.version.yieldQuantity} ${view.version.yieldUnitCode}`}
-                />
-                <Definition
-                  label={tVersion("fields.portionCount")}
-                  value={
-                    view.version.portionCount === null
-                      ? "—"
-                      : String(view.version.portionCount)
-                  }
-                />
-                <Definition
-                  label={tVersion("fields.prepMinutes")}
-                  value={
-                    view.version.prepMinutes === null
-                      ? "—"
-                      : String(view.version.prepMinutes)
-                  }
-                />
-                <Definition
-                  label={tVersion("fields.cookMinutes")}
-                  value={
-                    view.version.cookMinutes === null
-                      ? "—"
-                      : String(view.version.cookMinutes)
-                  }
-                />
-                <Definition
-                  label={tVersion("fields.changeNote")}
-                  value={view.version.changeNote ?? "—"}
-                />
-                <Definition
-                  label={tVersion("fields.instructions")}
-                  value={view.version.instructions ?? "—"}
-                />
-              </Grid>
-            </Card>
-          )}
+          ) : null}
 
           {view.canReadCost && view.version.cost ? (
             <CostBreakdown cost={view.version.cost} />
@@ -171,7 +160,7 @@ export default async function RecipeVersionPage({params}: VersionParams) {
             </Stack>
           ) : null}
         </Stack>
-      </Center>
-    </Section>
+      </DetailShell>
+    </PageShell>
   );
 }

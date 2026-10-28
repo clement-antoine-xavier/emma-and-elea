@@ -2,15 +2,12 @@ import type {Metadata} from "next";
 import {Badge} from "@astryxdesign/core/Badge";
 import {Button} from "@astryxdesign/core/Button";
 import {Card} from "@astryxdesign/core/Card";
-import {Center} from "@astryxdesign/core/Center";
-import {Grid} from "@astryxdesign/core/Grid";
-import {HStack} from "@astryxdesign/core/HStack";
-import {Section} from "@astryxdesign/core/Section";
 import {Stack} from "@astryxdesign/core/Stack";
-import {Text} from "@astryxdesign/core/Text";
 import {notFound} from "next/navigation";
 import {getLocale, getTranslations} from "next-intl/server";
-import {PageHeader} from "@/components/page-header";
+import {PageShell} from "@/components/layout/page-shell";
+import {DetailShell} from "@/components/layout/detail-shell";
+import {PropertyList} from "@/components/layout/property-list";
 import {PlanActions} from "@/components/production/plan-actions";
 import {PlanLinesManager} from "@/components/production/plan-lines-manager";
 import {formatBusinessDate} from "@/lib/format";
@@ -42,17 +39,6 @@ export async function generateMetadata({
   };
 }
 
-function Definition({label, value}: {label: string; value: string}) {
-  return (
-    <Stack gap={1}>
-      <Text type="label" color="secondary">
-        {label}
-      </Text>
-      <Text>{value}</Text>
-    </Stack>
-  );
-}
-
 export default async function PlanDetailPage({params}: PlanParams) {
   const {id} = await params;
   const actor = await requirePermission("production:read");
@@ -71,68 +57,72 @@ export default async function PlanDetailPage({params}: PlanParams) {
   const date = plan.plannedFor.toISOString().slice(0, 10);
 
   return (
-    <Section padding={6} minHeight="100%">
-      <Center axis="horizontal">
-        <Stack gap={6} maxWidth={1120} width="100%">
-          <PageHeader
-            title={t("detailTitle")}
-            intro={`${formatBusinessDate(plan.plannedFor, {locale})} · ${plan.siteName}`}
-            actions={
-              <Button
-                label={t("back")}
-                variant="secondary"
-                href={`/dashboard/production/planning?siteId=${plan.siteId}&date=${date}`}
+    <PageShell
+      title={t("detailTitle")}
+      intro={`${formatBusinessDate(plan.plannedFor, {locale})} · ${plan.siteName}`}
+      actions={
+        <Button
+          label={t("back")}
+          variant="secondary"
+          href={`/dashboard/production/planning?siteId=${plan.siteId}&date=${date}`}
+        />
+      }
+      contentWidth={1280}
+    >
+      <DetailShell
+        asideLabel={t("summary.status")}
+        aside={
+          <Stack gap={4}>
+            <Card padding={5}>
+              <PropertyList
+                columns="single"
+                labelPosition="start"
+                items={[
+                  {
+                    label: t("summary.status"),
+                    value: (
+                      <Badge
+                        label={tStatuses(plan.status)}
+                        variant={
+                          plan.status === "CONFIRMED"
+                            ? "success"
+                            : plan.status === "DRAFT"
+                              ? "warning"
+                              : "neutral"
+                        }
+                      />
+                    ),
+                  },
+                  {
+                    label: t("summary.source"),
+                    value: tSources(plan.source),
+                  },
+                  {label: t("summary.site"), value: plan.siteName},
+                  {
+                    label: t("summary.date"),
+                    value: formatBusinessDate(plan.plannedFor, {locale}),
+                  },
+                  {
+                    label: t("summary.note"),
+                    value: plan.note ?? t("summary.noNote"),
+                  },
+                ]}
               />
-            }
-          />
-
-          <Card padding={5}>
-            <Grid columns={{minWidth: 180, max: 3}} gap={4}>
-              <Stack gap={1}>
-                <Text type="label" color="secondary">
-                  {t("summary.status")}
-                </Text>
-                <HStack gap={2}>
-                  <Badge
-                    label={tStatuses(plan.status)}
-                    variant={
-                      plan.status === "CONFIRMED"
-                        ? "success"
-                        : plan.status === "DRAFT"
-                          ? "warning"
-                          : "neutral"
-                    }
-                  />
-                </HStack>
-              </Stack>
-              <Definition
-                label={t("summary.source")}
-                value={tSources(plan.source)}
-              />
-              <Definition
-                label={t("summary.site")}
-                value={plan.siteName}
-              />
-              <Definition
-                label={t("summary.date")}
-                value={formatBusinessDate(plan.plannedFor, {locale})}
-              />
-              <Definition
-                label={t("summary.note")}
-                value={plan.note ?? t("summary.noNote")}
-              />
-            </Grid>
-          </Card>
-
-          {view.canWrite ? <PlanActions plan={plan} /> : null}
-
-          <PlanLinesManager
-            plan={plan}
-            items={view.options.items}
-            canWrite={view.canWrite}
-          />
-        </Stack>
-      </Center>
-    </Section>
+            </Card>
+            {view.canWrite ? (
+              <Card padding={5}>
+                <PlanActions plan={plan} />
+              </Card>
+            ) : null}
+          </Stack>
+        }
+      >
+        <PlanLinesManager
+          plan={plan}
+          items={view.options.items}
+          canWrite={view.canWrite}
+        />
+      </DetailShell>
+    </PageShell>
   );
 }

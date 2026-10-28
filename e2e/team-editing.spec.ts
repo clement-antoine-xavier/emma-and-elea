@@ -48,6 +48,7 @@ test("cancels invitations, edits employees and removes shifts", async ({
 
   // Create an employee profile and rename it.
   await page.getByRole("link", {name: "Employees"}).click();
+  await page.getByRole("button", {name: "Add an employee profile"}).click();
   await page.getByLabel("Job title").fill("Baker");
   await page.getByLabel("Weekly contract hours").fill("35");
   await page.getByRole("button", {name: "Create profile"}).click();

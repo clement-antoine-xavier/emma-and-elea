@@ -1,8 +1,9 @@
 "use client";
 
-import {Button} from "@astryxdesign/core/Button";
-import {HStack} from "@astryxdesign/core/HStack";
-import {Text} from "@astryxdesign/core/Text";
+import {
+  SegmentedControl,
+  SegmentedControlItem,
+} from "@astryxdesign/core/SegmentedControl";
 import {usePathname, useRouter} from "next/navigation";
 
 export function PeriodFilter({
@@ -18,23 +19,20 @@ export function PeriodFilter({
   const pathname = usePathname();
 
   return (
-    <HStack gap={2} align="center" wrap="wrap">
-      <Text type="supporting" color="secondary">
-        {label}
-      </Text>
+    <SegmentedControl
+      label={label}
+      value={String(period)}
+      onChange={(value) =>
+        router.replace(`${pathname}?period=${value}`, {scroll: false})
+      }
+    >
       {options.map((option) => (
-        <Button
+        <SegmentedControlItem
           key={option.value}
-          size="sm"
-          variant={option.value === period ? "primary" : "secondary"}
+          value={String(option.value)}
           label={option.label}
-          onClick={() =>
-            router.replace(`${pathname}?period=${option.value}`, {
-              scroll: false,
-            })
-          }
         />
       ))}
-    </HStack>
+    </SegmentedControl>
   );
 }

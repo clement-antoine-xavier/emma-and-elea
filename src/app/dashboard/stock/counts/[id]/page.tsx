@@ -2,15 +2,11 @@ import type {Metadata} from "next";
 import {Badge} from "@astryxdesign/core/Badge";
 import {Button} from "@astryxdesign/core/Button";
 import {Card} from "@astryxdesign/core/Card";
-import {Center} from "@astryxdesign/core/Center";
-import {Grid} from "@astryxdesign/core/Grid";
-import {HStack} from "@astryxdesign/core/HStack";
-import {Section} from "@astryxdesign/core/Section";
-import {Stack} from "@astryxdesign/core/Stack";
-import {Text} from "@astryxdesign/core/Text";
 import {notFound} from "next/navigation";
 import {getLocale, getTranslations} from "next-intl/server";
-import {PageHeader} from "@/components/page-header";
+import {PageShell} from "@/components/layout/page-shell";
+import {DetailShell} from "@/components/layout/detail-shell";
+import {PropertyList} from "@/components/layout/property-list";
 import {StockCountDetail} from "@/components/stock/stock-count-detail";
 import {formatBusinessDate} from "@/lib/format";
 import {requirePermission} from "@/server/auth/actor";
@@ -41,17 +37,6 @@ export async function generateMetadata({
   };
 }
 
-function Definition({label, value}: {label: string; value: string}) {
-  return (
-    <Stack gap={1}>
-      <Text type="label" color="secondary">
-        {label}
-      </Text>
-      <Text>{value}</Text>
-    </Stack>
-  );
-}
-
 export default async function StockCountDetailPage({
   params,
 }: StockCountParams) {
@@ -69,62 +54,61 @@ export default async function StockCountDetailPage({
   const count = view.count;
 
   return (
-    <Section padding={6} minHeight="100%">
-      <Center axis="horizontal">
-        <Stack gap={6} maxWidth={1120} width="100%">
-          <PageHeader
-            title={t("detailTitle")}
-            intro={`${formatBusinessDate(count.countedAt, {locale})} · ${count.siteName}`}
-            actions={
-              <Button
-                label={t("back")}
-                variant="secondary"
-                href="/dashboard/stock/counts"
-              />
-            }
-          />
-
+    <PageShell
+      title={t("detailTitle")}
+      intro={`${formatBusinessDate(count.countedAt, {locale})} · ${count.siteName}`}
+      actions={
+        <Button
+          label={t("back")}
+          variant="secondary"
+          href="/dashboard/stock/counts"
+        />
+      }
+      contentWidth={1280}
+    >
+      <DetailShell
+        asideLabel={t("columns.status")}
+        aside={
           <Card padding={5}>
-            <Grid columns={{minWidth: 180, max: 3}} gap={4}>
-              <Stack gap={1}>
-                <Text type="label" color="secondary">
-                  {t("columns.status")}
-                </Text>
-                <HStack gap={2}>
-                  <Badge
-                    label={tStatuses(count.status)}
-                    variant={
-                      count.status === "POSTED"
-                        ? "success"
-                        : count.status === "CANCELLED"
-                          ? "neutral"
-                          : "warning"
-                    }
-                  />
-                </HStack>
-              </Stack>
-              <Definition
-                label={t("columns.site")}
-                value={count.siteName}
-              />
-              <Definition
-                label={t("columns.date")}
-                value={formatBusinessDate(count.countedAt, {locale})}
-              />
-              <Definition
-                label={t("detail.note")}
-                value={count.note ?? t("detail.noNote")}
-              />
-            </Grid>
+            <PropertyList
+              columns="single"
+              labelPosition="start"
+              items={[
+                {
+                  label: t("columns.status"),
+                  value: (
+                    <Badge
+                      label={tStatuses(count.status)}
+                      variant={
+                        count.status === "POSTED"
+                          ? "success"
+                          : count.status === "CANCELLED"
+                            ? "neutral"
+                            : "warning"
+                      }
+                    />
+                  ),
+                },
+                {label: t("columns.site"), value: count.siteName},
+                {
+                  label: t("columns.date"),
+                  value: formatBusinessDate(count.countedAt, {locale}),
+                },
+                {
+                  label: t("detail.note"),
+                  value: count.note ?? t("detail.noNote"),
+                },
+              ]}
+            />
           </Card>
-
-          <StockCountDetail
-            count={count}
-            canCount={view.canCount}
-            canPost={view.canPost}
-          />
-        </Stack>
-      </Center>
-    </Section>
+        }
+      >
+        <StockCountDetail
+          count={count}
+          canCount={view.canCount}
+          canPost={view.canPost}
+        />
+      </DetailShell>
+    </PageShell>
   );
 }

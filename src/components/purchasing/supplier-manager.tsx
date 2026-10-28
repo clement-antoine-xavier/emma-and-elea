@@ -7,8 +7,10 @@ import {Badge} from "@astryxdesign/core/Badge";
 import {Banner} from "@astryxdesign/core/Banner";
 import {Button} from "@astryxdesign/core/Button";
 import {Card} from "@astryxdesign/core/Card";
+import {Dialog, DialogHeader} from "@astryxdesign/core/Dialog";
 import {EmptyState} from "@astryxdesign/core/EmptyState";
 import {FormLayout} from "@astryxdesign/core/FormLayout";
+import {HStack} from "@astryxdesign/core/HStack";
 import {Stack} from "@astryxdesign/core/Stack";
 import {Table, pixel, proportional} from "@astryxdesign/core/Table";
 import {Heading, Text} from "@astryxdesign/core/Text";
@@ -34,6 +36,7 @@ export function SupplierManager({
   const tErrors = useTranslations("Common.errors");
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
+  const [createOpen, setCreateOpen] = useState(false);
 
   const schema = useMemo(
     () => supplierInputSchema((key) => tValidation(key)),
@@ -73,6 +76,7 @@ export function SupplierManager({
     }
 
     reset();
+    setCreateOpen(false);
     if (result.supplierId) {
       router.push(`/dashboard/purchasing/suppliers/${result.supplierId}`);
       router.refresh();
@@ -82,14 +86,19 @@ export function SupplierManager({
   return (
     <Stack gap={6}>
       {canWrite ? (
-        <Card padding={5}>
+        <Dialog
+          isOpen={createOpen}
+          onOpenChange={setCreateOpen}
+          width={560}
+          purpose="form"
+        >
+          <DialogHeader
+            title={t("createTitle")}
+            subtitle={t("createIntro")}
+            onOpenChange={setCreateOpen}
+          />
           <form onSubmit={handleSubmit(onSubmit)} noValidate>
             <Stack gap={4}>
-              <Stack gap={1}>
-                <Heading level={2}>{t("createTitle")}</Heading>
-                <Text type="supporting">{t("createIntro")}</Text>
-              </Stack>
-
               {errors.root?.message ? (
                 <Banner
                   status="error"
@@ -154,11 +163,20 @@ export function SupplierManager({
               />
             </Stack>
           </form>
-        </Card>
+        </Dialog>
       ) : null}
 
       <Stack gap={3}>
-        <Heading level={2}>{t("listTitle")}</Heading>
+        <HStack justify="between" align="end" wrap="wrap" gap={3}>
+          <Heading level={2}>{t("listTitle")}</Heading>
+          {canWrite ? (
+            <Button
+              variant="primary"
+              label={t("createTitle")}
+              onClick={() => setCreateOpen(true)}
+            />
+          ) : null}
+        </HStack>
 
         {error ? (
           <Banner status="error" title={t("errorTitle")} description={error} />

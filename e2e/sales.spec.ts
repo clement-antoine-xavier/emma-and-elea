@@ -46,6 +46,7 @@ test("an order dispatch consumes lots and reports leave daily sales untouched", 
 
   await clickNav(page, "Purchasing", "/dashboard/purchasing");
   await page.getByRole("link", { name: "Suppliers" }).click();
+  await page.getByRole("button", { name: "Add a supplier" }).click();
   const supplierForm = page
     .locator("form")
     .filter({ has: page.getByRole("button", { name: "Add supplier" }) });
@@ -93,6 +94,7 @@ test("an order dispatch consumes lots and reports leave daily sales untouched", 
   // Customer.
   await page.getByRole("link", { name: "Sales", exact: true }).click();
   await page.getByRole("link", { name: "Customers" }).click();
+  await page.getByRole("button", { name: "New customer" }).click();
   const customerForm = page
     .locator("form")
     .filter({ has: page.getByRole("button", { name: "Create customer" }) });

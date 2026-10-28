@@ -1,13 +1,14 @@
 import type {Metadata} from "next";
+import type {ReactNode} from "react";
 import {Card} from "@astryxdesign/core/Card";
-import {Center} from "@astryxdesign/core/Center";
+import {Divider} from "@astryxdesign/core/Divider";
 import {EmptyState} from "@astryxdesign/core/EmptyState";
 import {Grid} from "@astryxdesign/core/Grid";
-import {Section} from "@astryxdesign/core/Section";
 import {Stack} from "@astryxdesign/core/Stack";
 import {Heading, Text} from "@astryxdesign/core/Text";
 import {getLocale, getTranslations} from "next-intl/server";
-import {PageHeader} from "@/components/page-header";
+import {PageShell} from "@/components/layout/page-shell";
+import {MetricCard} from "@/components/dashboard/metric-card";
 import {
   BatchYieldsTable,
   ProductMarginsTable,
@@ -26,16 +27,23 @@ export async function generateMetadata(): Promise<Metadata> {
   return {title: t("metadataTitle")};
 }
 
-function Stat({label, value}: {label: string; value: string}) {
+function Band({
+  title,
+  intro,
+  children,
+}: {
+  title: string;
+  intro: string;
+  children: ReactNode;
+}) {
   return (
-    <Card padding={5}>
+    <Stack gap={3}>
       <Stack gap={1}>
-        <Text type="label" color="secondary">
-          {label}
-        </Text>
-        <Heading level={2}>{value}</Heading>
+        <Heading level={2}>{title}</Heading>
+        <Text type="supporting">{intro}</Text>
       </Stack>
-    </Card>
+      {children}
+    </Stack>
   );
 }
 
@@ -50,94 +58,87 @@ export default async function ReportsPage() {
   const {summary, margins, yields, alerts} = report;
 
   return (
-    <Section padding={6} minHeight="100%">
-      <Center axis="horizontal">
-        <Stack gap={8} maxWidth={1120} width="100%">
-          <PageHeader
-            title={t("title")}
-            intro={t("intro", {
-              from: formatBusinessDate(summary.from, {locale}),
-              to: formatBusinessDate(summary.to, {locale}),
-            })}
-          />
+    <PageShell
+      eyebrow={t("summaryTitle")}
+      title={t("title")}
+      intro={t("intro", {
+        from: formatBusinessDate(summary.from, {locale}),
+        to: formatBusinessDate(summary.to, {locale}),
+      })}
+      hasHeaderDivider
+    >
+      <Grid columns={{minWidth: 220, max: 4}} gap={4}>
+        <MetricCard
+          label={t("wasteCost")}
+          value={formatMoney(summary.wasteCost, {
+            locale,
+            currency: summary.currency,
+          })}
+        />
+        <MetricCard
+          label={t("productionCost")}
+          value={formatMoney(summary.productionCost, {
+            locale,
+            currency: summary.currency,
+          })}
+        />
+        <MetricCard
+          label={t("wasteRate")}
+          value={formatPercent(summary.wasteRatePct, {locale})}
+        />
+        <MetricCard
+          label={t("alertsCount")}
+          value={String(alerts.length)}
+        />
+      </Grid>
 
-          <Stack gap={4}>
-            <Stack gap={1}>
-              <Heading level={2}>{t("summaryTitle")}</Heading>
-              <Text type="supporting">{t("summaryIntro")}</Text>
-            </Stack>
-            <Grid columns={{minWidth: 220, max: 4}} gap={4}>
-              <Stat
-                label={t("wasteCost")}
-                value={formatMoney(summary.wasteCost, {
-                  locale,
-                  currency: summary.currency,
-                })}
-              />
-              <Stat
-                label={t("productionCost")}
-                value={formatMoney(summary.productionCost, {
-                  locale,
-                  currency: summary.currency,
-                })}
-              />
-              <Stat
-                label={t("wasteRate")}
-                value={formatPercent(summary.wasteRatePct, {locale})}
-              />
-              <Stat label={t("alertsCount")} value={String(alerts.length)} />
-            </Grid>
-          </Stack>
+      <Divider />
 
-          <Stack gap={3}>
-            <Heading level={2}>{t("marginsTitle")}</Heading>
-            <Text type="supporting">{t("marginsIntro")}</Text>
-            {margins.length === 0 ? (
-              <Card padding={4}>
-                <EmptyState
-                  title={t("emptyMarginsTitle")}
-                  description={t("emptyMarginsBody")}
-                  isCompact
-                />
-              </Card>
-            ) : (
-              <ProductMarginsTable margins={margins} />
-            )}
-          </Stack>
+      <Band title={t("marginsTitle")} intro={t("marginsIntro")}>
+        {margins.length === 0 ? (
+          <Card padding={4}>
+            <EmptyState
+              title={t("emptyMarginsTitle")}
+              description={t("emptyMarginsBody")}
+              isCompact
+            />
+          </Card>
+        ) : (
+          <ProductMarginsTable margins={margins} />
+        )}
+      </Band>
 
-          <Stack gap={3}>
-            <Heading level={2}>{t("yieldsTitle")}</Heading>
-            <Text type="supporting">{t("yieldsIntro")}</Text>
-            {yields.length === 0 ? (
-              <Card padding={4}>
-                <EmptyState
-                  title={t("emptyYieldsTitle")}
-                  description={t("emptyYieldsBody")}
-                  isCompact
-                />
-              </Card>
-            ) : (
-              <BatchYieldsTable yields={yields} />
-            )}
-          </Stack>
+      <Divider />
 
-          <Stack gap={3}>
-            <Heading level={2}>{t("alertsTitle")}</Heading>
-            <Text type="supporting">{t("alertsIntro")}</Text>
-            {alerts.length === 0 ? (
-              <Card padding={4}>
-                <EmptyState
-                  title={t("emptyAlertsTitle")}
-                  description={t("emptyAlertsBody")}
-                  isCompact
-                />
-              </Card>
-            ) : (
-              <StockLevelsTable levels={alerts} />
-            )}
-          </Stack>
-        </Stack>
-      </Center>
-    </Section>
+      <Band title={t("yieldsTitle")} intro={t("yieldsIntro")}>
+        {yields.length === 0 ? (
+          <Card padding={4}>
+            <EmptyState
+              title={t("emptyYieldsTitle")}
+              description={t("emptyYieldsBody")}
+              isCompact
+            />
+          </Card>
+        ) : (
+          <BatchYieldsTable yields={yields} />
+        )}
+      </Band>
+
+      <Divider />
+
+      <Band title={t("alertsTitle")} intro={t("alertsIntro")}>
+        {alerts.length === 0 ? (
+          <Card padding={4}>
+            <EmptyState
+              title={t("emptyAlertsTitle")}
+              description={t("emptyAlertsBody")}
+              isCompact
+            />
+          </Card>
+        ) : (
+          <StockLevelsTable levels={alerts} />
+        )}
+      </Band>
+    </PageShell>
   );
 }

@@ -33,7 +33,8 @@ test("settings save, edit and archive reference data", async ({page}) => {
   await expect(page.getByText("Settings saved.")).toBeVisible();
 
   // Edit a site, then archive it.
-  await page.getByRole("link", {name: "Manage sites"}).click();
+  await page.getByRole("link", {name: "Sites", exact: true}).click();
+  await page.getByRole("button", {name: "Add a site"}).click();
   const siteForm = page
     .locator("form")
     .filter({has: page.getByRole("button", {name: "Add site"})});
@@ -69,8 +70,7 @@ test("settings save, edit and archive reference data", async ({page}) => {
   ).toBeVisible();
 
   // Labour rates and energy tariffs archive and close.
-  await page.getByRole("link", {name: "Back to settings"}).first().click();
-  await page.getByRole("link", {name: "Manage rates"}).click();
+  await page.getByRole("link", {name: "Labour and energy"}).click();
 
   const labourForm = page
     .locator("form")
@@ -92,14 +92,17 @@ test("settings save, edit and archive reference data", async ({page}) => {
   await expect(page.getByText("Closed").first()).toBeVisible();
 
   // Equipment archives.
-  await page.getByRole("link", {name: "Back to settings"}).first().click();
-  await page.getByRole("link", {name: "Manage equipment"}).click();
+  await page.getByRole("link", {name: "Equipment", exact: true}).click();
+  await page.getByRole("button", {name: "Add equipment"}).click();
   const equipmentForm = page
     .locator("form")
     .filter({has: page.getByRole("button", {name: "Add equipment"})});
   await equipmentForm.getByLabel("Name").fill("Archived oven");
   await equipmentForm.getByLabel("Power").fill("3");
-  await page.getByRole("button", {name: "Add equipment"}).click();
+  await page
+    .getByRole("dialog")
+    .getByRole("button", {name: "Add equipment"})
+    .click();
   const equipmentRow = page.getByRole("row", {name: /Archived oven/});
   await equipmentRow.getByRole("button", {name: "Archive"}).click();
   await expect(equipmentRow.getByText("Archived")).toBeVisible();

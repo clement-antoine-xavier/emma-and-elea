@@ -232,6 +232,17 @@
     }
   },
   "Auth": {
+    "split": {
+      "badge": "Emma & Éléa",
+      "title": "The workspace behind every good service.",
+      "intro": "Recipes, production, stock, sales and traceability in one place, from raw material to the finished product.",
+      "points": {
+        "recipes": "Cost every recipe and every batch",
+        "stock": "Trace lots, waste and expiring stock",
+        "team": "Plan production, sales and shifts together"
+      },
+      "home": "Back to home"
+    },
     "fields": {
       "name": "Name",
       "email": "Email",
@@ -338,6 +349,17 @@
       "siteCodeHint": "2 to 8 uppercase letters or digits. It prefixes lot numbers."
     },
     "submit": "Create workspace",
+    "home": "Back to home",
+    "aside": {
+      "title": "What you set up now",
+      "intro": "Two minutes of setup, then the workspace is yours. Everything stays editable in Settings.",
+      "workspaceTitle": "Your workspace",
+      "workspaceBody": "The business name and the address your team signs in with.",
+      "siteTitle": "Your first site",
+      "siteBody": "Where stock sits and production happens. Its code prefixes every lot number.",
+      "teamTitle": "Your team, next",
+      "teamBody": "Invite colleagues and choose what each role can see and change."
+    },
     "errors": {
       "bannerTitle": "Could not create the workspace",
       "slugTaken": "This workspace address is already taken. Try another one.",
@@ -717,6 +739,12 @@
     "metadataTitle": "Invitation · Emma & Éléa",
     "title": "Join {organization}",
     "intro": "{inviter} invited {email} to join {organization} as {role}.",
+    "home": "Back to home",
+    "fields": {
+      "email": "Invited email",
+      "role": "Role",
+      "inviter": "Invited by"
+    },
     "accept": "Accept invitation",
     "decline": "Not now",
     "signInPrompt": "Sign in or create an account with {email} to accept.",
@@ -772,6 +800,7 @@
     "metadataTitle": "Settings · Emma & Éléa",
     "title": "Settings",
     "intro": "Your business, sites, rates and equipment.",
+  "railTitle": "Sections",
     "backToSettings": "Back to settings",
     "manageTitle": "Manage",
     "cards": {
@@ -1030,6 +1059,9 @@
       "allTypes": "All types",
       "category": "Category",
       "allCategories": "All categories",
+      "scope": "Show",
+      "activeView": "Active",
+      "allView": "All",
       "archived": "Include archived",
       "apply": "Apply filters"
     },
@@ -1232,6 +1264,7 @@
     "backToList": "Back to suppliers",
     "active": "Active",
     "archived": "Archived",
+    "statusTitle": "Status",
     "columns": {
       "code": "Code",
       "name": "Name",
@@ -1311,6 +1344,7 @@
     "backToReceipts": "Back to purchasing",
     "open": "Open",
     "paginationLabel": "Receipt pagination",
+    "count": "{count, plural, =0 {No receipts} one {# receipt} other {# receipts}}",
     "emptyTitle": "No receipts yet",
     "emptyBody": "Create a draft receipt when a delivery arrives.",
     "filters": {
@@ -1318,6 +1352,7 @@
       "searchPlaceholder": "Number or supplier",
       "status": "Status",
       "allStatuses": "All statuses",
+      "allView": "All",
       "apply": "Apply filters"
     },
     "statuses": {
@@ -1418,7 +1453,8 @@
     "backToStock": "Back to stock",
     "alerts": {
       "title": "Replenishment alerts",
-      "body": "{count, plural, one {# item is below its minimum stock.} other {# items are below their minimum stock.}}"
+      "body": "{count, plural, one {# item is below its minimum stock.} other {# items are below their minimum stock.}}",
+      "none": "Every item is above its minimum."
     },
     "levelsTitle": "Stock levels",
     "levelsIntro": "Only available lots with a remaining quantity are counted.",
@@ -1439,6 +1475,7 @@
       "title": "Lots",
       "intro": "Every quantity in stock belongs to a lot. Open a lot to see its ledger.",
       "paginationLabel": "Lot pagination",
+      "count": "{count, plural, =0 {No lots} one {# lot} other {# lots}}",
       "emptyTitle": "No lots",
       "emptyBody": "Post a purchase receipt or complete a production batch to create lots.",
       "open": "Open",
@@ -1460,6 +1497,9 @@
       "filters": {
         "search": "Search",
         "searchPlaceholder": "Lot, item name or code",
+        "scope": "Show",
+        "availableView": "Remaining",
+        "allView": "All lots",
         "includeEmpty": "Include empty lots",
         "apply": "Apply filters"
       }
@@ -2058,6 +2098,13 @@
       "dispatches": "Dispatches",
       "daily": "Daily sales"
     },
+    "count": "{count, plural, =0 {No orders} one {# order} other {# orders}}",
+    "filters": {
+      "search": "Search",
+      "searchPlaceholder": "Order number or customer",
+      "status": "Status",
+      "allStatuses": "All statuses"
+    },
     "types": {
       "BUSINESS": "Business",
       "INDIVIDUAL": "Individual"
@@ -2207,6 +2254,13 @@
       "pageTitle": "Dispatches",
       "pageIntro": "Prepare deliveries from traceable lots and post them to the stock ledger.",
       "backToSales": "Back to sales",
+      "count": "{count, plural, =0 {No dispatches} one {# dispatch} other {# dispatches}}",
+      "filters": {
+        "search": "Search",
+        "searchPlaceholder": "Number, customer or order",
+        "scope": "Status",
+        "allView": "All"
+      },
       "createTitle": "New dispatch",
       "createIntro": "Create a draft dispatch, then add the lots you are sending.",
       "errorTitle": "Could not create the dispatch.",

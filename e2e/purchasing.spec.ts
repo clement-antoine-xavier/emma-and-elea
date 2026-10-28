@@ -41,6 +41,7 @@ test("a receipt posts lots and stock movements", async ({ page }) => {
   // A supplier and one supplier price.
   await clickNav(page, "Purchasing", "/dashboard/purchasing");
   await page.getByRole("link", { name: "Suppliers" }).click();
+  await page.getByRole("button", { name: "Add a supplier" }).click();
   const supplierForm = page
     .locator("form")
     .filter({ has: page.getByRole("button", { name: "Add supplier" }) });

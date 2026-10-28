@@ -30,7 +30,7 @@ test("a completed batch consumes lots and creates a traceable output", async ({
 
   // Costing references.
   await page.getByRole("link", { name: "Settings" }).click();
-  await page.getByRole("link", { name: "Manage rates" }).click();
+  await page.getByRole("link", { name: "Labour and energy" }).click();
   const labourForm = page
     .locator("form")
     .filter({ has: page.getByRole("button", { name: "Add labour rate" }) });
@@ -42,14 +42,17 @@ test("a completed batch consumes lots and creates a traceable output", async ({
     .filter({ has: page.getByRole("button", { name: "Add energy tariff" }) });
   await energyForm.getByLabel("Price per kWh").fill("0.2516");
   await page.getByRole("button", { name: "Add energy tariff" }).click();
-  await page.getByRole("link", { name: "Back to settings" }).click();
-  await page.getByRole("link", { name: "Manage equipment" }).click();
+  await page.getByRole("link", { name: "Equipment", exact: true }).click();
+  await page.getByRole("button", { name: "Add equipment" }).click();
   const equipmentForm = page
     .locator("form")
     .filter({ has: page.getByRole("button", { name: "Add equipment" }) });
   await equipmentForm.getByLabel("Name").fill("Four production");
   await equipmentForm.getByLabel("Power").fill("3.5");
-  await page.getByRole("button", { name: "Add equipment" }).click();
+  await page
+    .getByRole("dialog")
+    .getByRole("button", { name: "Add equipment" })
+    .click();
 
   // Raw material first: this keeps the receipt item picker unambiguous.
   await page.getByRole("link", { name: "Catalog", exact: true }).click();
@@ -66,6 +69,7 @@ test("a completed batch consumes lots and creates a traceable output", async ({
   // Supplier and price.
   await clickNav(page, "Purchasing", "/dashboard/purchasing");
   await page.getByRole("link", { name: "Suppliers" }).click();
+  await page.getByRole("button", { name: "Add a supplier" }).click();
   const supplierForm = page
     .locator("form")
     .filter({ has: page.getByRole("button", { name: "Add supplier" }) });
@@ -132,6 +136,7 @@ test("a completed batch consumes lots and creates a traceable output", async ({
 
   // Recipe and published version.
   await page.getByRole("link", { name: "Recipes", exact: true }).click();
+  await page.getByRole("button", { name: "New recipe" }).click();
   const recipeForm = page
     .locator("form")
     .filter({ has: page.getByRole("button", { name: "Create recipe" }) });
@@ -172,6 +177,7 @@ test("a completed batch consumes lots and creates a traceable output", async ({
 
   // Plan and complete a 30-piece batch.
   await page.getByRole("link", { name: "Production", exact: true }).click();
+  await page.getByRole("button", { name: "Plan a batch" }).click();
   const batchForm = page
     .locator("form")
     .filter({ has: page.getByRole("button", { name: "Plan batch" }) });

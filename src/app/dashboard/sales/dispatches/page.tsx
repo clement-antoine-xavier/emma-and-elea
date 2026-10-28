@@ -1,10 +1,8 @@
 import type {Metadata} from "next";
 import {Button} from "@astryxdesign/core/Button";
-import {Center} from "@astryxdesign/core/Center";
-import {Section} from "@astryxdesign/core/Section";
-import {Stack} from "@astryxdesign/core/Stack";
 import {getTranslations} from "next-intl/server";
-import {PageHeader} from "@/components/page-header";
+import {PageShell} from "@/components/layout/page-shell";
+import {ListToolbar} from "@/components/list/list-toolbar";
 import {ListPagination} from "@/components/list-pagination";
 import {DispatchManager} from "@/components/sales/dispatch-manager";
 import {requirePermission} from "@/server/auth/actor";
@@ -27,44 +25,68 @@ export default async function DispatchesPage({
   searchParams,
 }: DispatchSearchParams) {
   const actor = await requirePermission("dispatch:read");
-  const t = await getTranslations("Sales.dispatches");
-  const params = await searchParams;
+  const [t, tFilters, tStatus, params] = await Promise.all([
+    getTranslations("Sales.dispatches"),
+    getTranslations("Sales.dispatches.filters"),
+    getTranslations("Sales.statuses"),
+    searchParams,
+  ]);
   const [view, options] = await Promise.all([
     dispatchService.getDispatches(actor, params),
     dispatchService.getOptions(actor),
   ]);
 
+  const paginationParams: Record<string, string> = {};
+  if (view.filters.search) paginationParams.search = view.filters.search;
+  if (view.filters.status) paginationParams.status = view.filters.status;
+
   return (
-    <Section padding={6} minHeight="100%">
-      <Center axis="horizontal">
-        <Stack gap={6} maxWidth={1120} width="100%">
-          <PageHeader
-            title={t("pageTitle")}
-            intro={t("pageIntro")}
-            actions={
-              <Button
-                label={t("backToSales")}
-                variant="secondary"
-                href="/dashboard/sales"
-              />
-            }
-          />
-          <DispatchManager
-            dispatches={view.page.items}
-            customers={options.customers}
-            sites={options.sites}
-            orders={options.orders}
-            canWrite={view.canWrite}
-          />
-          <ListPagination
-            page={view.page.page}
-            pageSize={view.page.pageSize}
-            total={view.page.total}
-            searchParams={{}}
-            label={t("paginationLabel")}
-          />
-        </Stack>
-      </Center>
-    </Section>
+    <PageShell
+      title={t("pageTitle")}
+      intro={t("pageIntro")}
+      actions={
+        <Button
+          label={t("backToSales")}
+          variant="secondary"
+          href="/dashboard/sales"
+        />
+      }
+    >
+      <ListToolbar
+        search={{
+          value: view.filters.search,
+          label: tFilters("search"),
+          placeholder: tFilters("searchPlaceholder"),
+        }}
+        scope={{
+          key: "status",
+          label: tFilters("scope"),
+          value: view.filters.status ?? "",
+          options: [
+            {value: "", label: tFilters("allView")},
+            {value: "DRAFT", label: tStatus("DRAFT")},
+            {value: "DISPATCHED", label: tStatus("DISPATCHED")},
+            {value: "CANCELLED", label: tStatus("CANCELLED")},
+          ],
+        }}
+        summary={t("count", {count: view.page.total})}
+      />
+
+      <DispatchManager
+        dispatches={view.page.items}
+        customers={options.customers}
+        sites={options.sites}
+        orders={options.orders}
+        canWrite={view.canWrite}
+      />
+
+      <ListPagination
+        page={view.page.page}
+        pageSize={view.page.pageSize}
+        total={view.page.total}
+        searchParams={paginationParams}
+        label={t("paginationLabel")}
+      />
+    </PageShell>
   );
 }
