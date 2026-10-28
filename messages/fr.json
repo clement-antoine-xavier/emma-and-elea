@@ -382,6 +382,7 @@
     "brand": "Emma & Éléa",
     "nav": {
       "label": "Navigation de l’espace",
+      "assistant": "Assistant",
       "overview": "Vue d’ensemble",
       "production": "Production",
       "recipes": "Recettes",
@@ -471,13 +472,32 @@
       "supportNote": "Accès support plateforme. Prenez l'identité d'un tenant pour voir ses données."
     },
     "assistant": {
-      "trigger": "Demander à Emma ou Éléa",
       "title": "Assistant",
+      "metadataTitle": "Assistant · Emma & Éléa",
       "personaLabel": "Choisir un assistant",
       "newChat": "Nouvelle conversation",
-      "emptyHint": "Posez une question sur les priorités du jour, un enregistrement ou une tâche à préparer.",
       "placeholder": "Demandez à {name}…",
       "thinking": "Réflexion…",
+      "handoff": "{name} prend le relais.",
+      "tools": {
+        "used": "Outils utilisés",
+        "running": "Outils en cours"
+      },
+      "landing": {
+        "greeting": "Bonjour, {name}",
+        "title": "Par où commencer ?",
+        "suggestions": "Suggestions",
+        "recent": "Conversations récentes",
+        "untitled": "Conversation sans titre"
+      },
+      "review": {
+        "open": "Vérifier",
+        "title": "Validation des actions",
+        "count": "{count, plural, =0 {Aucune validation} one {# validation} other {# validations}}",
+        "close": "Fermer",
+        "resize": "Redimensionner le panneau de validation",
+        "openRecord": "Ouvrir l’enregistrement"
+      },
       "approval": {
         "badge": "Validation requise",
         "approve": "Valider",

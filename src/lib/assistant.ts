@@ -208,3 +208,178 @@ export type AssistantHistoryMessage = {
   text: string;
   createdAt: string;
 };
+
+/** Client-side tool activity for the live run. Not persisted by the API. */
+export type AssistantToolCall = {
+  id: string;
+  name: string;
+  label: string;
+  status: "running" | "complete" | "error";
+  startedAt: number;
+  durationMs?: number;
+};
+
+export type AssistantTurn = {
+  id: string;
+  role: "user" | "assistant" | "system";
+  text: string;
+  createdAt: string;
+  persona?: AssistantPersona;
+  toolCalls?: AssistantToolCall[];
+};
+
+export type AssistantPendingApproval = {
+  id: string;
+  toolName: string;
+  preview: AssistantApprovalPreview;
+};
+
+/** Conversation row returned by the assistant stream route. */
+export type AssistantConversationSummary = {
+  id: string;
+  persona: AssistantPersona;
+  title: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type AssistantSuggestion = {
+  id: string;
+  title: Record<"en" | "fr", string>;
+  description: Record<"en" | "fr", string>;
+  prompt: Record<"en" | "fr", string>;
+};
+
+/**
+ * Starter prompts for the zero state. They are domain copy, not chrome, so
+ * they live next to the persona definitions instead of the message catalog.
+ */
+export const PERSONA_SUGGESTIONS: Record<
+  AssistantPersona,
+  readonly AssistantSuggestion[]
+> = {
+  emma: [
+    {
+      id: "priorities",
+      title: {
+        en: "Today’s priorities",
+        fr: "Priorités du jour",
+      },
+      description: {
+        en: "See what needs attention across orders, deliveries and sales.",
+        fr: "Voir ce qui demande votre attention : commandes, livraisons et ventes.",
+      },
+      prompt: {
+        en: "What should I focus on today? Summarize today’s orders, deliveries and sales.",
+        fr: "Sur quoi dois-je me concentrer aujourd’hui ? Résume les commandes, livraisons et ventes du jour.",
+      },
+    },
+    {
+      id: "orders",
+      title: {
+        en: "Orders to confirm",
+        fr: "Commandes à confirmer",
+      },
+      description: {
+        en: "List drafts that are waiting for confirmation.",
+        fr: "Lister les brouillons en attente de confirmation.",
+      },
+      prompt: {
+        en: "Show me the orders that still need confirmation.",
+        fr: "Montre-moi les commandes qui doivent encore être confirmées.",
+      },
+    },
+    {
+      id: "deliveries",
+      title: {
+        en: "Today’s deliveries",
+        fr: "Livraisons du jour",
+      },
+      description: {
+        en: "Check the dispatches planned for today.",
+        fr: "Vérifier les livraisons prévues aujourd’hui.",
+      },
+      prompt: {
+        en: "Which deliveries are planned for today?",
+        fr: "Quelles livraisons sont prévues aujourd’hui ?",
+      },
+    },
+    {
+      id: "customers",
+      title: {
+        en: "Top customers",
+        fr: "Meilleurs clients",
+      },
+      description: {
+        en: "See who ordered the most this month.",
+        fr: "Voir les clients qui ont le plus commandé ce mois-ci.",
+      },
+      prompt: {
+        en: "Which customers ordered the most this month?",
+        fr: "Quels clients ont le plus commandé ce mois-ci ?",
+      },
+    },
+  ],
+  elea: [
+    {
+      id: "production",
+      title: {
+        en: "Production plan",
+        fr: "Plan de production",
+      },
+      description: {
+        en: "Review today’s plan and the batches in progress.",
+        fr: "Examiner le plan du jour et les lots en cours.",
+      },
+      prompt: {
+        en: "What is on the production plan today?",
+        fr: "Qu’y a-t-il au plan de production aujourd’hui ?",
+      },
+    },
+    {
+      id: "expiring",
+      title: {
+        en: "Expiring lots",
+        fr: "Lots à surveiller",
+      },
+      description: {
+        en: "Find stock lots that expire soon.",
+        fr: "Repérer les lots qui arrivent à expiration.",
+      },
+      prompt: {
+        en: "Which stock lots expire in the next seven days?",
+        fr: "Quels lots de stock expirent dans les sept prochains jours ?",
+      },
+    },
+    {
+      id: "receipts",
+      title: {
+        en: "Receipts to post",
+        fr: "Réceptions à valider",
+      },
+      description: {
+        en: "List goods receipts that are still drafts.",
+        fr: "Lister les réceptions encore en brouillon.",
+      },
+      prompt: {
+        en: "Which purchase receipts are still waiting to be posted?",
+        fr: "Quelles réceptions d’achat restent à valider ?",
+      },
+    },
+    {
+      id: "team",
+      title: {
+        en: "Team today",
+        fr: "Équipe du jour",
+      },
+      description: {
+        en: "See who is scheduled to work today.",
+        fr: "Voir qui est planifié aujourd’hui.",
+      },
+      prompt: {
+        en: "Who is scheduled to work today?",
+        fr: "Qui est planifié pour travailler aujourd’hui ?",
+      },
+    },
+  ],
+};

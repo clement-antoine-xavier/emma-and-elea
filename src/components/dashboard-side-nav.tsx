@@ -21,14 +21,13 @@ import {
   Package,
   Receipt,
   Settings,
+  Sparkles,
   Truck,
   Users,
 } from "lucide-react";
 import {useTranslations} from "next-intl";
 import {usePathname} from "next/navigation";
 import {AuthStatus} from "@/components/auth-status";
-import {AssistantDrawer} from "@/components/assistant/assistant-drawer";
-import type {AssistantPersona} from "@/lib/assistant";
 import {LocaleSwitcher} from "@/components/locale-switcher";
 import {ThemeSwitcher} from "@/components/theme-switcher";
 import {
@@ -89,12 +88,8 @@ function isSelected(pathname: string, item: DashboardNavItem): boolean {
  */
 function SideNavAccount({
   roleLabel,
-  assistantEnabled,
-  assistantPersonas,
 }: {
   roleLabel: string;
-  assistantEnabled: boolean;
-  assistantPersonas: AssistantPersona[];
 }) {
   const t = useTranslations("Dashboard.nav");
   const {isCollapsed} = useSideNavCollapse();
@@ -106,9 +101,6 @@ function SideNavAccount({
   return (
     <SideNavSection title={t("account")} isHeaderHidden>
       <Stack gap={3} align="start">
-        {assistantEnabled ? (
-          <AssistantDrawer availablePersonas={assistantPersonas} />
-        ) : null}
         <Badge label={roleLabel} variant="purple" />
         <LocaleSwitcher />
         <ThemeSwitcher />
@@ -123,13 +115,11 @@ export function DashboardSideNav({
   roleLabel,
   brand,
   assistantEnabled,
-  assistantPersonas,
 }: {
   items: DashboardNavItem[];
   roleLabel: string;
   brand: string;
   assistantEnabled: boolean;
-  assistantPersonas: AssistantPersona[];
 }) {
   const t = useTranslations("Dashboard.nav");
   const pathname = usePathname();
@@ -161,17 +151,22 @@ export function DashboardSideNav({
           headingHref="/dashboard"
         />
       }
-      footer={
-        <SideNavAccount
-          roleLabel={roleLabel}
-          assistantEnabled={assistantEnabled}
-          assistantPersonas={assistantPersonas}
-        />
-      }
+      footer={<SideNavAccount roleLabel={roleLabel} />}
     >
-      {visible.has("overview") ? (
+      {visible.has("overview") || assistantEnabled ? (
         <SideNavSection title={t("label")} isHeaderHidden>
-          {renderItem("overview")}
+          {assistantEnabled ? (
+            <SideNavItem
+              label={t("assistant")}
+              icon={Sparkles}
+              href="/dashboard/assistant"
+              isSelected={
+                pathname === "/dashboard/assistant" ||
+                pathname.startsWith("/dashboard/assistant/")
+              }
+            />
+          ) : null}
+          {visible.has("overview") ? renderItem("overview") : null}
         </SideNavSection>
       ) : null}
 

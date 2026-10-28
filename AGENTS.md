@@ -191,7 +191,7 @@ Two personas, Emma (revenue and customers) and Éléa (production and operations
 - Tools call services with the session `OrganizationActor`; no tool accepts an organization id. Services still run `assertPermission`.
 - Drafts run immediately. Postings, publications and decisions use `needsApproval`; the approval card is built server-side by `approvals/preview.ts`.
 - Route: `POST /dashboard/assistant/stream` (SSE, session cookie, origin check, rate limit). It is outside `/api/**` on purpose.
-- UI: `src/components/assistant/assistant-drawer.tsx`, mounted in the dashboard side nav.
+- UI: `/dashboard/assistant` (zero state) and `/dashboard/assistant/[conversationId]` (transcript and approval panel), orchestrated by `src/components/assistant/assistant-workspace.tsx`; the dashboard side nav links to the zero state.
 - Persistence: `agent_conversation`, `agent_message`, `agent_run`, `agent_approval`. Prune with `npm run db:prune-assistant`.
 - Config: `.env` only (`OPENAI_API_KEY`, `ASSISTANT_ENABLED`, `ASSISTANT_MODEL`, guardrails). `.env.example` holds placeholders.
 

@@ -231,6 +231,11 @@ The dashboard exposes two assistants behind `ASSISTANT_ENABLED`:
 - **Éléa** — production, planning, stock, purchasing, recipes/costs, reports and
   the team.
 
+`/dashboard/assistant` is the zero state with persona selection and starter
+prompts; a conversation lives at `/dashboard/assistant/<id>` with the transcript
+and a resizable approval panel (a full-screen dialog on mobile). The dashboard
+side nav links to the zero state.
+
 They use the OpenAI Agents SDK with in-process tools that call the same services
 as the pages and Server Actions. The authenticated session actor supplies the
 organization; no tool accepts an organization id. A capability is registered only

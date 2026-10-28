@@ -22,6 +22,7 @@ import {stockCountRepository} from "@/server/repositories/stock-count.repository
 import {stockRepository} from "@/server/repositories/stock.repository";
 import {supplierRepository} from "@/server/repositories/supplier.repository";
 import {createDashboardService} from "./dashboard.service";
+import {createAssistantService} from "./assistant.service";
 import {createHomeService} from "./home.service";
 import {createCatalogService} from "./catalog.service";
 import {createCustomerService} from "./customer.service";
@@ -63,6 +64,8 @@ export const invitationService = createInvitationService({
 });
 
 export const dashboardService = createDashboardService();
+
+export const assistantService = createAssistantService();
 
 export const siteService = createSiteService({siteRepository});
 

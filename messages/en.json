@@ -382,6 +382,7 @@
     "brand": "Emma & Éléa",
     "nav": {
       "label": "Workspace navigation",
+      "assistant": "Assistant",
       "overview": "Overview",
       "production": "Production",
       "recipes": "Recipes",
@@ -471,13 +472,32 @@
       "supportNote": "Platform support access. Impersonate a tenant to see its data."
     },
     "assistant": {
-      "trigger": "Ask Emma or Éléa",
       "title": "Assistant",
+      "metadataTitle": "Assistant · Emma & Éléa",
       "personaLabel": "Choose an assistant",
       "newChat": "New chat",
-      "emptyHint": "Ask about today’s priorities, a record, or a task you want to prepare.",
       "placeholder": "Ask {name}…",
       "thinking": "Thinking…",
+      "handoff": "{name} is now helping.",
+      "tools": {
+        "used": "Tools used",
+        "running": "Running tools"
+      },
+      "landing": {
+        "greeting": "Hi, {name}",
+        "title": "Where should we start?",
+        "suggestions": "Suggestions",
+        "recent": "Recent conversations",
+        "untitled": "Untitled conversation"
+      },
+      "review": {
+        "open": "Review",
+        "title": "Action review",
+        "count": "{count, plural, =0 {No approvals} one {# approval} other {# approvals}}",
+        "close": "Close",
+        "resize": "Resize approval panel",
+        "openRecord": "Open record"
+      },
       "approval": {
         "badge": "Approval required",
         "approve": "Approve",

@@ -15,7 +15,7 @@ test.afterAll(async () => {
   await deleteUserByEmail(email);
 });
 
-test("the assistant drawer opens for both personas", async ({page}) => {
+test("the assistant pages open for both personas", async ({page}) => {
   await signUpAndCreateWorkspace(page, {
     name: "Assistant Owner",
     email,
@@ -26,44 +26,52 @@ test("the assistant drawer opens for both personas", async ({page}) => {
     siteCode: "AST",
   });
 
-  await page.getByRole("button", {name: "Ask Emma or Éléa"}).click();
+  await page.getByRole("link", {name: "Assistant", exact: true}).click();
   await expect(
-    page.getByRole("heading", {name: "Assistant", exact: true}),
+    page.getByRole("heading", {name: "Where should we start?"}),
   ).toBeVisible();
   await expect(page.getByText("I look after customers, orders")).toBeVisible();
-
-  const sendMessage =
-    process.env.ASSISTANT_FAKE_MODEL === "echo" ||
-    process.env.ASSISTANT_LIVE_TEST === "1";
-
-  if (sendMessage) {
-    await page
-      .getByRole("textbox", {name: "Message input"})
-      .fill(
-        process.env.ASSISTANT_FAKE_MODEL === "echo"
-          ? "What should I look at today?"
-          : "Use the whoami tool and reply with my organization role only.",
-      );
-    await page.getByRole("button", {name: "Send"}).click();
-
-    if (process.env.ASSISTANT_FAKE_MODEL === "echo") {
-      await expect(
-        page.getByText("Test reply from the assistant."),
-      ).toBeVisible();
-    } else {
-      await expect(page.getByRole("log")).toContainText(/owner/i, {
-        timeout: 30_000,
-      });
-    }
-  }
 
   await page.getByRole("radio", {name: "Éléa"}).click();
   await expect(
     page.getByText("I look after production, stock, purchasing"),
   ).toBeVisible();
 
+  await page.getByRole("radio", {name: "Emma"}).click();
+  await expect(page.getByText("I look after customers, orders")).toBeVisible();
+
+  const sendMessage =
+    process.env.ASSISTANT_FAKE_MODEL === "echo" ||
+    process.env.ASSISTANT_LIVE_TEST === "1";
+
+  if (!sendMessage) return;
+
+  const prompt =
+    process.env.ASSISTANT_FAKE_MODEL === "echo"
+      ? "What should I look at today?"
+      : "Use the whoami tool and reply with my organization role only.";
+
+  await page.getByRole("textbox", {name: "Message input"}).fill(prompt);
+  await page.getByRole("button", {name: "Send"}).click();
+
+  if (process.env.ASSISTANT_FAKE_MODEL === "echo") {
+    await expect(
+      page.getByText("Test reply from the assistant."),
+    ).toBeVisible();
+  } else {
+    await expect(page.getByRole("log")).toContainText(/owner/i, {
+      timeout: 30_000,
+    });
+  }
+
+  await expect(page).toHaveURL(/\/dashboard\/assistant\/[^/]+$/);
+
   await page.getByRole("button", {name: "New chat"}).click();
   await expect(
-    page.getByRole("textbox", {name: "Message input"}),
+    page.getByRole("heading", {name: "Where should we start?"}),
   ).toBeVisible();
+  await expect(page).toHaveURL(/\/dashboard\/assistant$/);
+
+  await page.getByRole("link", {name: prompt}).click();
+  await expect(page.getByRole("log")).toContainText(prompt);
 });
