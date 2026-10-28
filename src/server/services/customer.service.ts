@@ -1,7 +1,8 @@
-import {can} from "@/lib/permissions";
+
 import {
   assertOrganizationActor,
   assertPermission,
+  isGranted,
 } from "@/server/auth/guards";
 import type {Actor} from "@/server/auth/types";
 import {DomainError} from "@/server/domain/errors";
@@ -42,7 +43,7 @@ export function createCustomerService(deps: {
 
       return {
         customers: await deps.customerRepository.list(actor.organizationId),
-        canWrite: can(actor.role, "customer:write"),
+        canWrite: isGranted(actor, "customer:write"),
       };
     },
 
@@ -58,7 +59,7 @@ export function createCustomerService(deps: {
 
       return {
         customer,
-        canWrite: can(actor.role, "customer:write"),
+        canWrite: isGranted(actor, "customer:write"),
       };
     },
 

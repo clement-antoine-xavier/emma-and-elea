@@ -5,9 +5,9 @@ Next.js 16 App Router app with Astryx UI, Prisma ORM 7, and Better Auth.
 ## Stack
 
 - Next.js 16.4.3 + React 19.3 + TypeScript
-- Astryx 0.7.4 (Butter theme)
+- Astryx 0.7.4 (Butter theme) + Recharts 3.10 for the dashboard charts
 - Prisma ORM 7.10.1 + PostgreSQL 18
-- Better Auth 1.7.13 (email/password, admin, organization)
+- Better Auth 1.7.14 (email/password, admin, organization, MCP OAuth)
 - next-intl 4.14.9 (English and French, locale from the `NEXT_LOCALE` cookie)
 - Zod 4 + React Hook Form 7 for forms
 
@@ -65,6 +65,8 @@ batches, allocates lots FEFO, records waste and exposes lot traceability.
 | `DATABASE_URL` | PostgreSQL connection string used by Prisma |
 | `BETTER_AUTH_SECRET` | Signing/encryption secret (32+ bytes) |
 | `BETTER_AUTH_URL` | Public app URL used by Better Auth |
+| `MCP_RESOURCE_URL` | Public URL of the MCP endpoint (defaults to `$BETTER_AUTH_URL/mcp`) |
+| `API_RESOURCE_URL` | Public base URL of the REST API (defaults to `$BETTER_AUTH_URL/api`) |
 
 Inside Docker, Compose overrides `DATABASE_URL` to use the `postgres` service hostname.
 
@@ -120,6 +122,91 @@ npm run auth:create-admin -- \
   --name "Admin" \
   --role support
 ```
+
+## OAuth resources: MCP and REST API
+
+Better Auth is the authorization server and both surfaces are protected
+resources with separate audiences (ADR-0020, ADR-0021):
+
+| Surface | Resource | Token audience |
+| --- | --- | --- |
+| MCP | `POST /mcp` | `$BETTER_AUTH_URL/mcp` |
+| REST API | `/api/...` | `$BETTER_AUTH_URL/api` |
+
+A token issued for one resource is rejected by the other. Both use the same
+resource-neutral scopes (`api:read`, `api:write`, `api:execute`, `api:finance`)
+and the same tenant claim, so consent is understood the same way everywhere.
+
+### MCP
+
+- Route: `src/app/mcp/route.ts` (POST only, stateless 2026-07-28 transport)
+- Authorization: `src/server/mcp/handler.ts` (`requireMcpAuth` + JWKS)
+- Tools: `src/server/mcp/tools/*` — thin wrappers over the services
+- Consent screen: `/consent`
+
+```text
+http://localhost:3000/mcp
+```
+
+The host discovers the authorization server from the `401` challenge, registers
+itself (DCR or CIMD), opens `/sign-in` then `/consent`, and stores the token. The
+token is bound to the organization that was active at consent time and can never
+grant more than the member's current role.
+
+### REST API
+
+- Entry points: `src/app/api/**/route.ts`
+- Token verification: `src/server/api/token-auth.ts` (`401` with RFC 9728
+  metadata, `403 insufficient_scope`)
+- Error mapping: `src/server/api/respond.ts`
+
+Read endpoints:
+
+```text
+GET /api/me
+GET /api/sites                    GET /api/sites/:id
+GET /api/catalog/items            GET /api/catalog/items/:id
+GET /api/catalog/categories
+GET /api/customers                GET /api/customers/:id
+GET /api/stock/levels             GET /api/stock/lots        GET /api/stock/lots/:id
+GET /api/production/batches       GET /api/production/batches/:id
+GET /api/orders                   GET /api/orders/:id
+GET /api/dispatches               GET /api/dispatches/:id
+GET /api/reports                  (requires api:finance)
+```
+
+Writes (`api:write`) currently cover the catalog and customers:
+
+```text
+POST  /api/customers                        PATCH /api/customers/:id
+POST  /api/customers/:id/archive
+POST  /api/catalog/items                    PATCH /api/catalog/items/:id
+POST  /api/catalog/items/:id/archive
+POST  /api/catalog/categories               POST  /api/catalog/categories/:id/archive
+```
+
+Selecting, ordering and posting ledger movements stay on the Server Actions until
+the remaining write endpoints land.
+
+Send `Authorization: Bearer <access_token>`. Server Components and Server
+Actions keep using the session cookie; only these resource routes accept bearer
+tokens.
+
+### Discovery
+
+```text
+/api/auth/.well-known/oauth-authorization-server
+/.well-known/oauth-authorization-server/api/auth
+/api/auth/jwks
+/.well-known/oauth-protected-resource
+/.well-known/oauth-protected-resource/mcp
+/.well-known/oauth-protected-resource/api
+```
+
+The protected-resource documents live on the app origin (RFC 9728), not under
+`/api/auth`. Set `MCP_RESOURCE_URL` and `API_RESOURCE_URL` to the public HTTPS
+URLs in production; they are the token audiences and must match what clients
+call.
 
 ## Backend architecture
 

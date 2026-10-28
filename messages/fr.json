@@ -378,36 +378,75 @@
         "organization": "Organisation"
       }
     },
-    "overview": {
-      "eyebrow": "Espace de travail",
+    "home": {
+      "eyebrow": "Vue d'ensemble",
       "title": "Bonjour, {name}",
-      "intro": "Vous travaillez dans {organization} en tant que {role}.",
-      "roleTitle": "Votre rôle",
-      "accessTitle": "Ce à quoi vous avez accès",
-      "accessIntro": "Les écrans et les actions sont filtrés selon votre rôle. Le serveur applique les mêmes règles.",
-      "manage": "Gérer",
-      "view": "Consulter",
-      "areas": {
-        "catalog": "Articles et catalogue",
-        "recipes": "Recettes",
-        "costs": "Coûts et marges",
-        "production": "Production",
-        "stock": "Stock et traçabilité",
-        "sales": "Clients et ventes",
-        "team": "Équipe et planning",
-        "reports": "Rapports"
+      "intro": "{organization} · {role} · {date}",
+      "periodLabel": "Période",
+      "periods": {
+        "7": "7 jours",
+        "30": "30 jours",
+        "90": "90 jours"
       },
-      "supportNote": "Accès support plateforme. Prenez l’identité d’un client pour voir ses données.",
-      "organizationTitle": "Espace de travail",
-      "organizationBody": "Tout le monde dans cet espace voit tous les sites. Votre rôle détermine ce que vous pouvez modifier."
-    },
-    "kpis": {
-      "title": "Aujourd’hui en un coup d’œil",
-      "intro": "Signaux opérationnels de votre organisation.",
-      "batchesToday": "Lots terminés aujourd’hui",
-      "lowStock": "Articles sous le minimum",
-      "expiringLots": "Lots expirant sous 7 jours",
-      "waste30d": "Coût des pertes (30 jours)"
+      "newProduction": "Nouveau lot",
+      "supportBadge": "Support",
+      "metrics": {
+        "batchesToday": "Lots terminés aujourd'hui",
+        "plannedBatches": "Lots planifiés",
+        "revenue": "Chiffre d'affaires",
+        "lowStock": "Sous le minimum",
+        "expiringLots": "Lots expirant",
+        "wasteCost": "Coût des pertes",
+        "orders": "Commandes",
+        "completedBatches": "Lots terminés",
+        "since": "Sur {days} jours",
+        "vsPrevious": "vs période précédente",
+        "allTime": "Depuis le début"
+      },
+      "charts": {
+        "revenueTitle": "Chiffre d'affaires",
+        "revenueIntro": "Chiffre d'affaires quotidien sur la période.",
+        "productionTitle": "Production",
+        "productionIntro": "Lots terminés par jour.",
+        "completed": "Terminés"
+      },
+      "tables": {
+        "alertsTitle": "Alertes de stock",
+        "alertsIntro": "Articles au niveau minimum ou en dessous.",
+        "alertsEmpty": "Tous les articles sont au-dessus du minimum.",
+        "ordersTitle": "Commandes récentes",
+        "ordersIntro": "Dernières commandes de l'espace.",
+        "ordersEmpty": "Aucune commande.",
+        "batchesTitle": "Lots à venir",
+        "batchesIntro": "Lots planifiés en attente de démarrage.",
+        "batchesEmpty": "Aucun lot planifié.",
+        "belowMinimum": "Sous le min",
+        "columns": {
+          "item": "Article",
+          "onHand": "En stock",
+          "minimum": "Minimum",
+          "status": "Statut",
+          "order": "Commande",
+          "customer": "Client",
+          "total": "Total",
+          "batch": "Lot",
+          "recipe": "Recette",
+          "quantity": "Quantité"
+        }
+      },
+      "statuses": {
+        "DRAFT": "Brouillon",
+        "CONFIRMED": "Confirmée",
+        "READY": "Prête",
+        "DISPATCHED": "Expédiée",
+        "CANCELLED": "Annulée",
+        "PLANNED": "Planifié",
+        "IN_PROGRESS": "En cours",
+        "COMPLETED": "Terminé",
+        "IN_PRODUCTION": "En production",
+        "DELIVERED": "Livrée"
+      },
+      "supportNote": "Accès support plateforme. Prenez l'identité d'un tenant pour voir ses données."
     }
   },
   "Team": {
@@ -2325,5 +2364,33 @@
     "alertsIntro": "Articles au niveau ou en dessous de leur stock minimum.",
     "emptyAlertsTitle": "Aucune alerte de stock",
     "emptyAlertsBody": "Tous les articles sont au-dessus de leur minimum."
+  },
+  "Consent": {
+    "metadataTitle": "Autoriser l'accès · Emma & Éléa",
+    "title": "Autoriser l'accès",
+    "subtitle": "{client} souhaite se connecter à votre espace de travail.",
+    "accountLabel": "Espace de travail",
+    "accountValue": "L'accès sera accordé pour {organization}.",
+    "scopesLabel": "Cela permettra au client de",
+    "clientLink": "Client : {uri}",
+    "accept": "Autoriser",
+    "deny": "Refuser",
+    "unknownOrganization": "votre organisation",
+    "errors": {
+      "title": "Impossible de continuer",
+      "generic": "Une erreur est survenue. Réessayez.",
+      "invalidQuery": "Cette demande d'autorisation est invalide ou a expiré. Relancez la connexion depuis votre client MCP.",
+      "roleRestricted": "Votre rôle dans cette organisation ne permet aucune des permissions demandées."
+    },
+    "scopes": {
+      "openid": "Vérifier votre identité",
+      "profile": "Lire votre nom et votre profil",
+      "email": "Lire votre adresse e-mail",
+      "offline_access": "Rester connecté en votre absence",
+      "api:read": "Lire le catalogue, le stock, la production, les ventes et l'équipe",
+      "api:write": "Créer et modifier des brouillons : catalogue, commandes, réceptions, plans et expéditions",
+      "api:execute": "Comptabiliser les mouvements de stock et exécuter les lots de production",
+      "api:finance": "Lire les coûts, les marges et les rapports financiers"
+    }
   }
 }

@@ -1,7 +1,8 @@
-import {can} from "@/lib/permissions";
+
 import {
   assertOrganizationActor,
   assertPermission,
+  isGranted,
 } from "@/server/auth/guards";
 import type {Actor} from "@/server/auth/types";
 import {DomainError} from "@/server/domain/errors";
@@ -115,7 +116,7 @@ export function createDispatchService(deps: {
           page: window.page,
           pageSize: window.pageSize,
         },
-        canWrite: can(actor.role, "dispatch:write"),
+        canWrite: isGranted(actor, "dispatch:write"),
         filters: {search, status},
       };
     },
@@ -132,7 +133,7 @@ export function createDispatchService(deps: {
 
       return {
         dispatch,
-        canWrite: can(actor.role, "dispatch:write"),
+        canWrite: isGranted(actor, "dispatch:write"),
       };
     },
 

@@ -46,6 +46,9 @@ services:
       DATABASE_URL: postgresql://postgres:postgres@postgres:5432/emma_and_elea?schema=public
       BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:?Set BETTER_AUTH_SECRET in .env}
       BETTER_AUTH_URL: ${BETTER_AUTH_URL:-http://localhost:3000}
+      # Optional; default to ${BETTER_AUTH_URL}/mcp and /api inside the app.
+      MCP_RESOURCE_URL: ${MCP_RESOURCE_URL:-}
+      API_RESOURCE_URL: ${API_RESOURCE_URL:-}
     ports:
       - "3000:3000"
     depends_on:

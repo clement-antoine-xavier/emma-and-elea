@@ -1,7 +1,8 @@
-import {can} from "@/lib/permissions";
+
 import {
   assertOrganizationActor,
   assertPermission,
+  isGranted,
 } from "@/server/auth/guards";
 import type {Actor} from "@/server/auth/types";
 import {DomainError} from "@/server/domain/errors";
@@ -117,7 +118,7 @@ export function createOrderService(deps: {
           page: window.page,
           pageSize: window.pageSize,
         },
-        canWrite: can(actor.role, "order:write"),
+        canWrite: isGranted(actor, "order:write"),
         filters: {search, status},
       };
     },
@@ -131,7 +132,7 @@ export function createOrderService(deps: {
 
       return {
         order,
-        canWrite: can(actor.role, "order:write"),
+        canWrite: isGranted(actor, "order:write"),
       };
     },
 

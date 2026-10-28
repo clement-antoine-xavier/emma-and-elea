@@ -95,6 +95,7 @@ describe("getActorContext", () => {
       organizationId: "org_1",
       organization: {id: "org_1", name: "Bakery", slug: "bakery"},
       role: "owner",
+      scopes: expect.any(Set),
     });
   });
 

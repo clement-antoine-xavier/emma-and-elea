@@ -1,7 +1,8 @@
-import {can} from "@/lib/permissions";
+
 import {
   assertOrganizationActor,
   assertPermission,
+  isGranted,
 } from "@/server/auth/guards";
 import type {Actor} from "@/server/auth/types";
 import {DomainError} from "@/server/domain/errors";
@@ -36,7 +37,7 @@ export function createEquipmentService(deps: {
 
       return {
         equipment: await deps.equipmentRepository.list(actor.organizationId),
-        canWrite: can(actor.role, "equipment:write"),
+        canWrite: isGranted(actor, "equipment:write"),
       };
     },
 

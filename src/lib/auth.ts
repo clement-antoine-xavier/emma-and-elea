@@ -1,18 +1,22 @@
-import { betterAuth } from "better-auth";
-import { createAuthMiddleware } from "better-auth/api";
-import { prismaAdapter } from "better-auth/adapters/prisma";
-import { nextCookies } from "better-auth/next-js";
-import { admin } from "better-auth/plugins/admin";
+import {betterAuth} from "better-auth";
+import {createAuthMiddleware} from "better-auth/api";
+import {prismaAdapter} from "better-auth/adapters/prisma";
+import {nextCookies} from "better-auth/next-js";
+import {jwt} from "better-auth/plugins";
+import {admin} from "better-auth/plugins/admin";
 import type {AccessControl} from "better-auth/plugins/access";
-import {
-  adminAc,
-  defaultAc,
-  defaultRoles,
-} from "better-auth/plugins/admin/access";
-import { organization } from "better-auth/plugins/organization";
-import { organizationBootstrapService } from "@/server/services/organization-bootstrap.container";
-import { ac, roles } from "@/server/auth/permissions";
-import { prisma } from "./prisma";
+import {adminAc, defaultAc, defaultRoles} from "better-auth/plugins/admin/access";
+import {organization} from "better-auth/plugins/organization";
+import {mcp} from "@better-auth/mcp";
+import {cimd} from "@better-auth/cimd";
+import {fetchClientMetadataResource} from "@better-auth/cimd/node";
+import {organizationBootstrapService} from "@/server/services/organization-bootstrap.container";
+import {ac, roles} from "@/server/auth/permissions";
+import {apiResource, mcpResource, providerScopes} from "./resources";
+import {TOKEN_ORG_CLAIM} from "./scopes";
+import {prisma} from "./prisma";
+
+const baseURL = process.env.BETTER_AUTH_URL ?? "http://localhost:3000";
 
 /**
  * Bootstraps the tenant when an organization is created.
@@ -25,7 +29,7 @@ const createOrganizationDefaults = createAuthMiddleware(async (ctx) => {
   if (ctx.path !== "/organization/create") return;
 
   const created = ctx.context.returned as
-    | { id?: string; error?: unknown }
+    | {id?: string; error?: unknown}
     | undefined;
   if (!created?.id || created.error) return;
 
@@ -44,6 +48,7 @@ const createOrganizationDefaults = createAuthMiddleware(async (ctx) => {
 
 export const auth = betterAuth({
   appName: "Emma & Elea",
+  baseURL,
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
@@ -64,6 +69,55 @@ export const auth = betterAuth({
     },
   },
   plugins: [
+    // The JWT plugin provides the signing key and `/jwks` used by the OAuth
+    // provider to mint verifiable access tokens.
+    jwt(),
+    // MCP clients discover this authorization server from the MCP route's
+    // 401 challenge. Scopes are coarse: the member role remains authoritative.
+    mcp({
+      loginPage: "/sign-in",
+      consentPage: "/consent",
+      resource: mcpResource,
+      scopes: providerScopes,
+      // A resource without `allowedScopes` cannot be stored with Prisma, and
+      // `mcp()` always adds its own resource. Declare both resources with every
+      // scope so MCP clients and REST API clients share one consent vocabulary.
+      resources: [
+        {identifier: mcpResource, allowedScopes: providerScopes},
+        {identifier: apiResource, allowedScopes: providerScopes},
+      ],
+      // Dynamic-registration clients may request the API resource in addition
+      // to the MCP default. Production API clients are usually pre-registered.
+      clientRegistrationAllowedResources: [apiResource],
+      accessTokenExpiresIn: 60 * 60,
+      // Dynamic registration keeps Cursor and older Claude Code builds
+      // working. MCP 2026-07-28 prefers CIMD, which `cimd()` adds below.
+      allowDynamicClientRegistration: true,
+      allowUnauthenticatedClientRegistration: true,
+      clientRegistrationDefaultApplicationType: "infer",
+      // Consent is stored per organization, so a token granted for one tenant
+      // is never reused for another. Users without an organization complete
+      // onboarding first.
+      postLogin: {
+        page: "/onboarding",
+        shouldRedirect: ({session}) => !session.activeOrganizationId,
+        consentReferenceId: ({session}) => {
+          const organizationId = session.activeOrganizationId;
+          return typeof organizationId === "string" && organizationId.length > 0
+            ? organizationId
+            : undefined;
+        },
+      },
+      customAccessTokenClaims: ({referenceId}) =>
+        referenceId ? {[TOKEN_ORG_CLAIM]: referenceId} : {},
+    }),
+    // Client ID Metadata Documents, pinned to the MCP 2026-07-28 profile.
+    // `fetchClientMetadataResource` resolves DNS once and pins the connection,
+    // which keeps the outbound fetch off private addresses (see ADR-0020).
+    cimd({
+      fetchClientMetadataResource,
+      metadataProfile: "mcp-2026-07-28",
+    }),
     admin({
       // Platform staff are separate from organization roles. "admin" is kept
       // as a legacy alias for installs created before ADR-0011.

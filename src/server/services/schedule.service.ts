@@ -1,7 +1,8 @@
-import {can} from "@/lib/permissions";
+
 import {
   assertOrganizationActor,
   assertPermission,
+  isGranted,
 } from "@/server/auth/guards";
 import type {Actor} from "@/server/auth/types";
 import {DomainError} from "@/server/domain/errors";
@@ -199,7 +200,7 @@ export function createScheduleService(deps: {
         sites: sites
           .filter((site) => !site.archivedAt)
           .map((site) => ({id: site.id, name: site.name, code: site.code})),
-        canWrite: can(actor.role, "team:write"),
+        canWrite: isGranted(actor, "team:write"),
       };
     },
 
@@ -219,7 +220,7 @@ export function createScheduleService(deps: {
           actor.organizationId,
           id,
         ),
-        canWrite: can(actor.role, "team:write"),
+        canWrite: isGranted(actor, "team:write"),
       };
     },
 
@@ -292,7 +293,7 @@ export function createScheduleService(deps: {
 
       const from = parseDate(single(filters.from), addDays(today(), -7));
       const to = parseDate(single(filters.to), addDays(today(), 60));
-      const canViewAll = can(actor.role, "team:read");
+      const canViewAll = isGranted(actor, "team:read");
       const current = await deps.scheduleRepository.findEmployeeByUser(
         actor.organizationId,
         actor.userId,
@@ -316,8 +317,8 @@ export function createScheduleService(deps: {
               (absence) => absence.employeeId === current?.id,
             ),
         employees,
-        canRequest: can(actor.role, "absence:request"),
-        canDecide: can(actor.role, "absence:decide"),
+        canRequest: isGranted(actor, "absence:request"),
+        canDecide: isGranted(actor, "absence:decide"),
         currentEmployee: current ? toEmployeeOption(current) : null,
       };
     },
@@ -326,7 +327,7 @@ export function createScheduleService(deps: {
       const actor = assertOrganizationActor(actorInput);
       assertPermission(actor, "absence:request");
 
-      const canViewAll = can(actor.role, "team:read");
+      const canViewAll = isGranted(actor, "team:read");
       let employeeId = input.employeeId;
       if (!canViewAll) {
         const current = await deps.scheduleRepository.findEmployeeByUser(
@@ -427,7 +428,7 @@ export function createScheduleService(deps: {
         }),
         employees,
         sites,
-        canWrite: can(actor.role, "team:write"),
+        canWrite: isGranted(actor, "team:write"),
       };
     },
 

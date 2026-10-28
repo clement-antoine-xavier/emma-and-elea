@@ -1,6 +1,6 @@
-import {can, type Permission} from "@/lib/permissions";
+import {type Permission} from "@/lib/permissions";
 import type {DashboardNavItem} from "@/lib/navigation";
-import {assertOrganizationActor} from "@/server/auth/guards";
+import {assertOrganizationActor, isGranted} from "@/server/auth/guards";
 import type {Actor} from "@/server/auth/types";
 
 export type {DashboardNavItem};
@@ -63,7 +63,7 @@ export function createDashboardService(): DashboardService {
 
       return {
         items: navItems
-          .filter((item) => can(actor.role, item.read))
+          .filter((item) => isGranted(actor, item.read))
           .map((item) => item.key),
       };
     },
@@ -72,11 +72,11 @@ export function createDashboardService(): DashboardService {
       const actor = assertOrganizationActor(actorInput);
 
       const visible = areas
-        .filter((area) => can(actor.role, area.read))
+        .filter((area) => isGranted(actor, area.read))
         .map<DashboardArea>((area) => ({
           key: area.key,
           access:
-            area.write !== undefined && can(actor.role, area.write)
+            area.write !== undefined && isGranted(actor, area.write)
               ? "manage"
               : "view",
         }));

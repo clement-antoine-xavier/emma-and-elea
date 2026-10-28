@@ -3,13 +3,13 @@ import {headers} from "next/headers";
 import {notFound, redirect} from "next/navigation";
 import {auth} from "@/lib/auth";
 import {
-  can,
-  canAny,
   isOrgRole,
   isPlatformSupport,
+  permissionsFor,
   type Permission,
 } from "@/lib/permissions";
 import {membershipRepository} from "@/server/repositories/membership.repository";
+import {isGranted} from "./guards";
 import type {Actor, OrganizationActor} from "./types";
 
 /**
@@ -33,6 +33,8 @@ export const getActorContext = cache(async (): Promise<Actor | null> => {
     memberships[0] ??
     null;
 
+  const role = isOrgRole(membership?.role) ? membership.role : null;
+
   return {
     userId: session.user.id,
     name: session.user.name,
@@ -44,7 +46,8 @@ export const getActorContext = cache(async (): Promise<Actor | null> => {
     membershipId: membership?.id ?? null,
     organizationId: membership?.organizationId ?? null,
     organization: membership?.organization ?? null,
-    role: isOrgRole(membership?.role) ? membership.role : null,
+    role,
+    scopes: new Set(permissionsFor(role)),
   };
 });
 
@@ -81,7 +84,7 @@ export async function requirePermission(
 ): Promise<OrganizationActor> {
   const actor = await requireOrganizationActor();
 
-  if (!can(actor.role, permission)) notFound();
+  if (!isGranted(actor, permission)) notFound();
 
   return actor;
 }
@@ -91,7 +94,9 @@ export async function requireAnyPermission(
 ): Promise<OrganizationActor> {
   const actor = await requireOrganizationActor();
 
-  if (!canAny(actor.role, permissions)) notFound();
+  if (!permissions.some((permission) => isGranted(actor, permission))) {
+    notFound();
+  }
 
   return actor;
 }
@@ -108,7 +113,7 @@ export function hasPermission(
   actor: Actor | null,
   permission: Permission,
 ): boolean {
-  return can(actor?.role, permission);
+  return isGranted(actor, permission);
 }
 
 export type {Actor, OrganizationActor};

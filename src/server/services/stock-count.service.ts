@@ -1,7 +1,8 @@
-import {can} from "@/lib/permissions";
+
 import {
   assertOrganizationActor,
   assertPermission,
+  isGranted,
 } from "@/server/auth/guards";
 import type {Actor} from "@/server/auth/types";
 import {DomainError} from "@/server/domain/errors";
@@ -65,8 +66,8 @@ export function createStockCountService(deps: {
         sites: sites
           .filter((site) => !site.archivedAt)
           .map((site) => ({id: site.id, name: site.name, code: site.code})),
-        canCount: can(actor.role, "stock:count"),
-        canPost: can(actor.role, "stock:write"),
+        canCount: isGranted(actor, "stock:count"),
+        canPost: isGranted(actor, "stock:write"),
       };
     },
 
@@ -82,8 +83,8 @@ export function createStockCountService(deps: {
 
       return {
         count,
-        canCount: can(actor.role, "stock:count"),
-        canPost: can(actor.role, "stock:write"),
+        canCount: isGranted(actor, "stock:count"),
+        canPost: isGranted(actor, "stock:write"),
       };
     },
 

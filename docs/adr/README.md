@@ -27,6 +27,9 @@ decision.
 | [0016](0016-forecast-from-daily-sales.md) | Forecast from daily sales and keep plans as snapshots | Accepted | 2026-10-27 |
 | [0017](0017-schedule-against-local-availability.md) | Schedule shifts against local availability and approved absences | Accepted | 2026-10-27 |
 | [0018](0018-post-stock-counts-from-captured-expected.md) | Post stock counts from captured expected quantities | Accepted | 2026-10-27 |
+| [0019](0019-test-the-layers.md) | Test the layers: unit, database integration, end-to-end | Accepted | 2026-10-27 |
+| [0020](0020-expose-mcp-through-better-auth-oauth.md) | Expose MCP through Better Auth OAuth | Accepted | 2026-10-27 |
+| [0021](0021-expose-a-rest-api-as-a-second-oauth-resource.md) | Expose a REST API as a second OAuth resource | Accepted | 2026-10-27 |
 
 ## Creating a new ADR
 

@@ -1,7 +1,8 @@
-import {can} from "@/lib/permissions";
+
 import {
   assertOrganizationActor,
   assertPermission,
+  isGranted,
 } from "@/server/auth/guards";
 import type {Actor} from "@/server/auth/types";
 import {DomainError} from "@/server/domain/errors";
@@ -216,7 +217,7 @@ export function createCatalogService(deps: {
           pageSize: window.pageSize,
         },
         categories,
-        canWrite: can(actor.role, "catalog:write"),
+        canWrite: isGranted(actor, "catalog:write"),
         filters: {
           search,
           type: isItemType(typeValue) ? typeValue : null,
@@ -306,7 +307,7 @@ export function createCatalogService(deps: {
         categories: await deps.catalogRepository.listCategories(
           actor.organizationId,
         ),
-        canWrite: can(actor.role, "catalog:write"),
+        canWrite: isGranted(actor, "catalog:write"),
       };
     },
 

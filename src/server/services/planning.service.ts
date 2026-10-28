@@ -1,8 +1,9 @@
 import {Decimal} from "@prisma/client/runtime/client";
-import {can} from "@/lib/permissions";
+
 import {
   assertOrganizationActor,
   assertPermission,
+  isGranted,
 } from "@/server/auth/guards";
 import type {Actor, OrganizationActor} from "@/server/auth/types";
 import {DEFAULT_ORGANIZATION_SETTINGS} from "@/server/domain/organization-settings";
@@ -121,7 +122,7 @@ function addDays(date: Date, days: number): Date {
 }
 
 function canWrite(actor: OrganizationActor): boolean {
-  return can(actor.role, "production:write");
+  return isGranted(actor, "production:write");
 }
 
 export function createPlanningService(deps: {

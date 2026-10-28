@@ -1,7 +1,8 @@
-import {can} from "@/lib/permissions";
+
 import {
   assertOrganizationActor,
   assertPermission,
+  isGranted,
 } from "@/server/auth/guards";
 import type {Actor, OrganizationActor} from "@/server/auth/types";
 import {DomainError} from "@/server/domain/errors";
@@ -81,7 +82,7 @@ export interface ProductionService {
 }
 
 function executeAllowed(actor: OrganizationActor): boolean {
-  return can(actor.role, "production:execute");
+  return isGranted(actor, "production:execute");
 }
 
 export function createProductionService(deps: {
@@ -109,7 +110,7 @@ export function createProductionService(deps: {
         batches: await deps.productionRepository.listBatches(
           actor.organizationId,
         ),
-        canWrite: can(actor.role, "production:write"),
+        canWrite: isGranted(actor, "production:write"),
         canExecute: executeAllowed(actor),
       };
     },
@@ -126,7 +127,7 @@ export function createProductionService(deps: {
 
       return {
         batch,
-        canWrite: can(actor.role, "production:write"),
+        canWrite: isGranted(actor, "production:write"),
         canExecute: executeAllowed(actor),
       };
     },

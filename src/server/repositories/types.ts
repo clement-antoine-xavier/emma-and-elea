@@ -39,6 +39,15 @@ export type MembershipWithOrganization = {
   organization: OrganizationSummary;
 };
 
+/** Membership plus the account fields an actor needs, resolved for MCP. */
+export type MembershipActorRecord = MembershipWithOrganization & {
+  user: {
+    name: string;
+    email: string;
+    role: string | null;
+  };
+};
+
 export type TeamMemberRecord = {
   id: string;
   userId: string;

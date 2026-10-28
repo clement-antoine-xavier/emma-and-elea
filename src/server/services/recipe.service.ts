@@ -1,7 +1,8 @@
-import {can} from "@/lib/permissions";
+
 import {
   assertOrganizationActor,
   assertPermission,
+  isGranted,
 } from "@/server/auth/guards";
 import type {Actor, OrganizationActor} from "@/server/auth/types";
 import {DomainError} from "@/server/domain/errors";
@@ -342,7 +343,7 @@ export function createRecipeService(deps: {
   }
 
   function canPublish(actor: OrganizationActor): boolean {
-    return can(actor.role, "recipe:publish");
+    return isGranted(actor, "recipe:publish");
   }
 
   return {
@@ -352,7 +353,7 @@ export function createRecipeService(deps: {
 
       return {
         recipes: await deps.recipeRepository.list(actor.organizationId),
-        canWrite: can(actor.role, "recipe:write"),
+        canWrite: isGranted(actor, "recipe:write"),
       };
     },
 
@@ -368,9 +369,9 @@ export function createRecipeService(deps: {
 
       return {
         recipe,
-        canWrite: can(actor.role, "recipe:write"),
+        canWrite: isGranted(actor, "recipe:write"),
         canPublish: canPublish(actor),
-        canReadCost: can(actor.role, "cost:read"),
+        canReadCost: isGranted(actor, "cost:read"),
       };
     },
 
@@ -386,7 +387,7 @@ export function createRecipeService(deps: {
       );
       if (!version) return null;
 
-      const canReadCost = can(actor.role, "cost:read");
+      const canReadCost = isGranted(actor, "cost:read");
 
       if (canReadCost && version.status === "DRAFT") {
         const {result} = await computeVersion(actor.organizationId, version);
@@ -395,7 +396,7 @@ export function createRecipeService(deps: {
 
       return {
         version,
-        canWrite: can(actor.role, "recipe:write"),
+        canWrite: isGranted(actor, "recipe:write"),
         canPublish: canPublish(actor),
         canReadCost,
       };

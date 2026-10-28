@@ -1,6 +1,6 @@
 import type {Metadata} from "next";
 import {Badge} from "@astryxdesign/core/Badge";
-import {Card} from "@astryxdesign/core/Card";
+import {Button} from "@astryxdesign/core/Button";
 import {Center} from "@astryxdesign/core/Center";
 import {Grid} from "@astryxdesign/core/Grid";
 import {HStack} from "@astryxdesign/core/HStack";
@@ -8,13 +8,34 @@ import {Section} from "@astryxdesign/core/Section";
 import {Stack} from "@astryxdesign/core/Stack";
 import {Heading, Text} from "@astryxdesign/core/Text";
 import {getLocale, getTranslations} from "next-intl/server";
-import {can} from "@/lib/permissions";
 import {formatMoney} from "@/lib/format";
 import {requireOrganizationActor} from "@/server/auth/actor";
-import {dashboardService, reportService} from "@/server/services/container";
+import {homeService} from "@/server/services/container";
+import {normalizePeriod} from "@/server/services/home.service";
+import {DashboardTables} from "@/components/dashboard/dashboard-tables";
+import {
+  MetricCard,
+  type MetricChange,
+} from "@/components/dashboard/metric-card";
+import {PeriodFilter} from "@/components/dashboard/period-filter";
+import {ProductionChart} from "@/components/dashboard/production-chart";
+import {RevenueChart} from "@/components/dashboard/revenue-chart";
 
 // Session data keeps this route blocking until it is moved to a streamed shell.
 export const instant = false;
+
+type DashboardPageProps = {
+  searchParams: Promise<{period?: string | string[]}>;
+};
+
+type Metric = {
+  key: string;
+  label: string;
+  value: string;
+  hint?: string;
+  change?: MetricChange | null;
+  sparkline?: number[];
+};
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Dashboard");
@@ -22,135 +43,210 @@ export async function generateMetadata(): Promise<Metadata> {
   return {title: t("metadataTitle")};
 }
 
-export default async function DashboardPage() {
+export default async function DashboardPage({
+  searchParams,
+}: DashboardPageProps) {
   const actor = await requireOrganizationActor();
-  const t = await getTranslations("Dashboard.overview");
-  const tKpis = await getTranslations("Dashboard.kpis");
-  const tRoles = await getTranslations("Roles");
-  const {areas} = dashboardService.getOverview(actor);
-  const canReadReports = can(actor.role, "report:read");
-  const [locale, kpis] = await Promise.all([
+  const params = await searchParams;
+  const period = normalizePeriod(params.period);
+  const home = await homeService.getHome(actor, period);
+  const [t, tRoles, locale] = await Promise.all([
+    getTranslations("Dashboard.home"),
+    getTranslations("Roles"),
     getLocale(),
-    canReadReports ? reportService.getKpis(actor) : Promise.resolve(null),
   ]);
+
+  const roleLabel = tRoles(`${actor.role}.label`);
+  const today = new Intl.DateTimeFormat(locale, {
+    dateStyle: "long",
+  }).format(new Date());
+
+  const metrics: Metric[] = [
+    {
+      key: "batches",
+      label: t("metrics.batchesToday"),
+      value: String(home.kpis.batchesToday),
+      hint: t("metrics.since", {days: home.period}),
+      sparkline: home.productionTrend.map((point) => point.completed),
+    },
+  ];
+
+  if (home.can.sales) {
+    const delta = home.kpis.revenueDeltaPct;
+    metrics.push({
+      key: "revenue",
+      label: t("metrics.revenue"),
+      value: formatMoney(home.kpis.revenue, {
+        locale,
+        currency: home.currency,
+        maximumFractionDigits: 0,
+        minimumFractionDigits: 0,
+      }),
+      hint: t("metrics.vsPrevious"),
+      change:
+        delta === null
+          ? null
+          : {
+              value: `${delta > 0 ? "+" : ""}${delta}%`,
+              positive: delta >= 0,
+            },
+      sparkline: home.salesTrend.map((point) => point.revenue),
+    });
+  } else {
+    metrics.push({
+      key: "planned",
+      label: t("metrics.plannedBatches"),
+      value: String(home.kpis.plannedBatches),
+      hint: t("metrics.since", {days: home.period}),
+    });
+  }
+
+  metrics.push({
+    key: "lowStock",
+    label: t("metrics.lowStock"),
+    value: String(home.kpis.lowStockCount),
+    hint: t("metrics.since", {days: home.period}),
+  });
+
+  if (home.can.finance && home.kpis.wasteCost !== null) {
+    metrics.push({
+      key: "waste",
+      label: t("metrics.wasteCost"),
+      value: formatMoney(home.kpis.wasteCost, {
+        locale,
+        currency: home.currency,
+      }),
+      hint: t("metrics.since", {days: home.period}),
+    });
+  } else if (home.can.reports) {
+    metrics.push({
+      key: "expiring",
+      label: t("metrics.expiringLots"),
+      value: String(home.kpis.expiringLotsCount),
+      hint: t("metrics.since", {days: home.period}),
+    });
+  } else if (home.can.orders) {
+    metrics.push({
+      key: "orders",
+      label: t("metrics.orders"),
+      value: String(home.kpis.orderCount),
+      hint: t("metrics.allTime"),
+    });
+  } else {
+    const completed = home.productionTrend.reduce(
+      (total, point) => total + point.completed,
+      0,
+    );
+    metrics.push({
+      key: "completed",
+      label: t("metrics.completedBatches"),
+      value: String(completed),
+      hint: t("metrics.since", {days: home.period}),
+    });
+  }
 
   return (
     <Section padding={6} minHeight="100%">
       <Center axis="horizontal">
-        <Stack gap={8} maxWidth={1120} width="100%">
-          <Stack gap={2}>
-            <Text type="label" color="accent">
-              {t("eyebrow")}
-            </Text>
-            <Heading level={1} type="display-3">
-              {t("title", {name: actor.name})}
-            </Heading>
-            <Text type="large" color="secondary">
-              {t("intro", {
-                organization: actor.organization.name,
-                role: tRoles(`${actor.role}.label`),
-              })}
-            </Text>
-          </Stack>
-
-          {canReadReports && kpis ? (
-            <Stack gap={4}>
-              <Stack gap={1}>
-                <Heading level={2}>{tKpis("title")}</Heading>
-                <Text color="secondary">{tKpis("intro")}</Text>
-              </Stack>
-              <Grid columns={{minWidth: 220, max: 4}} gap={4}>
-                <Card padding={5}>
-                  <Stack gap={1}>
-                    <Text type="label" color="secondary">
-                      {tKpis("batchesToday")}
-                    </Text>
-                    <Heading level={3}>{kpis.batchesToday}</Heading>
-                  </Stack>
-                </Card>
-                <Card padding={5}>
-                  <Stack gap={1}>
-                    <Text type="label" color="secondary">
-                      {tKpis("lowStock")}
-                    </Text>
-                    <Heading level={3}>{kpis.lowStockCount}</Heading>
-                  </Stack>
-                </Card>
-                <Card padding={5}>
-                  <Stack gap={1}>
-                    <Text type="label" color="secondary">
-                      {tKpis("expiringLots")}
-                    </Text>
-                    <Heading level={3}>{kpis.expiringLotsCount}</Heading>
-                  </Stack>
-                </Card>
-                <Card padding={5}>
-                  <Stack gap={1}>
-                    <Text type="label" color="secondary">
-                      {tKpis("waste30d")}
-                    </Text>
-                    <Heading level={3}>
-                      {formatMoney(kpis.wasteCost30d, {
-                        locale,
-                        currency: kpis.currency,
-                      })}
-                    </Heading>
-                  </Stack>
-                </Card>
-              </Grid>
+        <Stack gap={6} maxWidth={1120} width="100%">
+          <HStack
+            gap={4}
+            align="start"
+            justify="between"
+            wrap="wrap"
+            width="100%"
+          >
+            <Stack gap={1}>
+              <Text type="label" color="accent">
+                {t("eyebrow")}
+              </Text>
+              <Heading level={1} type="display-3">
+                {t("title", {name: actor.name})}
+              </Heading>
+              <Text type="large" color="secondary">
+                {t("intro", {
+                  organization: actor.organization.name,
+                  role: roleLabel,
+                  date: today,
+                })}
+              </Text>
+              <HStack gap={2} wrap="wrap">
+                <Badge
+                  label={actor.organization.slug}
+                  variant="neutral"
+                />
+                {actor.isSupport ? (
+                  <Badge label={t("supportBadge")} variant="warning" />
+                ) : null}
+              </HStack>
             </Stack>
-          ) : null}
+            <Stack gap={3} align="end">
+              <PeriodFilter
+                period={home.period}
+                label={t("periodLabel")}
+                options={[
+                  {value: 7, label: t("periods.7")},
+                  {value: 30, label: t("periods.30")},
+                  {value: 90, label: t("periods.90")},
+                ]}
+              />
+              {home.can.productionWrite ? (
+                <Button
+                  variant="secondary"
+                  label={t("newProduction")}
+                  href="/dashboard/production"
+                />
+              ) : null}
+            </Stack>
+          </HStack>
 
-          <Grid columns={{minWidth: 280, max: 2}} gap={4}>
-            <Card padding={5}>
-              <Stack gap={3}>
-                <Text type="label" color="secondary">
-                  {t("roleTitle")}
-                </Text>
-                <HStack gap={3} align="center" wrap="wrap">
-                  <Heading level={2}>
-                    {tRoles(`${actor.role}.label`)}
-                  </Heading>
-                  <Badge
-                    label={actor.organization.slug}
-                    variant="neutral"
-                  />
-                </HStack>
-                <Text color="secondary">
-                  {tRoles(`${actor.role}.description`)}
-                </Text>
-              </Stack>
-            </Card>
-
-            <Card padding={5}>
-              <Stack gap={3}>
-                <Text type="label" color="secondary">
-                  {t("organizationTitle")}
-                </Text>
-                <Heading level={2}>{actor.organization.name}</Heading>
-                <Text color="secondary">{t("organizationBody")}</Text>
-              </Stack>
-            </Card>
+          <Grid columns={{minWidth: 220, max: 4}} gap={4}>
+            {metrics.map((metric) => (
+              <MetricCard
+                key={metric.key}
+                label={metric.label}
+                value={metric.value}
+                hint={metric.hint}
+                change={metric.change}
+                sparkline={metric.sparkline}
+              />
+            ))}
           </Grid>
 
-          <Stack gap={4}>
-            <Stack gap={1}>
-              <Heading level={2}>{t("accessTitle")}</Heading>
-              <Text color="secondary">{t("accessIntro")}</Text>
-            </Stack>
-            <Grid columns={{minWidth: 260, max: 3}} gap={4}>
-              {areas.map((area) => (
-                <Card key={area.key} padding={5}>
-                  <Stack gap={2}>
-                    <Heading level={3}>{t(`areas.${area.key}`)}</Heading>
-                    <Text type="supporting" color="secondary">
-                      {area.access === "manage" ? t("manage") : t("view")}
-                    </Text>
-                  </Stack>
-                </Card>
-              ))}
+          {home.can.sales || home.can.production ? (
+            <Grid
+              columns={{
+                minWidth: 360,
+                max: home.can.sales && home.can.production ? 2 : 1,
+              }}
+              gap={4}
+            >
+              {home.can.sales ? (
+                <RevenueChart
+                  data={home.salesTrend}
+                  title={t("charts.revenueTitle")}
+                  intro={t("charts.revenueIntro")}
+                  currency={home.currency}
+                />
+              ) : null}
+              {home.can.production ? (
+                <ProductionChart
+                  data={home.productionTrend}
+                  title={t("charts.productionTitle")}
+                  intro={t("charts.productionIntro")}
+                  label={t("charts.completed")}
+                />
+              ) : null}
             </Grid>
-          </Stack>
+          ) : null}
+
+          <DashboardTables
+            alerts={home.alerts}
+            orders={home.recentOrders}
+            batches={home.upcomingBatches}
+            currency={home.currency}
+            can={home.can}
+          />
 
           {actor.isSupport ? (
             <Section variant="muted" padding={4}>

@@ -111,6 +111,16 @@ export function AuthForm({mode, next}: {mode: AuthMode; next?: string}) {
       return;
     }
 
+    // The OAuth provider resumes an in-flight MCP authorization on session
+    // creation and answers with the URL to continue at. A full navigation is
+    // required: the client must leave the app for `/consent` or the client
+    // callback.
+    const continuation = (result.data as {url?: string} | null)?.url;
+    if (continuation) {
+      window.location.assign(continuation);
+      return;
+    }
+
     router.push(next ?? (isSignUp ? "/onboarding" : "/dashboard"));
     router.refresh();
   }

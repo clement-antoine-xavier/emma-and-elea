@@ -11,8 +11,11 @@ it should be built.
 
 The seven authentication tables that already exist (`user`, `session`,
 `account`, `verification`, `organization`, `member`, `invitation`) are owned by
-Better Auth and are only referenced from here, never redefined. The 46 domain
-tables below are new.
+Better Auth and are only referenced from here, never redefined. The OAuth
+provider tables added for OAuth (MCP and the REST API) (`jwks`, `oauthClient`, `oauthResource`,
+`oauthClientResource`, `oauthAccessToken`, `oauthRefreshToken`, `oauthConsent`,
+`oauthClientAssertion`) are owned by the same plugins (ADR-0020) and are not
+modelled here either. The 46 domain tables below are new.
 
 ## How to read this document
 

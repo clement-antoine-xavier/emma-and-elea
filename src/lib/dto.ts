@@ -959,3 +959,53 @@ export type StockCountDetailRecord = StockCountSummaryRecord & {
   note: string | null;
   lines: StockCountLineRecord[];
 };
+
+/* -------------------------------------------------------------------------- */
+/* Dashboard home                                                             */
+/* -------------------------------------------------------------------------- */
+
+export type HomePeriod = 7 | 30 | 90;
+
+export type HomeCapabilities = {
+  sales: boolean;
+  orders: boolean;
+  production: boolean;
+  productionWrite: boolean;
+  stock: boolean;
+  reports: boolean;
+  finance: boolean;
+};
+
+export type HomeSalesPoint = {
+  date: string;
+  revenue: number;
+  quantity: number;
+};
+
+export type HomeProductionPoint = {
+  date: string;
+  completed: number;
+};
+
+export type HomeData = {
+  period: HomePeriod;
+  from: Date;
+  to: Date;
+  currency: string;
+  kpis: {
+    batchesToday: number;
+    plannedBatches: number;
+    lowStockCount: number;
+    expiringLotsCount: number;
+    revenue: number;
+    revenueDeltaPct: number | null;
+    orderCount: number;
+    wasteCost: string | null;
+  };
+  salesTrend: HomeSalesPoint[];
+  productionTrend: HomeProductionPoint[];
+  alerts: StockLevelRecord[];
+  upcomingBatches: ProductionBatchSummaryRecord[];
+  recentOrders: OrderSummaryRecord[];
+  can: HomeCapabilities;
+};

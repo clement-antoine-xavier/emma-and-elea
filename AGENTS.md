@@ -181,6 +181,33 @@ Better Auth **1.7.13** with the Prisma adapter, email/password auth, and the `ad
 
 <!-- END:better-auth -->
 
+<!-- BEGIN:mcp -->
+
+## MCP server
+
+`POST /mcp` exposes the domain to MCP hosts through Better Auth OAuth. See ADR-0020 and ADR-0021.
+
+- Route: `src/app/mcp/route.ts` (POST only). Authorization and the SDK handler live in `src/server/mcp/`; the route never imports `@/lib/auth`.
+- Auth server: `jwt()` + `mcp({ resource })` + `cimd()` in `src/lib/auth.ts`. Resource URLs live in `src/lib/resources.ts` (`MCP_RESOURCE_URL` default `$BETTER_AUTH_URL/mcp`, `API_RESOURCE_URL` default `$BETTER_AUTH_URL/api`).
+- Consent: `/consent` verifies the signed query via `src/server/auth/oauth-consent.ts` before rendering.
+- Actors: `src/server/auth/token-actor.ts` resolves the consent-bound organization claim, re-reads the membership, and builds `token scopes ∩ role permissions`. Shared by MCP and the REST API.
+- Tools: `src/server/mcp/tools/*`; each is a thin wrapper over a service, so the service's `assertPermission` still runs. Converts dates and empty strings exactly like the Server Actions do.
+- Scopes: `src/lib/scopes.ts` (`api:read`, `api:write`, `api:execute`, `api:finance`). Tools declare `scopeChallenge` for step-up.
+- Discovery: `/.well-known/oauth-protected-resource`, `/.well-known/oauth-protected-resource/mcp`, `/.well-known/oauth-protected-resource/api`, `/api/auth/.well-known/oauth-authorization-server`, and `/.well-known/oauth-authorization-server/api/auth`.
+- MCP 2026-07-28 is stateless: `legacy: "reject"`. Clients must send `MCP-Protocol-Version`, `Mcp-Method`, and the per-request `_meta` envelope.
+
+## REST API
+
+`/api/**` is a second protected resource with audience `$BETTER_AUTH_URL/api` (ADR-0021).
+
+- Routes: `src/app/api/**/route.ts`; `GET /api/me` plus read endpoints for sites, catalog, customers, stock, production, orders, dispatches and reports. Writes currently cover catalog items, categories and customers (`api:write`); the remaining domains follow the same pattern.
+- Verification: `src/server/api/token-auth.ts` (`verifyAccessTokenRequest`, RFC 6750 `401`/`403` challenges). Do not reuse `requireMcpAuth` here; its errors are JSON-RPC.
+- Errors: `src/server/api/respond.ts` maps `DomainError` to HTTP statuses.
+- A token minted for `/mcp` is rejected by `/api` and vice versa. Server Components and Server Actions stay on the session cookie.
+- API clients are authenticated as users: the token carries the organization claim and the role is re-read on every call. Machine-to-machine clients would need `client_credentials` and a separate registration path.
+
+<!-- END:mcp -->
+
 <!-- BEGIN:nextjs -->
 
 ## This is NOT the Next.js you know

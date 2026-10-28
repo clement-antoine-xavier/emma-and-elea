@@ -1,7 +1,8 @@
-import {can} from "@/lib/permissions";
+
 import {
   assertOrganizationActor,
   assertPermission,
+  isGranted,
 } from "@/server/auth/guards";
 import type {Actor} from "@/server/auth/types";
 import {DEFAULT_ORGANIZATION_SETTINGS} from "@/server/domain/organization-settings";
@@ -36,7 +37,7 @@ export function createSettingsService(deps: {
 
       return {
         settings: stored ?? DEFAULT_ORGANIZATION_SETTINGS,
-        canUpdate: can(actor.role, "organization:update"),
+        canUpdate: isGranted(actor, "organization:update"),
       };
     },
 

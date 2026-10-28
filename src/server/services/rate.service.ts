@@ -1,7 +1,8 @@
-import {can} from "@/lib/permissions";
+
 import {
   assertOrganizationActor,
   assertPermission,
+  isGranted,
 } from "@/server/auth/guards";
 import type {Actor} from "@/server/auth/types";
 import {
@@ -66,7 +67,7 @@ export function createRateService(deps: {
       return {
         labourRates,
         energyTariffs,
-        canWrite: can(actor.role, "organization:update"),
+        canWrite: isGranted(actor, "organization:update"),
       };
     },
 

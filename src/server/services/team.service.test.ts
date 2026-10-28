@@ -25,6 +25,7 @@ function actorFor(role: OrgRole, userId = "user_owner"): OrganizationActor {
 function makeDeps() {
   const membershipRepository: MembershipRepository = {
     findMembershipsForUser: jest.fn(async () => []),
+    findMembershipForUserInOrganization: jest.fn(async () => null),
     findMemberByIdInOrganization: jest.fn(async () => null),
     listMembers: jest.fn(async () => []),
   };

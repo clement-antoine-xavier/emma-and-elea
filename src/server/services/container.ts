@@ -22,6 +22,7 @@ import {stockCountRepository} from "@/server/repositories/stock-count.repository
 import {stockRepository} from "@/server/repositories/stock.repository";
 import {supplierRepository} from "@/server/repositories/supplier.repository";
 import {createDashboardService} from "./dashboard.service";
+import {createHomeService} from "./home.service";
 import {createCatalogService} from "./catalog.service";
 import {createCustomerService} from "./customer.service";
 import {createDailySalesService} from "./daily-sales.service";
@@ -148,4 +149,12 @@ export const scheduleService = createScheduleService({
 export const stockCountService = createStockCountService({
   stockCountRepository,
   siteRepository,
+});
+
+export const homeService = createHomeService({
+  reportService,
+  dailySalesService,
+  productionService,
+  orderService,
+  stockService,
 });

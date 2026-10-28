@@ -378,36 +378,75 @@
         "organization": "Organization"
       }
     },
-    "overview": {
-      "eyebrow": "Workspace",
+    "home": {
+      "eyebrow": "Overview",
       "title": "Hello, {name}",
-      "intro": "You are working in {organization} as {role}.",
-      "roleTitle": "Your role",
-      "accessTitle": "What you can access",
-      "accessIntro": "Screens and actions are filtered by your role. The server enforces the same rules.",
-      "manage": "Manage",
-      "view": "View",
-      "areas": {
-        "catalog": "Items and catalog",
-        "recipes": "Recipes",
-        "costs": "Costs and margins",
-        "production": "Production",
-        "stock": "Stock and traceability",
-        "sales": "Customers and sales",
-        "team": "Team and scheduling",
-        "reports": "Reports"
+      "intro": "{organization} · {role} · {date}",
+      "periodLabel": "Period",
+      "periods": {
+        "7": "7 days",
+        "30": "30 days",
+        "90": "90 days"
       },
-      "supportNote": "Platform support access. Impersonate a tenant to see its data.",
-      "organizationTitle": "Workspace",
-      "organizationBody": "Everyone in this workspace sees all sites. Your role decides what you can change."
-    },
-    "kpis": {
-      "title": "Today at a glance",
-      "intro": "Operational signals for your organization.",
-      "batchesToday": "Batches completed today",
-      "lowStock": "Items below minimum",
-      "expiringLots": "Lots expiring in 7 days",
-      "waste30d": "Waste cost (30 days)"
+      "newProduction": "New batch",
+      "supportBadge": "Support",
+      "metrics": {
+        "batchesToday": "Batches today",
+        "plannedBatches": "Planned batches",
+        "revenue": "Revenue",
+        "lowStock": "Below minimum",
+        "expiringLots": "Expiring lots",
+        "wasteCost": "Waste cost",
+        "orders": "Orders",
+        "completedBatches": "Batches completed",
+        "since": "Last {days} days",
+        "vsPrevious": "vs previous period",
+        "allTime": "All time"
+      },
+      "charts": {
+        "revenueTitle": "Revenue",
+        "revenueIntro": "Daily revenue over the selected period.",
+        "productionTitle": "Production",
+        "productionIntro": "Batches completed per day.",
+        "completed": "Completed"
+      },
+      "tables": {
+        "alertsTitle": "Stock alerts",
+        "alertsIntro": "Items at or below their minimum level.",
+        "alertsEmpty": "Every item is above its minimum.",
+        "ordersTitle": "Recent orders",
+        "ordersIntro": "Latest orders for this workspace.",
+        "ordersEmpty": "No orders yet.",
+        "batchesTitle": "Upcoming batches",
+        "batchesIntro": "Planned batches waiting to start.",
+        "batchesEmpty": "No planned batches.",
+        "belowMinimum": "Below min",
+        "columns": {
+          "item": "Item",
+          "onHand": "On hand",
+          "minimum": "Minimum",
+          "status": "Status",
+          "order": "Order",
+          "customer": "Customer",
+          "total": "Total",
+          "batch": "Batch",
+          "recipe": "Recipe",
+          "quantity": "Quantity"
+        }
+      },
+      "statuses": {
+        "DRAFT": "Draft",
+        "CONFIRMED": "Confirmed",
+        "READY": "Ready",
+        "DISPATCHED": "Dispatched",
+        "CANCELLED": "Cancelled",
+        "PLANNED": "Planned",
+        "IN_PROGRESS": "In progress",
+        "COMPLETED": "Completed",
+        "IN_PRODUCTION": "In production",
+        "DELIVERED": "Delivered"
+      },
+      "supportNote": "Platform support access. Impersonate a tenant to see its data."
     }
   },
   "Team": {
@@ -2325,5 +2364,33 @@
     "alertsIntro": "Items at or below their minimum stock level.",
     "emptyAlertsTitle": "No stock alerts",
     "emptyAlertsBody": "Every item is above its minimum."
+  },
+  "Consent": {
+    "metadataTitle": "Authorize access · Emma & Éléa",
+    "title": "Authorize access",
+    "subtitle": "{client} wants to connect to your workspace.",
+    "accountLabel": "Workspace",
+    "accountValue": "Access will be granted for {organization}.",
+    "scopesLabel": "This will allow the client to",
+    "clientLink": "Client: {uri}",
+    "accept": "Allow",
+    "deny": "Deny",
+    "unknownOrganization": "your organization",
+    "errors": {
+      "title": "Could not continue",
+      "generic": "Something went wrong. Please try again.",
+      "invalidQuery": "This authorization request is invalid or has expired. Start the connection again from your MCP client.",
+      "roleRestricted": "Your role in this organization does not allow any of the requested permissions."
+    },
+    "scopes": {
+      "openid": "Verify your identity",
+      "profile": "Read your name and profile",
+      "email": "Read your email address",
+      "offline_access": "Stay connected when you are away",
+      "api:read": "Read catalog, stock, production, sales and team data",
+      "api:write": "Create and edit drafts: catalog, orders, receipts, plans and dispatches",
+      "api:execute": "Post stock movements and run production batches",
+      "api:finance": "Read costs, margins and financial reports"
+    }
   }
 }

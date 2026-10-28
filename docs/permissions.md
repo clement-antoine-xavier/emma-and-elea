@@ -35,6 +35,26 @@ tenant.
 Reserved roles exist in the matrix so their screens can ship without a data
 migration. They are excluded from invitations and role pickers.
 
+## Bearer access tokens (MCP and REST API)
+
+MCP hosts and REST API clients receive an OAuth access token instead of a session
+cookie. The token carries coarse, resource-neutral scopes; the member role stays
+authoritative. Every call is the intersection of the two (`src/lib/scopes.ts`,
+ADR-0020 and ADR-0021).
+
+| Scope | Grants (when the role also has the permission) |
+| --- | --- |
+| `api:read` | every `*:read` permission used by the tools |
+| `api:write` | draft creation and edits: catalog, suppliers, receipts, orders, dispatches, plans, waste |
+| `api:execute` | `production:execute`, `task:execute`, `stock:count` — posting stock and running batches |
+| `api:finance` | `report:read`, `cost:read`, `report:finance`, `report:traceability` |
+
+Consent is stored per organization. `resolveTokenActor` re-reads the membership on
+every request, so a role change applies on the next call even while the JWT is
+still valid. Tokens are audience-bound: a token for the MCP resource (`/mcp`) is
+rejected by the REST API (`/api`) and vice versa. Server Components and Server
+Actions keep using the session cookie and the same `assertPermission` guard.
+
 ## Matrix
 
 Legend: **W** = write, **R** = read, **—** = no access, **own** = only the

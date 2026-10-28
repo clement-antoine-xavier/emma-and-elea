@@ -1,12 +1,12 @@
 import {
   assignableRolesFor,
-  can,
   canManageMember,
   isOrgRole,
   isReservedOrgRole,
   type OrgRole,
+  type Permission,
 } from "@/lib/permissions";
-import {assertOrganizationActor} from "@/server/auth/guards";
+import {assertOrganizationActor, isGranted} from "@/server/auth/guards";
 import type {Actor, OrganizationActor} from "@/server/auth/types";
 import type {BetterAuthGateway} from "@/server/auth/better-auth.gateway";
 import {DomainError} from "@/server/domain/errors";
@@ -57,9 +57,9 @@ export interface TeamService {
 
 function requirePermission(
   actor: OrganizationActor,
-  permission: Parameters<typeof can>[1],
+  permission: Permission,
 ): void {
-  if (!can(actor.role, permission)) throw new DomainError("FORBIDDEN");
+  if (!isGranted(actor, permission)) throw new DomainError("FORBIDDEN");
 }
 
 function assertAssignableRole(actor: OrganizationActor, role: string): OrgRole {

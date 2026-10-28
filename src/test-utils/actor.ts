@@ -1,5 +1,5 @@
 import type {Actor, OrganizationActor} from "@/server/auth/types";
-import type {OrgRole} from "@/lib/permissions";
+import {permissionsFor, type OrgRole} from "@/lib/permissions";
 
 /**
  * An authenticated organization member for service tests. Services never
@@ -21,6 +21,7 @@ export function actorFor(
     organizationId: "org_1",
     organization: {id: "org_1", name: "Bakery", slug: "bakery"},
     role,
+    scopes: new Set(permissionsFor(role)),
     ...overrides,
   };
 }

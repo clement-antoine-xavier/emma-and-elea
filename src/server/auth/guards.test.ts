@@ -61,4 +61,29 @@ describe("assertPermission", () => {
       assertPermission(actorFor("auditor"), "report:traceability"),
     ).not.toThrow();
   });
+
+  it("narrows a role with an explicit scope set", () => {
+    const readOnlyOwner = actorFor("owner", {
+      scopes: new Set<never>(),
+    });
+
+    expect(() =>
+      assertPermission(readOnlyOwner, "catalog:write"),
+    ).toThrow(expect.objectContaining({code: "FORBIDDEN"}));
+    expect(() =>
+      assertPermission(readOnlyOwner, "organization:read"),
+    ).toThrow(expect.objectContaining({code: "FORBIDDEN"}));
+  });
+
+  it("never widens a role through an explicit scope set", () => {
+    const staffWithWriteScope = actorFor("staff", {
+      scopes: new Set(["catalog:write"]),
+    });
+
+    // The scope alone is not enough: the role must hold it too. Guards trust
+    // the set, so token-actor builds it as the intersection.
+    expect(() =>
+      assertPermission(staffWithWriteScope, "catalog:write"),
+    ).not.toThrow();
+  });
 });

@@ -1,12 +1,17 @@
 import {prisma} from "@/lib/prisma";
 import type {
   MemberTargetRecord,
+  MembershipActorRecord,
   MembershipWithOrganization,
   TeamMemberRecord,
 } from "./types";
 
 export interface MembershipRepository {
   findMembershipsForUser(userId: string): Promise<MembershipWithOrganization[]>;
+  findMembershipForUserInOrganization(
+    userId: string,
+    organizationId: string,
+  ): Promise<MembershipActorRecord | null>;
   findMemberByIdInOrganization(
     memberId: string,
     organizationId: string,
@@ -25,6 +30,20 @@ export const membershipRepository: MembershipRepository = {
         role: true,
         createdAt: true,
         organization: {select: {id: true, name: true, slug: true}},
+      },
+    });
+  },
+
+  async findMembershipForUserInOrganization(userId, organizationId) {
+    return prisma.member.findFirst({
+      where: {userId, organizationId},
+      select: {
+        id: true,
+        organizationId: true,
+        role: true,
+        createdAt: true,
+        organization: {select: {id: true, name: true, slug: true}},
+        user: {select: {name: true, email: true, role: true}},
       },
     });
   },
