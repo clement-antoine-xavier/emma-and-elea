@@ -39,8 +39,10 @@ test("an event can be added and archived from settings", async ({ page }) => {
   await form.getByLabel("Expected uplift").fill("15");
   await form.getByRole("button", { name: "Add event" }).click();
 
-  await expect(page.getByText("School break")).toBeVisible();
-  await expect(page.getByText("15 %")).toBeVisible();
+  await expect(
+    page.getByRole("cell", { name: "School break" }),
+  ).toBeVisible();
+  await expect(page.getByRole("cell", { name: "15 %" })).toBeVisible();
 
   await page.getByRole("button", { name: "Archive" }).click();
   await expect(page.getByText("Archived")).toBeVisible();

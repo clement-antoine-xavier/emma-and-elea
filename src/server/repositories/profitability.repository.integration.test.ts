@@ -82,11 +82,25 @@ describe("profitability repository", () => {
         labelEn: "Expired",
       },
     });
+    const wasteLot = await prisma.lot.create({
+      data: {
+        organizationId: fixture.organizationId,
+        siteId: fixture.siteId,
+        itemId: fixture.items.croissant,
+        lotNumber: "L-PROFIT-WASTE",
+        receivedAt: new Date("2026-10-20T00:00:00.000Z"),
+        quantityReceived: "3",
+        quantityRemaining: "3",
+        unitCost: "1.5",
+        currency: "EUR",
+      },
+    });
     await prisma.wasteRecord.create({
       data: {
         organizationId: fixture.organizationId,
         siteId: fixture.siteId,
         itemId: fixture.items.croissant,
+        lotId: wasteLot.id,
         lossReasonId: reason.id,
         quantity: "3",
         unitId: referenceUnits.piece,
