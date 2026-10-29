@@ -13,6 +13,7 @@ import {
 import {Stack} from "@astryxdesign/core/Stack";
 import {
   BarChart3,
+  Bell,
   BookOpen,
   Boxes,
   ChefHat,
@@ -38,6 +39,7 @@ import {
 
 const navIcons = {
   overview: LayoutDashboard,
+  alerts: Bell,
   "my-work": ClipboardList,
   production: Factory,
   recipes: BookOpen,
@@ -60,7 +62,7 @@ const navSections: ReadonlyArray<{
 }> = [
   {
     titleKey: "operations",
-    items: ["my-work", "production", "recipes", "stock"],
+    items: ["alerts", "my-work", "production", "recipes", "stock"],
   },
   {
     titleKey: "supply",

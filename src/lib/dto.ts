@@ -260,6 +260,20 @@ export type StockLevelRecord = {
   isBelowMin: boolean;
 };
 
+export type AlertKindName =
+  | "LOW_STOCK"
+  | "EXPIRING_LOT"
+  | "PENDING_ABSENCE"
+  | "UNASSIGNED_TASK";
+
+export type AlertRecord = {
+  id: string;
+  kind: AlertKindName;
+  title: string;
+  description: string;
+  href: string;
+};
+
 export type ReplenishmentSuggestionRecord = {
   itemId: string;
   itemCode: string;

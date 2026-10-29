@@ -384,6 +384,7 @@
       "label": "Workspace navigation",
       "assistant": "Assistant",
       "overview": "Overview",
+      "alerts": "Alerts",
       "myWork": "My work",
       "production": "Production",
       "recipes": "Recipes",
@@ -2065,6 +2066,19 @@
       "activeMinutesInvalid": "Enter active minutes between 0 and the duration."
     }
   },
+  "Alerts": {
+    "metadataTitle": "Alerts · Emma & Éléa",
+    "title": "Alerts",
+    "intro": "Low stock, expiring lots, absences to decide and tasks without an owner. Only what your role can act on.",
+    "emptyTitle": "Nothing to report",
+    "emptyBody": "Stock, expiries, absences and tasks are all under control.",
+    "kinds": {
+      "LOW_STOCK": "Low stock",
+      "EXPIRING_LOT": "Expiring lot",
+      "PENDING_ABSENCE": "Absence to decide",
+      "UNASSIGNED_TASK": "Unassigned task"
+    }
+  },
   "Tasks": {
     "metadataTitle": "Production tasks · Emma & Éléa",
     "title": "Production tasks",
@@ -2654,6 +2668,16 @@
         "quantity": "Sold",
         "revenue": "Revenue",
         "channel": "Channel"
+      },
+      "import": {
+        "title": "Import daily sales",
+        "intro": "Paste a CSV with the columns date, site, item, quantity and revenue. The channel column is optional and defaults to RETAIL.",
+        "field": "CSV",
+        "fieldHint": "Header row required. Site and item use their codes; an existing row for the same day and channel is replaced.",
+        "required": "Paste at least one data row.",
+        "submit": "Import rows",
+        "resultTitle": "Imported {imported}, skipped {skipped}.",
+        "errorTitle": "Could not import the rows"
       }
     },
     "paginationLabel": "Orders pagination",
@@ -2680,6 +2704,7 @@
       "label": "Period",
       "days": "{days} days"
     },
+    "exportCsv": "Export profitability (CSV)",
     "summaryTitle": "Summary",
     "summaryIntro": "Waste compared with the cost of completed production in the period.",
     "wasteCost": "Waste cost",

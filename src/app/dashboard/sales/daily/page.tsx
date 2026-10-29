@@ -2,6 +2,7 @@ import type {Metadata} from "next";
 import {Button} from "@astryxdesign/core/Button";
 import {getTranslations} from "next-intl/server";
 import {PageShell} from "@/components/layout/page-shell";
+import {DailySalesImport} from "@/components/sales/daily-sales-import";
 import {DailySalesManager} from "@/components/sales/daily-sales-manager";
 import {requirePermission} from "@/server/auth/actor";
 import {dailySalesService} from "@/server/services/container";
@@ -41,6 +42,8 @@ export default async function DailySalesPage() {
         items={options.items}
         canWrite={view.canWrite}
       />
+
+      <DailySalesImport canWrite={view.canWrite} />
     </PageShell>
   );
 }

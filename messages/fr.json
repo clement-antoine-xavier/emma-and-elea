@@ -384,6 +384,7 @@
       "label": "Navigation de l’espace",
       "assistant": "Assistant",
       "overview": "Vue d’ensemble",
+      "alerts": "Alertes",
       "myWork": "Mon travail",
       "production": "Production",
       "recipes": "Recettes",
@@ -2065,6 +2066,19 @@
       "activeMinutesInvalid": "Saisissez des minutes actives entre 0 et la durée."
     }
   },
+  "Alerts": {
+    "metadataTitle": "Alertes · Emma & Éléa",
+    "title": "Alertes",
+    "intro": "Stock bas, lots proches de la DLC, absences à décider et tâches sans responsable. Uniquement ce que votre rôle peut traiter.",
+    "emptyTitle": "Rien à signaler",
+    "emptyBody": "Stock, DLC, absences et tâches sont sous contrôle.",
+    "kinds": {
+      "LOW_STOCK": "Stock bas",
+      "EXPIRING_LOT": "Lot proche de la DLC",
+      "PENDING_ABSENCE": "Absence à décider",
+      "UNASSIGNED_TASK": "Tâche non affectée"
+    }
+  },
   "Tasks": {
     "metadataTitle": "Tâches de production · Emma & Éléa",
     "title": "Tâches de production",
@@ -2654,6 +2668,16 @@
         "quantity": "Vendu",
         "revenue": "Chiffre d’affaires",
         "channel": "Canal"
+      },
+      "import": {
+        "title": "Importer les ventes",
+        "intro": "Collez un CSV avec les colonnes date, site, item, quantity et revenue. La colonne channel est facultative et vaut RETAIL par défaut.",
+        "field": "CSV",
+        "fieldHint": "Ligne d’en-tête obligatoire. Les sites et articles utilisent leurs codes ; une ligne existante pour le même jour et canal est remplacée.",
+        "required": "Collez au moins une ligne de données.",
+        "submit": "Importer les lignes",
+        "resultTitle": "{imported} importée(s), {skipped} ignorée(s).",
+        "errorTitle": "Impossible d’importer les lignes"
       }
     },
     "paginationLabel": "Pagination des commandes",
@@ -2679,6 +2703,7 @@
       "label": "Période",
       "days": "{days} jours"
     },
+    "exportCsv": "Exporter la rentabilité (CSV)",
     "intro": "Performance du {from} au {to} : marges, rendements, pertes et alertes de stock.",
     "summaryTitle": "Synthèse",
     "summaryIntro": "Pertes comparées au coût de la production terminée sur la période.",

@@ -25,6 +25,7 @@ import {stockCountRepository} from "@/server/repositories/stock-count.repository
 import {stockRepository} from "@/server/repositories/stock.repository";
 import {supplierRepository} from "@/server/repositories/supplier.repository";
 import {taskRepository} from "@/server/repositories/task.repository";
+import {createAlertService} from "./alert.service";
 import {createDashboardService} from "./dashboard.service";
 import {createAssistantService} from "./assistant.service";
 import {createHomeService} from "./home.service";
@@ -166,6 +167,12 @@ export const skillService = createSkillService({skillRepository});
 export const taskService = createTaskService({taskRepository});
 
 export const workloadService = createWorkloadService({
+  scheduleRepository,
+  taskRepository,
+});
+
+export const alertService = createAlertService({
+  stockRepository,
   scheduleRepository,
   taskRepository,
 });

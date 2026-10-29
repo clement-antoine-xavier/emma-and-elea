@@ -38,6 +38,10 @@ export interface DailySalesService {
     items: {id: string; code: string; name: string}[];
   }>;
   recordDailySales(actor: Actor | null, input: DailySalesInput): Promise<void>;
+  importDailySales(
+    actor: Actor | null,
+    csv: string,
+  ): Promise<{imported: number; skipped: number; errors: string[]}>;
 }
 
 function single(value: string | string[] | undefined): string {
@@ -130,6 +134,111 @@ export function createDailySalesService(deps: {
         unitId: selected.stockUnitId,
         note: input.note,
       });
+    },
+
+    async importDailySales(actorInput, csv) {
+      const actor = assertOrganizationActor(actorInput);
+      assertPermission(actor, "sales:write");
+
+      const [sites, items, settings] = await Promise.all([
+        deps.siteRepository.list(actor.organizationId),
+        deps.catalogRepository.listItemOptions(actor.organizationId),
+        deps.costingRepository.getSettings(actor.organizationId),
+      ]);
+
+      const siteByCode = new Map(
+        sites
+          .filter((site) => !site.archivedAt)
+          .map((site) => [site.code.toUpperCase(), site]),
+      );
+      const itemByCode = new Map(
+        items.map((item) => [item.code.toUpperCase(), item]),
+      );
+
+      const lines = csv
+        .replace(/^\uFEFF/, "")
+        .split(/\r?\n/)
+        .map((line) => line.trim())
+        .filter(Boolean);
+
+      if (lines.length < 2) {
+        throw new DomainError("INVALID_INPUT", "The CSV needs a header and rows.");
+      }
+
+      const headers = lines[0]
+        .split(",")
+        .map((header) => header.trim().toLowerCase());
+      const required = [
+        "date",
+        "site",
+        "item",
+        "quantity",
+        "revenue",
+      ];
+      if (required.some((header) => !headers.includes(header))) {
+        throw new DomainError(
+          "INVALID_INPUT",
+          `The CSV header must contain ${required.join(", ")}.`,
+        );
+      }
+
+      let imported = 0;
+      let skipped = 0;
+      const errors: string[] = [];
+
+      for (let index = 1; index < lines.length; index += 1) {
+        const values = lines[index].split(",").map((value) => value.trim());
+        const row = Object.fromEntries(
+          headers.map((header, position) => [header, values[position] ?? ""]),
+        );
+        const line = index + 1;
+        const date = row.date;
+        const site = siteByCode.get(row.site.toUpperCase());
+        const item = itemByCode.get(row.item.toUpperCase());
+        const channel = (row.channel || "RETAIL").toUpperCase();
+        const quantity = row.quantity;
+        const revenue = row.revenue;
+
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+          errors.push(`Line ${line}: invalid date.`);
+          skipped += 1;
+          continue;
+        }
+        if (!site) {
+          errors.push(`Line ${line}: unknown site code "${row.site}".`);
+          skipped += 1;
+          continue;
+        }
+        if (!item) {
+          errors.push(`Line ${line}: unknown item code "${row.item}".`);
+          skipped += 1;
+          continue;
+        }
+        if (
+          !["RETAIL", "WHOLESALE", "BOTH", "NONE"].includes(channel) ||
+          !/^\d+(?:\.\d{1,4})?$/.test(quantity) ||
+          !/^\d+(?:\.\d{1,4})?$/.test(revenue)
+        ) {
+          errors.push(`Line ${line}: invalid channel, quantity or revenue.`);
+          skipped += 1;
+          continue;
+        }
+
+        await deps.salesRepository.upsert(actor.organizationId, {
+          siteId: site.id,
+          itemId: item.id,
+          businessDate: new Date(`${date}T00:00:00.000Z`),
+          channel: channel as DailySalesInput["channel"],
+          quantitySold: quantity,
+          revenue,
+          currency: settings.currency,
+          unitId: item.stockUnitId,
+          note: null,
+        });
+        imported += 1;
+      }
+
+      return {imported, skipped, errors};
     },
   };
 }

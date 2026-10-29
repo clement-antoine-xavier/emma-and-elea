@@ -21,9 +21,23 @@ export type LotPage = {
   total: number;
 };
 
+export type ExpiringLotRecord = {
+  id: string;
+  lotNumber: string;
+  itemName: string;
+  siteName: string;
+  expiresOn: Date;
+  quantityRemaining: string;
+  unitCode: string;
+};
+
 export interface StockRepository {
   listLevels(organizationId: string): Promise<StockLevelRecord[]>;
   openDraftQuantities(organizationId: string): Promise<Record<string, string>>;
+  expiringLots(
+    organizationId: string,
+    before: Date,
+  ): Promise<ExpiringLotRecord[]>;
   listLots(
     organizationId: string,
     filters: LotFilters,
@@ -160,6 +174,42 @@ export const stockRepository: StockRepository = {
           a.itemName.localeCompare(b.itemName) ||
           a.siteName.localeCompare(b.siteName),
       );
+  },
+
+  async expiringLots(organizationId, before) {
+    const lots = await prisma.lot.findMany({
+      where: {
+        organizationId,
+        status: "AVAILABLE",
+        quantityRemaining: {gt: 0},
+        expiresOn: {not: null, lte: before},
+      },
+      orderBy: {expiresOn: "asc"},
+      select: {
+        id: true,
+        lotNumber: true,
+        expiresOn: true,
+        quantityRemaining: true,
+        item: {select: {name: true, stockUnit: {select: {code: true}}}},
+        site: {select: {name: true}},
+      },
+    });
+
+    return lots.flatMap((lot) =>
+      lot.expiresOn
+        ? [
+            {
+              id: lot.id,
+              lotNumber: lot.lotNumber,
+              itemName: lot.item.name,
+              siteName: lot.site.name,
+              expiresOn: lot.expiresOn,
+              quantityRemaining: lot.quantityRemaining.toString(),
+              unitCode: lot.item.stockUnit.code,
+            },
+          ]
+        : [],
+    );
   },
 
   async openDraftQuantities(organizationId) {

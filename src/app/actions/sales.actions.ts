@@ -255,3 +255,25 @@ export async function recordDailySalesAction(
     return {ok: false, error: mapDomainError(error)};
   }
 }
+
+export type DailySalesImportResult =
+  | {ok: true; imported: number; skipped: number; errors: string[]}
+  | {ok: false; error: ActionErrorKey};
+
+export async function importDailySalesAction(
+  csv: unknown,
+): Promise<DailySalesImportResult> {
+  const actor = await getActorContext();
+  if (!actor) return {ok: false, error: "unauthenticated"};
+
+  if (typeof csv !== "string" || csv.trim() === "") {
+    return {ok: false, error: "invalidInput"};
+  }
+
+  try {
+    const result = await dailySalesService.importDailySales(actor, csv);
+    return {ok: true, ...result};
+  } catch (error) {
+    return {ok: false, error: mapDomainError(error)};
+  }
+}

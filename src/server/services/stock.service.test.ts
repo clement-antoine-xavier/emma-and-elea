@@ -42,6 +42,7 @@ function repository(
   return {
     listLevels: jest.fn().mockResolvedValue([level(), level({itemId: "item_2", isBelowMin: false})]),
     openDraftQuantities: jest.fn().mockResolvedValue({}),
+    expiringLots: jest.fn().mockResolvedValue([]),
     listLots: jest.fn().mockResolvedValue({lots: [lot], total: 1}),
     findLot: jest.fn().mockResolvedValue({...lot, quantityReceived: "10", movements: []}),
     ...overrides,

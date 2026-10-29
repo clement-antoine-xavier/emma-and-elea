@@ -1,5 +1,6 @@
 import type {Metadata} from "next";
 import type {ReactNode} from "react";
+import {Button} from "@astryxdesign/core/Button";
 import {Card} from "@astryxdesign/core/Card";
 import {Divider} from "@astryxdesign/core/Divider";
 import {EmptyState} from "@astryxdesign/core/EmptyState";
@@ -102,14 +103,23 @@ export default async function ReportsPage({
           : t("opsIntro", dateRange)
       }
       actions={
-        <PeriodFilter
-          period={period}
-          label={tPeriod("label")}
-          options={[7, 30, 90].map((days) => ({
-            value: days,
-            label: tPeriod("days", {days}),
-          }))}
-        />
+        <HStack gap={2} wrap="wrap" align="end">
+          <PeriodFilter
+            period={period}
+            label={tPeriod("label")}
+            options={[7, 30, 90].map((days) => ({
+              value: days,
+              label: tPeriod("days", {days}),
+            }))}
+          />
+          {can.finance ? (
+            <Button
+              label={t("exportCsv")}
+              variant="secondary"
+              href={`/dashboard/reports/export?period=${period}`}
+            />
+          ) : null}
+        </HStack>
       }
       contentWidth={1400}
       hasHeaderDivider

@@ -25,6 +25,7 @@ const navItems: ReadonlyArray<{
   read: Permission;
 }> = [
   {key: "overview", read: "organization:read"},
+  {key: "alerts", read: "organization:read"},
   {key: "my-work", read: "task:read"},
   {key: "production", read: "production:read"},
   {key: "recipes", read: "recipe:read"},

@@ -284,3 +284,42 @@ describe("daily sales service", () => {
     expect(unit("piece").kind).toBe("COUNT");
   });
 });
+
+describe("daily sales CSV import", () => {
+  it("imports valid rows and reports skips", async () => {
+    const {service, salesRepository} = dependencies();
+
+    const result = await service.importDailySales(
+      actorFor("sales"),
+      [
+        "date,site,item,quantity,revenue,channel",
+        "2026-10-27,ATL,CROISSANT,10,30,RETAIL",
+        "2026-10-27,ATL,UNKNOWN,2,4,",
+        "2026-10-28,ATL,CROISSANT,5,15,",
+      ].join("\n"),
+    );
+
+    expect(result).toEqual({
+      imported: 2,
+      skipped: 1,
+      errors: ['Line 3: unknown item code "UNKNOWN".'],
+    });
+    expect(salesRepository.upsert).toHaveBeenCalledTimes(2);
+  });
+
+  it("requires the header columns", async () => {
+    const {service} = dependencies();
+
+    await expect(
+      service.importDailySales(actorFor("sales"), "date,site\n2026-10-27,ATL"),
+    ).rejects.toMatchObject({code: "INVALID_INPUT"});
+  });
+
+  it("requires sales:write", async () => {
+    const {service} = dependencies();
+
+    await expect(
+      service.importDailySales(actorFor("staff"), "date,site,item,quantity,revenue"),
+    ).rejects.toMatchObject({code: "FORBIDDEN"});
+  });
+});
