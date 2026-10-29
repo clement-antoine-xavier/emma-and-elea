@@ -105,27 +105,27 @@
       "items": {
         "costs": {
           "title": "Connaître le coût réel de chaque produit",
-          "body": "Ingrédients, pertes, emballage et main-d’œuvre dans un seul coût de revient. Les marges se mettent à jour quand un prix d’achat change."
+          "body": "Ingrédients, pertes, emballage et main-d’œuvre dans un seul coût de revient. Voyez quand un instantané est obsolète et actualisez les marges après un changement de prix."
         },
         "production": {
           "title": "Produire la bonne quantité",
-          "body": "Quantités suggérées à partir de l’historique des ventes, des commandes, de la saisonnalité, des jours de la semaine et des événements locaux."
+          "body": "Quantités suggérées à partir de l’historique des ventes, des commandes confirmées, des jours de la semaine et des événements locaux."
         },
         "stock": {
           "title": "Garder le stock et la traçabilité sous contrôle",
-          "body": "Stock en temps réel, besoins en ingrédients, lots, DLC, alertes de réapprovisionnement et documents prêts en cas de contrôle."
+          "body": "Stock en temps réel, besoins en ingrédients, lots, DLC, alertes de réapprovisionnement et traçabilité par lot."
         },
         "team": {
-          "title": "Mettre les bonnes personnes sur les bonnes tâches",
-          "body": "Compétences, disponibilités et charge de travail au même endroit, avec les bonnes tâches aux bonnes personnes et les conflits visibles."
+          "title": "Organiser l’atelier",
+          "body": "Profils, disponibilités, plannings et absences au même endroit, pour mettre les bonnes personnes au bon poste."
         },
         "margins": {
           "title": "Voir quels produits rapportent",
-          "body": "Comparez les produits par rentabilité, volume et taux de perte, et décidez d’ajuster un prix, une recette ou un fournisseur."
+          "body": "Comparez le coût et la marge de chaque produit, et actualisez-les quand les prix changent."
         },
         "mobile": {
           "title": "L’utiliser en atelier, pas seulement au bureau",
-          "body": "Rapide sur ordinateur, tablette ou mobile, avec une intégration progressive à la caisse, aux balances et aux imprimantes d’étiquettes."
+          "body": "Rapide sur ordinateur, tablette ou mobile, au bureau comme en atelier."
         }
       }
     },
@@ -858,6 +858,16 @@
         "title": "Équipements",
         "body": "Fours, batteurs et leur puissance, utilisés pour le coût de l’énergie.",
         "action": "Gérer les équipements"
+      },
+      "events": {
+        "title": "Événements locaux",
+        "body": "Jours fériés, vacances scolaires et événements locaux qui modifient la demande.",
+        "action": "Gérer les événements"
+      },
+      "skills": {
+        "title": "Compétences",
+        "body": "Les compétences de l’atelier, attribuées aux employés avec un niveau.",
+        "action": "Gérer les compétences"
       }
     },
     "organization": {
@@ -1485,6 +1495,9 @@
       "lotTooLong": "Le numéro de lot est trop long."
     }
   },
+  "Print": {
+    "action": "Imprimer / Enregistrer en PDF"
+  },
   "Stock": {
     "metadataTitle": "Stock · Emma & Éléa",
     "title": "Stock",
@@ -1495,6 +1508,24 @@
       "title": "Alertes de réapprovisionnement",
       "body": "{count, plural, one {# article est sous son stock minimum.} other {# articles sont sous leur stock minimum.}}",
       "none": "Tous les articles sont au-dessus de leur minimum."
+    },
+    "replenishment": {
+      "title": "Achats suggérés",
+      "intro": "Niveau cible (ou minimum) moins le stock disponible et les brouillons de réception en cours. Créez un brouillon en un clic.",
+      "emptyTitle": "Rien à commander",
+      "emptyBody": "Tous les articles avec un niveau cible ou un minimum sont couverts.",
+      "noSupplier": "Aucun prix fournisseur",
+      "create": "Créer le brouillon",
+      "errorTitle": "Impossible de créer la réception",
+      "columns": {
+        "item": "Article",
+        "site": "Site",
+        "onHand": "En stock",
+        "open": "En commande",
+        "suggested": "Suggéré",
+        "supplier": "Fournisseur",
+        "price": "Prix unitaire"
+      }
     },
     "levelsTitle": "Niveaux de stock",
     "levelsIntro": "Seuls les lots disponibles avec une quantité restante sont comptés.",
@@ -1546,6 +1577,7 @@
     },
     "lot": {
       "backToLots": "Retour aux lots",
+      "inspection": "Fiche de contrôle",
       "movementsTitle": "Mouvements",
       "movementsIntro": "Le registre en ajout seul de ce lot. Les corrections sont de nouveaux mouvements, jamais des modifications.",
       "fields": {
@@ -1578,12 +1610,29 @@
     },
     "trace": {
       "title": "Traçabilité",
-      "intro": "Origine de ce lot et lots de production qui l’ont consommé.",
+      "intro": "Origine de ce lot, lots de production qui l’ont consommé, expéditions et pertes.",
       "source": "Origine",
       "sourceLots": "Lots d’origine",
       "consumedBy": "Consommé par",
+      "dispatchedTo": "Expédié à",
+      "waste": "Pertes",
       "none": "Aucun enregistrement",
       "unknownSource": "Origine inconnue"
+    },
+    "inspection": {
+      "metadataTitle": "Fiche de contrôle · Emma & Éléa",
+      "title": "Fiche de contrôle",
+      "back": "Retour au lot",
+      "movementsTitle": "Mouvements",
+      "movementsIntro": "Le registre réimprimé pour un contrôle.",
+      "fields": {
+        "item": "Article",
+        "site": "Site",
+        "received": "Réceptionné",
+        "expires": "DLC",
+        "quantityReceived": "Quantité reçue",
+        "quantityRemaining": "Restant"
+      }
     },
     "countsLink": "Inventaires",
     "counts": {
@@ -1660,6 +1709,113 @@
         "note": "Note",
         "noNote": "Aucune note"
       }
+    }
+  },
+  "Skills": {
+    "title": "Compétences",
+    "intro": "Les compétences dont l’atelier a besoin. Attribuez-les aux employés avec un niveau et une date de certification facultative.",
+    "createTitle": "Ajouter une compétence",
+    "createIntro": "Un code court garde la liste lisible.",
+    "submit": "Ajouter la compétence",
+    "listTitle": "Compétences",
+    "active": "Active",
+    "archived": "Archivée",
+    "archive": "Archiver",
+    "errorTitle": "Impossible d’enregistrer la compétence",
+    "emptyTitle": "Aucune compétence",
+    "emptyBody": "Ajoutez les compétences de l’atelier, puis attribuez-les aux employés.",
+    "fields": {
+      "code": "Code",
+      "name": "Nom",
+      "description": "Description"
+    },
+    "columns": {
+      "name": "Compétence",
+      "code": "Code",
+      "description": "Description",
+      "status": "Statut"
+    },
+    "validation": {
+      "codeInvalid": "Utilisez 2 à 32 lettres, chiffres ou tirets.",
+      "nameRequired": "Saisissez un nom.",
+      "nameTooLong": "Utilisez au maximum 80 caractères.",
+      "descriptionTooLong": "Utilisez au maximum 500 caractères.",
+      "levelInvalid": "Choisissez un niveau.",
+      "certifiedInvalid": "Choisissez une date ou laissez vide."
+    },
+    "employee": {
+      "title": "Compétences",
+      "intro": "Compétences de cet employé, avec un niveau utilisé pour suggérer les tâches.",
+      "errorTitle": "Impossible de mettre à jour les compétences",
+      "submit": "Ajouter la compétence",
+      "remove": "Retirer",
+      "fields": {
+        "skill": "Compétence",
+        "level": "Niveau",
+        "certifiedOn": "Certifiée le"
+      },
+      "columns": {
+        "skill": "Compétence",
+        "level": "Niveau",
+        "certifiedOn": "Certifiée le"
+      },
+      "emptyTitle": "Aucune compétence attribuée",
+      "emptyBody": "Ajoutez une compétence pour faciliter l’affectation des tâches.",
+      "levels": {
+        "BEGINNER": "Débutant",
+        "INTERMEDIATE": "Intermédiaire",
+        "ADVANCED": "Avancé",
+        "EXPERT": "Expert"
+      }
+    }
+  },
+  "Events": {
+    "title": "Événements locaux",
+    "intro": "Jours fériés, vacances scolaires et événements locaux qui modifient la demande. La hausse est appliquée à la prévision de production.",
+    "createTitle": "Ajouter un événement",
+    "createIntro": "Seules la période et la hausse influencent la prévision.",
+    "submit": "Ajouter l’événement",
+    "listTitle": "Événements",
+    "shared": "Tous les sites",
+    "active": "Actif",
+    "archived": "Archivé",
+    "archive": "Archiver",
+    "errorTitle": "Impossible d’enregistrer l’événement",
+    "emptyTitle": "Aucun événement",
+    "emptyBody": "Ajoutez un jour férié, des vacances scolaires ou un événement local pour ajuster la prévision.",
+    "fields": {
+      "name": "Nom",
+      "kind": "Type",
+      "site": "Site",
+      "startsOn": "Début",
+      "endsOn": "Fin",
+      "expectedUpliftPct": "Hausse attendue",
+      "expectedUpliftPctHint": "Pourcentage ajouté à la prévision. Une valeur négative la réduit.",
+      "note": "Note"
+    },
+    "columns": {
+      "name": "Événement",
+      "kind": "Type",
+      "site": "Site",
+      "dates": "Dates",
+      "uplift": "Hausse",
+      "status": "Statut"
+    },
+    "kinds": {
+      "LOCAL_EVENT": "Événement local",
+      "HOLIDAY": "Jour férié",
+      "SCHOOL_BREAK": "Vacances scolaires",
+      "WEATHER": "Météo",
+      "OTHER": "Autre"
+    },
+    "validation": {
+      "nameRequired": "Saisissez un nom.",
+      "nameTooLong": "Utilisez au maximum 120 caractères.",
+      "kindInvalid": "Choisissez un type.",
+      "dateInvalid": "Choisissez une date.",
+      "datesInvalid": "La date de fin doit être postérieure ou égale à la date de début.",
+      "upliftInvalid": "Saisissez un pourcentage entre -100 et 200.",
+      "noteTooLong": "Utilisez au maximum 500 caractères."
     }
   },
   "Recipes": {
@@ -1794,10 +1950,53 @@
       "cancel": "Annuler",
       "errorTitle": "Impossible de publier la version"
     },
+    "simulation": {
+      "title": "Simuler un changement de coût ou de prix",
+      "intro": "Faites varier les prix, taux et tarifs actuels pour voir l’impact avant de modifier quoi que ce soit. Rien n’est enregistré.",
+      "errorTitle": "Impossible de lancer la simulation",
+      "warningsTitle": "Certaines références manquent",
+      "warnings": {
+        "MISSING_PRICE": "Aucun prix fournisseur ou d’achat pour {subject}.",
+        "MISSING_RATE": "Aucun taux de main-d’œuvre pour {subject}.",
+        "MISSING_TARIFF": "Aucun tarif d’énergie pour {subject}."
+      },
+      "fields": {
+        "materialPct": "Variation des ingrédients (%)",
+        "packagingPct": "Variation des emballages (%)",
+        "labourPct": "Variation de la main-d’œuvre (%)",
+        "energyPct": "Variation de l’énergie (%)",
+        "salePrice": "Prix de vente proposé",
+        "salePriceHint": "Laissez tel quel pour conserver le prix de vente actuel."
+      },
+      "submit": "Lancer la simulation",
+      "results": {
+        "baseCost": "Coût actuel / unité",
+        "simulatedCost": "Coût simulé / unité",
+        "costDelta": "Variation du coût",
+        "baseMargin": "Marge actuelle",
+        "simulatedMargin": "Marge simulée",
+        "marginDelta": "Variation de la marge",
+        "materials": "Ingrédients",
+        "packaging": "Emballages",
+        "labour": "Main-d’œuvre",
+        "energy": "Énergie",
+        "overhead": "Frais généraux",
+        "total": "Coût total"
+      },
+      "validation": {
+        "percentInvalid": "Saisissez un pourcentage entre -100 et 300.",
+        "priceInvalid": "Saisissez un prix de vente positif, ou laissez vide."
+      }
+    },
     "cost": {
       "title": "Détail du coût",
       "snapshotAt": "Instantané enregistré le {date}.",
       "livePreview": "Aperçu en direct à partir des prix fournisseurs, taux et tarifs actuels.",
+      "staleTitle": "Ce coût n’est plus à jour",
+      "staleBody": "Un prix, un taux ou un tarif a changé depuis cet instantané. Recalculez pour actualiser la marge.",
+      "refresh": "Recalculer le coût",
+      "refreshTitle": "Impossible de recalculer le coût",
+      "refreshError": "Vérifiez que chaque prix, taux et tarif est disponible, puis réessayez.",
       "material": "Matières",
       "packaging": "Emballages",
       "labour": "Main-d’œuvre",
@@ -1977,6 +2176,7 @@
       "title": "Planification de la production",
       "intro": "Prévoyez les ventes au comptoir et les commandes confirmées, puis transformez-les en plan de production.",
       "back": "Retour à la production",
+      "manageEvents": "Gérer les événements",
       "detailTitle": "Plan de production",
       "noSiteTitle": "Aucun site",
       "noSiteBody": "Créez un site dans les paramètres avant de planifier la production.",
@@ -2421,6 +2621,10 @@
   "Reports": {
     "metadataTitle": "Rapports · Emma & Éléa",
     "title": "Rapports",
+    "period": {
+      "label": "Période",
+      "days": "{days} jours"
+    },
     "intro": "Performance du {from} au {to} : marges, rendements, pertes et alertes de stock.",
     "summaryTitle": "Synthèse",
     "summaryIntro": "Pertes comparées au coût de la production terminée sur la période.",
@@ -2429,13 +2633,58 @@
     "wasteRate": "Taux de pertes",
     "alertsCount": "Alertes de stock",
     "marginsTitle": "Marges par produit",
-    "marginsIntro": "Dernier coût publié comparé au prix de vente de l’article produit.",
+    "marginsIntro": "Dernier coût publié comparé au prix de vente actuel de l’article produit.",
+    "costs": {
+      "refresh": "Recalculer tous les coûts",
+      "refreshed": "Coûts actualisés : {refreshed}. Ignorés faute de prix : {skipped}.",
+      "error": "Impossible de recalculer les coûts. Un prix, un taux ou un tarif est probablement manquant."
+    },
     "margins": {
       "columns": {
         "product": "Produit",
         "cost": "Coût / unité",
         "price": "Prix de vente",
-        "margin": "Marge"
+        "margin": "Marge",
+        "computedAt": "Coûté le"
+      }
+    },
+    "profitabilityTitle": "Rentabilité par produit",
+    "profitabilityIntro": "Quantités produites, vendues, invendues et perdues, avec la contribution de chaque produit sur la période. L’invendu est une estimation : produit − vendu − pertes.",
+    "categoriesTitle": "Par catégorie",
+    "emptyProfitabilityTitle": "Aucune activité",
+    "emptyProfitabilityBody": "Enregistrez des ventes, terminez un lot ou saisissez des pertes pour alimenter la rentabilité.",
+    "profitability": {
+      "missingRevenue": "chiffre d’affaires incomplet",
+      "sort": {
+        "label": "Trier par",
+        "contribution": "Contribution",
+        "margin": "Marge",
+        "volume": "Volume",
+        "unsold": "Taux d’invendus",
+        "loss": "Taux de pertes"
+      },
+      "columns": {
+        "product": "Produit",
+        "produced": "Produit",
+        "sold": "Vendu",
+        "unsold": "Invendu",
+        "waste": "Pertes",
+        "revenue": "Chiffre d’affaires",
+        "contribution": "Contribution",
+        "margin": "Marge",
+        "loss": "Taux de pertes",
+        "unsoldRate": "Taux d’invendus"
+      }
+    },
+    "categories": {
+      "columns": {
+        "category": "Catégorie",
+        "sold": "Vendu",
+        "unsold": "Invendu",
+        "revenue": "Chiffre d’affaires",
+        "contribution": "Contribution",
+        "margin": "Marge",
+        "loss": "Taux de pertes"
       }
     },
     "emptyMarginsTitle": "Aucun coût publié",

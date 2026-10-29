@@ -108,6 +108,7 @@ function toCost(
     marginPct: {toString(): string} | null;
     currency: string;
     computedAt: Date;
+    inputHash: string | null;
     lines: Array<{
       id: string;
       kind: string;
@@ -132,6 +133,10 @@ function toCost(
     marginPct: snapshot.marginPct?.toString() ?? null,
     currency: snapshot.currency,
     computedAt: snapshot.computedAt,
+    // A batch snapshot records what the batch actually consumed; it is not
+    // refreshed against later prices.
+    isStale: false,
+    inputHash: snapshot.inputHash,
     lines: snapshot.lines.map((line) => ({
       id: line.id,
       kind: line.kind as RecipeCostLineRecord["kind"],
@@ -234,6 +239,7 @@ const batchSelect = {
       marginPct: true,
       currency: true,
       computedAt: true,
+      inputHash: true,
       lines: {
         orderBy: {position: "asc"},
         select: {
@@ -1012,20 +1018,53 @@ export const productionRepository: ProductionRepository = {
 
     if (!lot) return null;
 
-    const consumedBy = await prisma.productionBatch.findMany({
-      where: {organizationId, inputs: {some: {lotId}}},
-      orderBy: {createdAt: "desc"},
-      select: {
-        id: true,
-        code: true,
-        outputs: {
-          select: {
-            lot: {select: {lotNumber: true}},
-            item: {select: {name: true}},
+    const [consumedBy, dispatchLines, wasteRecords] = await Promise.all([
+      prisma.productionBatch.findMany({
+        where: {organizationId, inputs: {some: {lotId}}},
+        orderBy: {createdAt: "desc"},
+        select: {
+          id: true,
+          code: true,
+          outputs: {
+            select: {
+              lot: {select: {lotNumber: true}},
+              item: {select: {name: true}},
+            },
           },
         },
-      },
-    });
+      }),
+      prisma.dispatchLine.findMany({
+        where: {
+          organizationId,
+          lotId,
+          dispatch: {status: "DISPATCHED"},
+        },
+        orderBy: {createdAt: "desc"},
+        select: {
+          quantity: true,
+          unit: {select: {code: true}},
+          dispatch: {
+            select: {
+              id: true,
+              number: true,
+              dispatchedAt: true,
+              customer: {select: {name: true}},
+            },
+          },
+        },
+      }),
+      prisma.wasteRecord.findMany({
+        where: {organizationId, lotId, archivedAt: null},
+        orderBy: {recordedAt: "desc"},
+        select: {
+          id: true,
+          quantity: true,
+          recordedAt: true,
+          unit: {select: {code: true}},
+          lossReason: {select: {labelEn: true, labelFr: true}},
+        },
+      }),
+    ]);
 
     const source = lot.purchaseReceiptLine
       ? {
@@ -1054,6 +1093,21 @@ export const productionRepository: ProductionRepository = {
             ? [{lotNumber: output.lot.lotNumber, itemName: output.item.name}]
             : [],
         ),
+      })),
+      dispatchedTo: dispatchLines.map((line) => ({
+        dispatchId: line.dispatch.id,
+        number: line.dispatch.number,
+        customerName: line.dispatch.customer?.name ?? null,
+        quantity: line.quantity.toString(),
+        unitCode: line.unit.code,
+        dispatchedAt: line.dispatch.dispatchedAt,
+      })),
+      waste: wasteRecords.map((record) => ({
+        id: record.id,
+        quantity: record.quantity.toString(),
+        unitCode: record.unit.code,
+        reason: record.lossReason.labelEn ?? record.lossReason.labelFr,
+        recordedAt: record.recordedAt,
       })),
     };
   },

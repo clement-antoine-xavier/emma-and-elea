@@ -1,7 +1,9 @@
 "use server";
 
+import type {RecipeSimulationRecord} from "@/lib/dto";
 import {getActorContext} from "@/server/auth/actor";
 import {recipeService} from "@/server/services/container";
+import {createSimulationSchema} from "@/server/validators/simulation.schema";
 import {
   recipeIdSchema,
   recipeInputSchema,
@@ -216,6 +218,75 @@ export async function publishRecipeVersionAction(
   try {
     await recipeService.publishVersion(actor, parsed.data.id);
     return {ok: true};
+  } catch (error) {
+    return {ok: false, error: mapDomainError(error)};
+  }
+}
+
+export type SimulationActionResult =
+  | {ok: true; simulation: RecipeSimulationRecord}
+  | {ok: false; error: ActionErrorKey};
+
+export async function simulateRecipeAction(
+  versionId: unknown,
+  input: unknown,
+): Promise<SimulationActionResult> {
+  const actor = await getActorContext();
+  if (!actor) return {ok: false, error: "unauthenticated"};
+
+  const parsedId = recipeVersionIdSchema.safeParse({id: versionId});
+  const parsed = createSimulationSchema((key) => key).safeParse(input);
+  if (!parsedId.success || !parsed.success) {
+    return {ok: false, error: "invalidInput"};
+  }
+
+  try {
+    const simulation = await recipeService.simulateVersion(
+      actor,
+      parsedId.data.id,
+      {
+        materialPct: parsed.data.materialPct,
+        packagingPct: parsed.data.packagingPct,
+        labourPct: parsed.data.labourPct,
+        energyPct: parsed.data.energyPct,
+        salePrice:
+          parsed.data.salePrice === "" ? null : parsed.data.salePrice,
+      },
+    );
+    return {ok: true, simulation};
+  } catch (error) {
+    return {ok: false, error: mapDomainError(error)};
+  }
+}
+
+export type RefreshCostsActionResult =
+  | {ok: true; refreshed?: number; skipped?: number}
+  | {ok: false; error: ActionErrorKey};
+
+export async function refreshRecipeCostAction(
+  input: unknown,
+): Promise<RefreshCostsActionResult> {
+  const actor = await getActorContext();
+  if (!actor) return {ok: false, error: "unauthenticated"};
+
+  const parsed = recipeVersionIdSchema.safeParse(input);
+  if (!parsed.success) return {ok: false, error: "invalidInput"};
+
+  try {
+    await recipeService.refreshCost(actor, parsed.data.id);
+    return {ok: true};
+  } catch (error) {
+    return {ok: false, error: mapDomainError(error)};
+  }
+}
+
+export async function refreshAllRecipeCostsAction(): Promise<RefreshCostsActionResult> {
+  const actor = await getActorContext();
+  if (!actor) return {ok: false, error: "unauthenticated"};
+
+  try {
+    const result = await recipeService.refreshAllCosts(actor);
+    return {ok: true, ...result};
   } catch (error) {
     return {ok: false, error: mapDomainError(error)};
   }

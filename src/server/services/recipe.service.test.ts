@@ -95,6 +95,8 @@ function recipeRepository(
     removeOperation: jest.fn(),
     findVersion: jest.fn().mockResolvedValue(version),
     publish: jest.fn().mockResolvedValue(undefined),
+    addCostSnapshot: jest.fn().mockResolvedValue(undefined),
+    listPublishedVersionIds: jest.fn().mockResolvedValue([]),
     listGraph: jest.fn().mockResolvedValue([]),
     ...overrides,
   };
@@ -114,12 +116,15 @@ function costingRepository(): CostingRepository {
   };
 }
 
-function service(repository = recipeRepository()) {
+function service(
+  repository = recipeRepository(),
+  costing = costingRepository(),
+) {
   return {
     repository,
     service: createRecipeService({
       recipeRepository: repository,
-      costingRepository: costingRepository(),
+      costingRepository: costing,
       catalogRepository: {
         findUnit: jest.fn().mockResolvedValue({
           id: "unit_piece",
@@ -154,4 +159,92 @@ describe("recipe service", () => {
       deps.service.publishVersion(actorFor("staff"), "version_1"),
     ).rejects.toMatchObject({code: "FORBIDDEN"});
   });
+
+  it("marks a published snapshot stale when the stored hash is outdated", async () => {
+    const published = publishedVersion("outdated-hash");
+    const deps = service(
+      recipeRepository({
+        findVersion: jest.fn().mockResolvedValue(published),
+      }),
+    );
+
+    const view = await deps.service.getVersion(actorFor("owner"), "version_1");
+
+    expect(view?.version.cost?.isStale).toBe(true);
+    // Cost 0.10 against a sale price of 2.00 gives a 95 % margin.
+    expect(view?.version.cost?.marginPct).toBe("95");
+  });
+
+  it("requires cost:read to refresh a snapshot", async () => {
+    const deps = service(
+      recipeRepository({
+        findVersion: jest.fn().mockResolvedValue(publishedVersion(null)),
+      }),
+    );
+
+    await expect(
+      deps.service.refreshCost(actorFor("sales"), "version_1"),
+    ).rejects.toMatchObject({code: "FORBIDDEN"});
+  });
+
+  it("refreshes a published snapshot with a new hash", async () => {
+    const repo = recipeRepository({
+      findVersion: jest.fn().mockResolvedValue(publishedVersion("outdated")),
+    });
+    const costing = costingRepository();
+    costing.resolvePrices = jest.fn().mockResolvedValue({
+      item_flour: {unitCostPerStockUnit: "2", source: "SUPPLIER"},
+    });
+    const deps = service(repo, costing);
+
+    await deps.service.refreshCost(actorFor("owner"), "version_1");
+
+    expect(repo.addCostSnapshot).toHaveBeenCalledTimes(1);
+    const [organizationId, versionId, snapshot, createdById] = (
+      repo.addCostSnapshot as jest.Mock
+    ).mock.calls[0];
+    expect(organizationId).toBe("org_1");
+    expect(versionId).toBe("version_1");
+    expect(snapshot.inputHash).toEqual(expect.any(String));
+    expect(createdById).toBe("user_1");
+  });
+
+  it("skips bulk refreshes when a price is missing", async () => {
+    const repo = recipeRepository({
+      findVersion: jest.fn().mockResolvedValue(publishedVersion("outdated")),
+      listPublishedVersionIds: jest
+        .fn()
+        .mockResolvedValue(["version_1", "version_2"]),
+    });
+    const deps = service(repo);
+
+    await expect(deps.service.refreshAllCosts(actorFor("owner"))).resolves.toEqual(
+      {refreshed: 0, skipped: 2},
+    );
+    expect(repo.addCostSnapshot).not.toHaveBeenCalled();
+  });
 });
+
+function publishedVersion(inputHash: string | null): RecipeVersionDetailRecord {
+  return {
+    ...version,
+    status: "PUBLISHED",
+    publishedAt: new Date("2026-01-01T00:00:00.000Z"),
+    cost: {
+      materialCost: "1",
+      packagingCost: "0",
+      labourCost: "0",
+      energyCost: "0",
+      overheadCost: "0",
+      totalCost: "1",
+      costPerUnit: "0.1",
+      marginPct: "95",
+      currency: "EUR",
+      computedAt: new Date("2026-01-01T00:00:00.000Z"),
+      isStale: false,
+      inputHash,
+      lines: [],
+      warnings: [],
+    },
+  };
+}

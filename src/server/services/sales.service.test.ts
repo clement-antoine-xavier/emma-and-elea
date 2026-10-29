@@ -4,6 +4,7 @@ import type {CustomerRepository} from "@/server/repositories/customer.repository
 import type {OrderRepository} from "@/server/repositories/order.repository";
 import type {DispatchRepository} from "@/server/repositories/dispatch.repository";
 import type {SalesRepository} from "@/server/repositories/sales.repository";
+import type {ProfitabilityRepository} from "@/server/repositories/profitability.repository";
 import type {ReportRepository} from "@/server/repositories/report.repository";
 import type {StockRepository} from "@/server/repositories/stock.repository";
 import type {CatalogRepository} from "@/server/repositories/catalog.repository";
@@ -504,10 +505,18 @@ describe("report service", () => {
     const stocks = {
       listLevels: jest.fn().mockResolvedValue([belowMin, healthy]),
     } as unknown as StockRepository;
+    const profitability = {
+      getData: jest.fn().mockResolvedValue({
+        items: [],
+        metrics: {},
+        currency: "EUR",
+      }),
+    } as unknown as ProfitabilityRepository;
 
     return createReportService({
       reportRepository: reports,
       stockRepository: stocks,
+      profitabilityRepository: profitability,
     });
   }
 

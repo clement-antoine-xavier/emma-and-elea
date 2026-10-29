@@ -11,11 +11,15 @@ import {SiteManager} from "@/components/settings/site-manager";
 import {LabourRateManager} from "@/components/settings/labour-rate-manager";
 import {EnergyTariffManager} from "@/components/settings/energy-tariff-manager";
 import {EquipmentManager} from "@/components/settings/equipment-manager";
+import {EventManager} from "@/components/settings/event-manager";
+import {SkillManager} from "@/components/settings/skill-manager";
 import {can, type Permission} from "@/lib/permissions";
 import {requirePermission} from "@/server/auth/actor";
 import {
   equipmentService,
+  eventService,
   rateService,
+  skillService,
   settingsService,
   siteService,
 } from "@/server/services/container";
@@ -29,13 +33,21 @@ export async function generateMetadata(): Promise<Metadata> {
   return {title: t("metadataTitle")};
 }
 
-type SettingsSection = "organization" | "sites" | "rates" | "equipment";
+type SettingsSection =
+  | "organization"
+  | "sites"
+  | "rates"
+  | "equipment"
+  | "events"
+  | "skills";
 
 const SECTION_PERMISSION: Record<SettingsSection, Permission> = {
   organization: "organization:read",
   sites: "site:read",
   rates: "cost:read",
   equipment: "equipment:read",
+  events: "event:read",
+  skills: "team:read",
 };
 
 const SECTIONS: SettingsSection[] = [
@@ -43,6 +55,8 @@ const SECTIONS: SettingsSection[] = [
   "sites",
   "rates",
   "equipment",
+  "events",
+  "skills",
 ];
 
 function isSection(value: string): value is SettingsSection {
@@ -60,6 +74,8 @@ export default async function SettingsPage({
   const tSites = await getTranslations("Sites");
   const tRates = await getTranslations("Rates");
   const tEquipment = await getTranslations("Equipment");
+  const tEvents = await getTranslations("Events");
+  const tSkills = await getTranslations("Skills");
   const params = await searchParams;
 
   const requested = Array.isArray(params.section)
@@ -75,6 +91,8 @@ export default async function SettingsPage({
     sites: t("cards.sites.title"),
     rates: t("cards.rates.title"),
     equipment: t("cards.equipment.title"),
+    events: t("cards.events.title"),
+    skills: t("cards.skills.title"),
   };
 
   const settingsView =
@@ -89,8 +107,12 @@ export default async function SettingsPage({
     section === "equipment"
       ? await equipmentService.getEquipment(actor)
       : null;
+  const eventsView =
+    section === "events" ? await eventService.getEvents(actor) : null;
+  const skillsView =
+    section === "skills" ? await skillService.getSkills(actor) : null;
   const sitesForPanel =
-    section === "rates" || section === "equipment"
+    section === "rates" || section === "equipment" || section === "events"
       ? (await siteService.getSites(actor)).sites
       : [];
 
@@ -128,14 +150,22 @@ export default async function SettingsPage({
               ? tSites("title")
               : section === "rates"
                 ? tRates("title")
-                : tEquipment("title")}
+                : section === "equipment"
+                  ? tEquipment("title")
+                  : section === "events"
+                    ? tEvents("title")
+                    : tSkills("title")}
           </Heading>
           <Text type="supporting">
             {section === "sites"
               ? tSites("intro", {organization: actor.organization.name})
               : section === "rates"
                 ? tRates("intro")
-                : tEquipment("intro")}
+                : section === "equipment"
+                  ? tEquipment("intro")
+                  : section === "events"
+                    ? tEvents("intro")
+                    : tSkills("intro")}
           </Text>
         </Stack>
       ) : null}
@@ -207,6 +237,21 @@ export default async function SettingsPage({
           equipment={equipmentView.equipment}
           sites={sitesForPanel}
           canWrite={equipmentView.canWrite}
+        />
+      ) : null}
+
+      {section === "events" && eventsView ? (
+        <EventManager
+          events={eventsView.events}
+          sites={sitesForPanel}
+          canWrite={eventsView.canWrite}
+        />
+      ) : null}
+
+      {section === "skills" && skillsView ? (
+        <SkillManager
+          skills={skillsView.skills}
+          canWrite={skillsView.canWrite}
         />
       ) : null}
     </PageShell>

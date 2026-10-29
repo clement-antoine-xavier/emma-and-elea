@@ -69,6 +69,7 @@ function purchaseRepository(
 function supplierRepository(): SupplierRepository {
   return {
     list: jest.fn().mockResolvedValue([]),
+    preferredPrices: jest.fn().mockResolvedValue({}),
     findById: jest.fn().mockResolvedValue(null),
     findSummary: jest.fn().mockResolvedValue({
       id: "supplier_1",

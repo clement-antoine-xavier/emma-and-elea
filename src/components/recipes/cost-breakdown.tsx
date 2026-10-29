@@ -1,12 +1,17 @@
 "use client";
 
+import {useState} from "react";
 import {Banner} from "@astryxdesign/core/Banner";
+import {Button} from "@astryxdesign/core/Button";
 import {Card} from "@astryxdesign/core/Card";
 import {Grid} from "@astryxdesign/core/Grid";
+import {HStack} from "@astryxdesign/core/HStack";
 import {Stack} from "@astryxdesign/core/Stack";
 import {Table, pixel, proportional} from "@astryxdesign/core/Table";
 import {Heading, Text} from "@astryxdesign/core/Text";
+import {useRouter} from "next/navigation";
 import {useLocale, useTranslations} from "next-intl";
+import {refreshRecipeCostAction} from "@/app/actions/recipe.actions";
 import {
   formatBusinessDate,
   formatMoney,
@@ -29,12 +34,40 @@ function Definition({label, value}: {label: string; value: string}) {
   );
 }
 
-export function CostBreakdown({cost}: {cost: RecipeCostRecord}) {
+export function CostBreakdown({
+  cost,
+  versionId,
+  canRefresh = false,
+}: {
+  cost: RecipeCostRecord;
+  versionId?: string;
+  canRefresh?: boolean;
+}) {
   const t = useTranslations("Recipes.cost");
   const locale = useLocale();
+  const router = useRouter();
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [refreshError, setRefreshError] = useState<string | null>(null);
 
   const money = (value: string) =>
     formatMoney(value, {locale, currency: cost.currency});
+
+  async function refresh() {
+    if (!versionId) return;
+
+    setIsRefreshing(true);
+    setRefreshError(null);
+    try {
+      const result = await refreshRecipeCostAction({id: versionId});
+      if (!result.ok) {
+        setRefreshError(t("refreshError"));
+        return;
+      }
+      router.refresh();
+    } finally {
+      setIsRefreshing(false);
+    }
+  }
 
   return (
     <Stack gap={4}>
@@ -48,6 +81,28 @@ export function CostBreakdown({cost}: {cost: RecipeCostRecord}) {
             : t("livePreview")}
         </Text>
       </Stack>
+
+      {cost.isStale ? (
+        <HStack gap={3} align="center" wrap="wrap">
+          <Banner
+            status="warning"
+            title={t("staleTitle")}
+            description={t("staleBody")}
+          />
+          {canRefresh && versionId ? (
+            <Button
+              label={t("refresh")}
+              variant="secondary"
+              isLoading={isRefreshing}
+              onClick={refresh}
+            />
+          ) : null}
+        </HStack>
+      ) : null}
+
+      {refreshError ? (
+        <Banner status="error" title={t("refreshTitle")} description={refreshError} />
+      ) : null}
 
       {cost.warnings.length > 0 ? (
         <Banner

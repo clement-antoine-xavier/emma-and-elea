@@ -10,9 +10,13 @@ import {DetailShell} from "@/components/layout/detail-shell";
 import {PropertyList} from "@/components/layout/property-list";
 import {AvailabilityManager} from "@/components/team/availability-manager";
 import {EmployeeEditForm} from "@/components/team/employee-edit-form";
+import {EmployeeSkillsManager} from "@/components/team/employee-skills-manager";
 import {formatBusinessDate} from "@/lib/format";
 import {requirePermission} from "@/server/auth/actor";
-import {scheduleService} from "@/server/services/container";
+import {
+  scheduleService,
+  skillService,
+} from "@/server/services/container";
 
 // Session data keeps this route blocking until it is moved to a streamed shell.
 export const instant = false;
@@ -35,12 +39,15 @@ export async function generateMetadata({
 export default async function EmployeeDetailPage({params}: EmployeeParams) {
   const {id} = await params;
   const actor = await requirePermission("team:read");
-  const [view, team, t, locale] = await Promise.all([
-    scheduleService.getEmployee(actor, id),
-    scheduleService.getEmployees(actor),
-    getTranslations("Team.employees"),
-    getLocale(),
-  ]);
+  const [view, team, skillCatalog, employeeSkills, t, locale] =
+    await Promise.all([
+      scheduleService.getEmployee(actor, id),
+      scheduleService.getEmployees(actor),
+      skillService.getSkills(actor),
+      skillService.getEmployeeSkills(actor, id),
+      getTranslations("Team.employees"),
+      getLocale(),
+    ]);
 
   if (!view) notFound();
 
@@ -108,6 +115,13 @@ export default async function EmployeeDetailPage({params}: EmployeeParams) {
               canWrite={view.canWrite}
             />
           ) : null}
+
+          <EmployeeSkillsManager
+            employeeId={employee.id}
+            skills={skillCatalog.skills}
+            assigned={employeeSkills.skills}
+            canWrite={employeeSkills.canWrite}
+          />
 
           <AvailabilityManager
             employeeId={employee.id}

@@ -7,6 +7,7 @@ import type {
   StockLevelRecord,
   StockMovementRecord,
 } from "@/lib/dto";
+import {convertQuantity, roundQuantity} from "@/server/domain/units";
 
 export type LotFilters = {
   search: string;
@@ -22,6 +23,7 @@ export type LotPage = {
 
 export interface StockRepository {
   listLevels(organizationId: string): Promise<StockLevelRecord[]>;
+  openDraftQuantities(organizationId: string): Promise<Record<string, string>>;
   listLots(
     organizationId: string,
     filters: LotFilters,
@@ -111,7 +113,7 @@ export const stockRepository: StockRepository = {
           name: true,
           minStockQuantity: true,
           parLevelQuantity: true,
-          stockUnit: {select: {code: true}},
+          stockUnit: {select: {id: true, code: true}},
         },
       }),
       prisma.site.findMany({
@@ -143,6 +145,7 @@ export const stockRepository: StockRepository = {
             itemName: item.name,
             siteId: site.id,
             siteName: site.name,
+            unitId: item.stockUnit.id,
             unitCode: item.stockUnit.code,
             quantity: quantity.toString(),
             minStockQuantity: minimum?.toString() ?? null,
@@ -157,6 +160,57 @@ export const stockRepository: StockRepository = {
           a.itemName.localeCompare(b.itemName) ||
           a.siteName.localeCompare(b.siteName),
       );
+  },
+
+  async openDraftQuantities(organizationId) {
+    const lines = await prisma.purchaseReceiptLine.findMany({
+      where: {
+        organizationId,
+        purchaseReceipt: {status: "DRAFT"},
+      },
+      select: {
+        itemId: true,
+        quantity: true,
+        unit: {select: {code: true, kind: true, factorToBase: true}},
+        item: {
+          select: {
+            stockUnit: {select: {code: true, kind: true, factorToBase: true}},
+          },
+        },
+        purchaseReceipt: {select: {siteId: true}},
+      },
+    });
+
+    const totals = new Map<string, Decimal>();
+
+    for (const line of lines) {
+      const key = `${line.purchaseReceipt.siteId}:${line.itemId}`;
+      try {
+        const quantity = roundQuantity(
+          convertQuantity(
+            line.quantity,
+            {
+              code: line.unit.code,
+              kind: line.unit.kind as "MASS" | "VOLUME" | "COUNT" | "LENGTH",
+              factorToBase: line.unit.factorToBase.toString(),
+            },
+            {
+              code: line.item.stockUnit.code,
+              kind: line.item.stockUnit
+                .kind as "MASS" | "VOLUME" | "COUNT" | "LENGTH",
+              factorToBase: line.item.stockUnit.factorToBase.toString(),
+            },
+          ),
+        );
+        totals.set(key, (totals.get(key) ?? new Decimal(0)).plus(quantity));
+      } catch {
+        // Incompatible units cannot be compared to stock; skip the line.
+      }
+    }
+
+    return Object.fromEntries(
+      [...totals.entries()].map(([key, value]) => [key, value.toString()]),
+    );
   },
 
   async listLots(organizationId, filters) {

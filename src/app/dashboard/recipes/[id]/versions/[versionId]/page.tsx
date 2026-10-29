@@ -11,6 +11,7 @@ import {PageShell} from "@/components/layout/page-shell";
 import {DetailShell} from "@/components/layout/detail-shell";
 import {PropertyList} from "@/components/layout/property-list";
 import {CostBreakdown} from "@/components/recipes/cost-breakdown";
+import {PriceSimulator} from "@/components/recipes/price-simulator";
 import {PublishVersionButton} from "@/components/recipes/publish-version-button";
 import {RecipeLinesManager} from "@/components/recipes/recipe-lines-manager";
 import {RecipeOperationsManager} from "@/components/recipes/recipe-operations-manager";
@@ -134,7 +135,19 @@ export default async function RecipeVersionPage({params}: VersionParams) {
           ) : null}
 
           {view.canReadCost && view.version.cost ? (
-            <CostBreakdown cost={view.version.cost} />
+            <CostBreakdown
+              cost={view.version.cost}
+              versionId={view.version.id}
+              canRefresh={view.version.status !== "DRAFT"}
+            />
+          ) : null}
+
+          {view.canReadCost ? (
+            <PriceSimulator
+              versionId={view.version.id}
+              salePrice={view.version.salePrice}
+              canSimulate={view.canReadCost}
+            />
           ) : null}
 
           <RecipeLinesManager

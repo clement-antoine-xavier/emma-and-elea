@@ -33,6 +33,7 @@ export const statements = {
   dispatch: ["read", "write"] as const,
   sales: ["read", "write"] as const,
   absence: ["read", "request", "decide"] as const,
+  event: ["read", "write"] as const,
   report: ["read", "finance", "traceability"] as const,
 } as const;
 
@@ -113,6 +114,8 @@ export const ROLE_PERMISSIONS: Record<OrgRole, readonly Permission[]> = {
     "absence:read",
     "absence:request",
     "absence:decide",
+    "event:read",
+    "event:write",
     "report:read",
     "report:finance",
   ],
@@ -141,6 +144,7 @@ export const ROLE_PERMISSIONS: Record<OrgRole, readonly Permission[]> = {
     "team:self",
     "absence:read",
     "absence:request",
+    "event:read",
     "report:read",
   ],
 
@@ -161,6 +165,8 @@ export const ROLE_PERMISSIONS: Record<OrgRole, readonly Permission[]> = {
     "team:self",
     "absence:read",
     "absence:request",
+    "event:read",
+    "event:write",
     "report:read",
   ],
 
@@ -180,6 +186,7 @@ export const ROLE_PERMISSIONS: Record<OrgRole, readonly Permission[]> = {
     "team:self",
     "absence:read",
     "absence:request",
+    "event:read",
   ],
 
   accountant: [
@@ -198,6 +205,7 @@ export const ROLE_PERMISSIONS: Record<OrgRole, readonly Permission[]> = {
     "order:read",
     "dispatch:read",
     "sales:read",
+    "event:read",
     "report:read",
     "report:finance",
   ],
@@ -215,6 +223,7 @@ export const ROLE_PERMISSIONS: Record<OrgRole, readonly Permission[]> = {
     "waste:read",
     "order:read",
     "dispatch:read",
+    "event:read",
     "report:read",
     "report:traceability",
   ],

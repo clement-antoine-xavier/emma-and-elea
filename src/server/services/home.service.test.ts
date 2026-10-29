@@ -79,6 +79,7 @@ function levelRow(name: string, belowMin: boolean) {
     itemName: name,
     siteId: "site_1",
     siteName: "Bakery",
+    unitId: "unit_kg",
     unitCode: "kg",
     quantity: "1",
     minStockQuantity: "5",

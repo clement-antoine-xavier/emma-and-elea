@@ -2,6 +2,7 @@ import type {Metadata} from "next";
 import {Button} from "@astryxdesign/core/Button";
 import {Card} from "@astryxdesign/core/Card";
 import {Divider} from "@astryxdesign/core/Divider";
+import {HStack} from "@astryxdesign/core/HStack";
 import {Stack} from "@astryxdesign/core/Stack";
 import {Heading, Text} from "@astryxdesign/core/Text";
 import {notFound} from "next/navigation";
@@ -53,11 +54,18 @@ export default async function LotDetailPage({params}: LotParams) {
       title={lot.lotNumber}
       intro={`${lot.itemName} · ${lot.siteName}`}
       actions={
-        <Button
-          label={tLot("backToLots")}
-          variant="secondary"
-          href="/dashboard/stock/lots"
-        />
+        <HStack gap={2} wrap="wrap">
+          <Button
+            label={tLot("inspection")}
+            variant="secondary"
+            href={`/dashboard/stock/lots/${lot.id}/inspection`}
+          />
+          <Button
+            label={tLot("backToLots")}
+            variant="secondary"
+            href="/dashboard/stock/lots"
+          />
+        </HStack>
       }
       contentWidth={1280}
     >
@@ -159,6 +167,38 @@ export default async function LotDetailPage({params}: LotParams) {
                                         )
                                         .join(", ")}`
                                     : batch.batchCode,
+                                )
+                                .join(" · ")
+                            : tTrace("none"),
+                      },
+                      {
+                        label: tTrace("dispatchedTo"),
+                        value:
+                          trace.dispatchedTo.length > 0
+                            ? trace.dispatchedTo
+                                .map(
+                                  (dispatch) =>
+                                    `${dispatch.number}${
+                                      dispatch.customerName
+                                        ? ` · ${dispatch.customerName}`
+                                        : ""
+                                    } (${formatQuantity(dispatch.quantity, {
+                                      locale,
+                                    })} ${dispatch.unitCode})`,
+                                )
+                                .join(" · ")
+                            : tTrace("none"),
+                      },
+                      {
+                        label: tTrace("waste"),
+                        value:
+                          trace.waste.length > 0
+                            ? trace.waste
+                                .map(
+                                  (record) =>
+                                    `${formatQuantity(record.quantity, {
+                                      locale,
+                                    })} ${record.unitCode} · ${record.reason}`,
                                 )
                                 .join(" · ")
                             : tTrace("none"),

@@ -40,6 +40,7 @@ describe("organization permissions", () => {
     expect(can("production_manager", "production:write")).toBe(true);
     expect(can("production_manager", "team:write")).toBe(true);
     expect(can("production_manager", "absence:decide")).toBe(true);
+    expect(can("production_manager", "event:write")).toBe(true);
     expect(can("production_manager", "member:update")).toBe(false);
   });
 
@@ -57,6 +58,7 @@ describe("organization permissions", () => {
     expect(can("sales", "customer:write")).toBe(true);
     expect(can("sales", "dispatch:write")).toBe(true);
     expect(can("sales", "sales:write")).toBe(true);
+    expect(can("sales", "event:write")).toBe(true);
     expect(can("sales", "cost:read")).toBe(false);
     expect(can("sales", "recipe:write")).toBe(false);
   });
@@ -67,6 +69,8 @@ describe("organization permissions", () => {
     expect(can("staff", "waste:write")).toBe(true);
     expect(can("staff", "stock:count")).toBe(true);
     expect(can("staff", "team:self")).toBe(true);
+    expect(can("staff", "event:read")).toBe(true);
+    expect(can("staff", "event:write")).toBe(false);
     expect(can("staff", "team:read")).toBe(false);
     expect(can("staff", "cost:read")).toBe(false);
     expect(can("staff", "member:read")).toBe(false);

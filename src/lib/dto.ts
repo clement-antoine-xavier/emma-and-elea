@@ -252,11 +252,31 @@ export type StockLevelRecord = {
   itemName: string;
   siteId: string;
   siteName: string;
+  unitId: string;
   unitCode: string;
   quantity: string;
   minStockQuantity: string | null;
   parLevelQuantity: string | null;
   isBelowMin: boolean;
+};
+
+export type ReplenishmentSuggestionRecord = {
+  itemId: string;
+  itemCode: string;
+  itemName: string;
+  siteId: string;
+  siteName: string;
+  unitId: string;
+  unitCode: string;
+  onHand: string;
+  openDraftQuantity: string;
+  minStockQuantity: string | null;
+  parLevelQuantity: string | null;
+  suggestedQuantity: string;
+  supplierId: string | null;
+  supplierName: string | null;
+  unitPrice: string | null;
+  currency: string;
 };
 
 export type LotSummaryRecord = {
@@ -408,7 +428,31 @@ export type RecipeCostRecord = {
   marginPct: string | null;
   currency: string;
   computedAt: Date | null;
+  /** True when the stored snapshot no longer matches current prices/rates. */
+  isStale: boolean;
+  /** Cost-input fingerprint stored with the snapshot; null on old snapshots. */
+  inputHash: string | null;
   lines: RecipeCostLineRecord[];
+  warnings: RecipeCostWarning[];
+};
+
+export type SimulationCostRecord = {
+  materialCost: string;
+  packagingCost: string;
+  labourCost: string;
+  energyCost: string;
+  overheadCost: string;
+  totalCost: string;
+  costPerUnit: string;
+  marginPct: string | null;
+  currency: string;
+};
+
+export type RecipeSimulationRecord = {
+  base: SimulationCostRecord;
+  simulated: SimulationCostRecord;
+  costDeltaPct: string | null;
+  marginDeltaPp: number | null;
   warnings: RecipeCostWarning[];
 };
 
@@ -592,6 +636,21 @@ export type LotTraceRecord = {
     batchCode: string;
     outputs: {lotNumber: string; itemName: string}[];
   }[];
+  dispatchedTo: {
+    dispatchId: string;
+    number: string;
+    customerName: string | null;
+    quantity: string;
+    unitCode: string;
+    dispatchedAt: Date | null;
+  }[];
+  waste: {
+    id: string;
+    quantity: string;
+    unitCode: string;
+    reason: string;
+    recordedAt: Date;
+  }[];
 };
 
 export type CustomerRecord = {
@@ -725,6 +784,48 @@ export type ProductMarginRecord = {
   salePrice: string | null;
   marginPct: string | null;
   currency: string;
+  computedAt: Date | null;
+};
+
+export type ProductProfitabilityRecord = {
+  itemId: string;
+  itemCode: string;
+  itemName: string;
+  itemType: ItemTypeName;
+  categoryName: string | null;
+  recipeId: string | null;
+  recipeName: string | null;
+  produced: string;
+  sold: string;
+  waste: string;
+  unsold: string;
+  /** produced − sold − waste before clamping; may be negative. */
+  variance: string;
+  wasteCost: string;
+  revenue: string;
+  costPerUnit: string | null;
+  costOfSold: string | null;
+  contribution: string | null;
+  marginPct: string | null;
+  lossRatePct: string | null;
+  unsoldRatePct: string | null;
+  currency: string;
+  costComputedAt: Date | null;
+  missingRevenue: boolean;
+};
+
+export type CategoryProfitabilityRecord = {
+  categoryName: string;
+  productCount: number;
+  produced: string;
+  sold: string;
+  waste: string;
+  unsold: string;
+  revenue: string;
+  contribution: string | null;
+  marginPct: string | null;
+  lossRatePct: string | null;
+  unsoldRatePct: string | null;
 };
 
 export type BatchYieldRecord = {
@@ -791,6 +892,26 @@ export type OrderDemandRecord = {
   recipeName: string | null;
 };
 
+export type EventKindName =
+  | "LOCAL_EVENT"
+  | "HOLIDAY"
+  | "SCHOOL_BREAK"
+  | "WEATHER"
+  | "OTHER";
+
+export type EventRecord = {
+  id: string;
+  siteId: string | null;
+  siteName: string | null;
+  name: string;
+  kind: EventKindName;
+  startsOn: Date;
+  endsOn: Date;
+  expectedUpliftPct: string | null;
+  note: string | null;
+  archivedAt: Date | null;
+};
+
 export type PlanningBoardRecord = {
   siteId: string | null;
   siteName: string | null;
@@ -838,6 +959,28 @@ export type ProductionPlanLineRecord = {
 export type ProductionPlanDetailRecord = ProductionPlanSummaryRecord & {
   note: string | null;
   lines: ProductionPlanLineRecord[];
+};
+
+export type SkillLevelName =
+  | "BEGINNER"
+  | "INTERMEDIATE"
+  | "ADVANCED"
+  | "EXPERT";
+
+export type SkillRecord = {
+  id: string;
+  code: string;
+  name: string;
+  description: string | null;
+  archivedAt: Date | null;
+};
+
+export type EmployeeSkillRecord = {
+  id: string;
+  skillId: string;
+  skillName: string;
+  level: SkillLevelName;
+  certifiedOn: Date | null;
 };
 
 export type EmployeeAvailabilityRecord = {

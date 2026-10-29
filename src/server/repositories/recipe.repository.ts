@@ -138,6 +138,13 @@ export interface RecipeRepository {
     versionId: string,
     snapshot: CostSnapshotInput,
   ): Promise<void>;
+  addCostSnapshot(
+    organizationId: string,
+    versionId: string,
+    snapshot: CostSnapshotInput,
+    createdById: string | null,
+  ): Promise<void>;
+  listPublishedVersionIds(organizationId: string): Promise<string[]>;
   listGraph(
     organizationId: string,
   ): Promise<{outputItemId: string; lineItemIds: string[]}[]>;
@@ -172,6 +179,7 @@ function toCost(
     marginPct: {toString(): string} | null;
     currency: string;
     computedAt: Date;
+    inputHash: string | null;
     lines: Array<{
       id: string;
       kind: string;
@@ -196,6 +204,8 @@ function toCost(
     marginPct: snapshot.marginPct?.toString() ?? null,
     currency: snapshot.currency,
     computedAt: snapshot.computedAt,
+    isStale: snapshot.inputHash === null,
+    inputHash: snapshot.inputHash,
     lines: snapshot.lines.map((line) => ({
       id: line.id,
       kind: line.kind as RecipeCostLineRecord["kind"],
@@ -680,6 +690,7 @@ export const recipeRepository: RecipeRepository = {
             marginPct: true,
             currency: true,
             computedAt: true,
+            inputHash: true,
             lines: {
               orderBy: {position: "asc"},
               select: {
@@ -842,6 +853,64 @@ export const recipeRepository: RecipeRepository = {
         },
       });
     });
+  },
+
+  async addCostSnapshot(
+    organizationId,
+    versionId,
+    snapshot,
+    createdById,
+  ) {
+    await prisma.costSnapshot.create({
+      data: {
+        organizationId,
+        scope: "RECIPE_VERSION",
+        recipeVersionId: versionId,
+        createdById,
+        currency: snapshot.currency,
+        materialCost: snapshot.materialCost,
+        packagingCost: snapshot.packagingCost,
+        labourCost: snapshot.labourCost,
+        energyCost: snapshot.energyCost,
+        overheadCost: snapshot.overheadCost,
+        totalCost: snapshot.totalCost,
+        yieldQuantity: snapshot.yieldQuantity,
+        yieldUnitId: snapshot.yieldUnitId,
+        costPerUnit: snapshot.costPerUnit,
+        salePrice: snapshot.salePrice,
+        marginPct: snapshot.marginPct,
+        inputHash: snapshot.inputHash,
+        lines: {
+          create: snapshot.lines.map((line) => ({
+            organizationId,
+            kind: line.kind,
+            itemId: line.itemId,
+            lotId: line.lotId,
+            recipeOperationId: line.recipeOperationId,
+            label: line.label,
+            quantity: line.quantity,
+            unitId: line.unitId,
+            unitCost: line.unitCost,
+            amount: line.amount,
+            position: line.position,
+          })),
+        },
+      },
+    });
+  },
+
+  async listPublishedVersionIds(organizationId) {
+    const versions = await prisma.recipeVersion.findMany({
+      where: {
+        organizationId,
+        status: "PUBLISHED",
+        recipe: {archivedAt: null},
+      },
+      orderBy: [{recipeId: "asc"}, {versionNumber: "desc"}],
+      select: {id: true},
+    });
+
+    return versions.map((version) => version.id);
   },
 
   async listGraph(organizationId) {

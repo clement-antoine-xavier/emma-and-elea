@@ -4,12 +4,14 @@ import {costingRepository} from "@/server/repositories/costing.repository";
 import {customerRepository} from "@/server/repositories/customer.repository";
 import {dispatchRepository} from "@/server/repositories/dispatch.repository";
 import {equipmentRepository} from "@/server/repositories/equipment.repository";
+import {eventRepository} from "@/server/repositories/event.repository";
 import {forecastRepository} from "@/server/repositories/forecast.repository";
 import {invitationRepository} from "@/server/repositories/invitation.repository";
 import {membershipRepository} from "@/server/repositories/membership.repository";
 import {orderRepository} from "@/server/repositories/order.repository";
 import {organizationSettingsRepository} from "@/server/repositories/organization-settings.repository";
 import {planningRepository} from "@/server/repositories/planning.repository";
+import {profitabilityRepository} from "@/server/repositories/profitability.repository";
 import {purchaseRepository} from "@/server/repositories/purchase.repository";
 import {rateRepository} from "@/server/repositories/rate.repository";
 import {recipeRepository} from "@/server/repositories/recipe.repository";
@@ -18,6 +20,7 @@ import {reportRepository} from "@/server/repositories/report.repository";
 import {salesRepository} from "@/server/repositories/sales.repository";
 import {scheduleRepository} from "@/server/repositories/schedule.repository";
 import {siteRepository} from "@/server/repositories/site.repository";
+import {skillRepository} from "@/server/repositories/skill.repository";
 import {stockCountRepository} from "@/server/repositories/stock-count.repository";
 import {stockRepository} from "@/server/repositories/stock.repository";
 import {supplierRepository} from "@/server/repositories/supplier.repository";
@@ -29,6 +32,7 @@ import {createCustomerService} from "./customer.service";
 import {createDailySalesService} from "./daily-sales.service";
 import {createDispatchService} from "./dispatch.service";
 import {createEquipmentService} from "./equipment.service";
+import {createEventService} from "./event.service";
 import {createInvitationService} from "./invitation.service";
 import {createOrderService} from "./order.service";
 import {organizationBootstrapService} from "./organization-bootstrap.container";
@@ -42,6 +46,7 @@ import {createReportService} from "./report.service";
 import {createScheduleService} from "./schedule.service";
 import {createSettingsService} from "./settings.service";
 import {createSiteService} from "./site.service";
+import {createSkillService} from "./skill.service";
 import {createStockCountService} from "./stock-count.service";
 import {createStockService} from "./stock.service";
 import {createSupplierService} from "./supplier.service";
@@ -77,6 +82,8 @@ export const rateService = createRateService({rateRepository});
 
 export const equipmentService = createEquipmentService({equipmentRepository});
 
+export const eventService = createEventService({eventRepository});
+
 export const catalogService = createCatalogService({catalogRepository});
 
 export const supplierService = createSupplierService({
@@ -91,7 +98,10 @@ export const purchasingService = createPurchasingService({
   catalogRepository,
 });
 
-export const stockService = createStockService({stockRepository});
+export const stockService = createStockService({
+  stockRepository,
+  supplierRepository,
+});
 
 export const recipeService = createRecipeService({
   recipeRepository,
@@ -142,7 +152,10 @@ export const dailySalesService = createDailySalesService({
 export const reportService = createReportService({
   reportRepository,
   stockRepository,
+  profitabilityRepository,
 });
+
+export const skillService = createSkillService({skillRepository});
 
 export const scheduleService = createScheduleService({
   scheduleRepository,

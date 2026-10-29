@@ -4,19 +4,27 @@ import {Card} from "@astryxdesign/core/Card";
 import {Divider} from "@astryxdesign/core/Divider";
 import {EmptyState} from "@astryxdesign/core/EmptyState";
 import {Grid} from "@astryxdesign/core/Grid";
+import {HStack} from "@astryxdesign/core/HStack";
 import {Stack} from "@astryxdesign/core/Stack";
 import {Heading, Text} from "@astryxdesign/core/Text";
 import {getLocale, getTranslations} from "next-intl/server";
 import {PageShell} from "@/components/layout/page-shell";
 import {MetricCard} from "@/components/dashboard/metric-card";
+import {PeriodFilter} from "@/components/dashboard/period-filter";
 import {
   BatchYieldsTable,
+  CategoryProfitabilityTable,
   ProductMarginsTable,
+  ProductProfitabilityTable,
 } from "@/components/reports/report-tables";
+import {ProfitabilitySortSelector} from "@/components/reports/profitability-sort-selector";
+import {RefreshCostsButton} from "@/components/reports/refresh-costs-button";
+import {normalizeProfitabilitySort} from "@/lib/profitability";
 import {StockLevelsTable} from "@/components/stock/stock-levels-table";
 import {formatBusinessDate, formatMoney, formatPercent} from "@/lib/format";
 import {requirePermission} from "@/server/auth/actor";
 import {reportService} from "@/server/services/container";
+import {normalizePeriod} from "@/server/services/home.service";
 
 // Session data keeps this route blocking until it is moved to a streamed shell.
 export const instant = false;
@@ -30,32 +38,55 @@ export async function generateMetadata(): Promise<Metadata> {
 function Band({
   title,
   intro,
+  action,
   children,
 }: {
   title: string;
   intro: string;
+  action?: ReactNode;
   children: ReactNode;
 }) {
   return (
     <Stack gap={3}>
-      <Stack gap={1}>
-        <Heading level={2}>{title}</Heading>
-        <Text type="supporting">{intro}</Text>
-      </Stack>
+      <HStack justify="between" align="end" gap={3} wrap="wrap">
+        <Stack gap={1}>
+          <Heading level={2}>{title}</Heading>
+          <Text type="supporting">{intro}</Text>
+        </Stack>
+        {action}
+      </HStack>
       {children}
     </Stack>
   );
 }
 
-export default async function ReportsPage() {
+export default async function ReportsPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const actor = await requirePermission("report:read");
-  const [t, locale, report] = await Promise.all([
+  const params = await searchParams;
+  const sort = normalizeProfitabilitySort(params.sort);
+  const period = normalizePeriod(params.period);
+  const [t, tPeriod, locale, report] = await Promise.all([
     getTranslations("Reports"),
+    getTranslations("Reports.period"),
     getLocale(),
-    reportService.getReports(actor),
+    reportService.getReports(actor, {sort, period}),
   ]);
 
-  const {summary, margins, yields, alerts, can, from, to} = report;
+  const {
+    summary,
+    margins,
+    profitability,
+    categoryProfitability,
+    yields,
+    alerts,
+    can,
+    from,
+    to,
+  } = report;
   const dateRange = {
     from: formatBusinessDate(from, {locale}),
     to: formatBusinessDate(to, {locale}),
@@ -70,6 +101,17 @@ export default async function ReportsPage() {
           ? t("intro", dateRange)
           : t("opsIntro", dateRange)
       }
+      actions={
+        <PeriodFilter
+          period={period}
+          label={tPeriod("label")}
+          options={[7, 30, 90].map((days) => ({
+            value: days,
+            label: tPeriod("days", {days}),
+          }))}
+        />
+      }
+      contentWidth={1400}
       hasHeaderDivider
     >
       {summary ? (
@@ -105,7 +147,11 @@ export default async function ReportsPage() {
 
       {can.finance ? (
         <>
-          <Band title={t("marginsTitle")} intro={t("marginsIntro")}>
+          <Band
+            title={t("marginsTitle")}
+            intro={t("marginsIntro")}
+            action={<RefreshCostsButton />}
+          >
             {margins.length === 0 ? (
               <Card padding={4}>
                 <EmptyState
@@ -116,6 +162,37 @@ export default async function ReportsPage() {
               </Card>
             ) : (
               <ProductMarginsTable margins={margins} />
+            )}
+          </Band>
+
+          <Divider />
+
+          <Band
+            title={t("profitabilityTitle")}
+            intro={t("profitabilityIntro")}
+            action={<ProfitabilitySortSelector sort={sort} />}
+          >
+            {profitability.length === 0 ? (
+              <Card padding={4}>
+                <EmptyState
+                  title={t("emptyProfitabilityTitle")}
+                  description={t("emptyProfitabilityBody")}
+                  isCompact
+                />
+              </Card>
+            ) : (
+              <Stack gap={6}>
+                <ProductProfitabilityTable records={profitability} />
+                {categoryProfitability.length > 0 ? (
+                  <Stack gap={2}>
+                    <Heading level={3}>{t("categoriesTitle")}</Heading>
+                    <CategoryProfitabilityTable
+                      records={categoryProfitability}
+                      currency={profitability[0]?.currency ?? "EUR"}
+                    />
+                  </Stack>
+                ) : null}
+              </Stack>
             )}
           </Band>
 

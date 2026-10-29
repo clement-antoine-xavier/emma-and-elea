@@ -105,27 +105,27 @@
       "items": {
         "costs": {
           "title": "Know what each product really costs",
-          "body": "Ingredients, losses, packaging and labour in one cost price. Margins update when a purchase price changes."
+          "body": "Ingredients, losses, packaging and labour in one cost price. See when a snapshot is out of date and refresh margins after a price change."
         },
         "production": {
           "title": "Produce the right quantity",
-          "body": "Suggested quantities from sales history, orders, seasonality, days of the week and local events."
+          "body": "Suggested quantities from sales history, confirmed orders, days of the week and local events."
         },
         "stock": {
           "title": "Keep stock and traceability under control",
-          "body": "Real-time stock, ingredient requirements, batches, expiry dates, replenishment alerts and inspection-ready records."
+          "body": "Real-time stock, ingredient requirements, batches, expiry dates, replenishment alerts and lot-level traceability."
         },
         "team": {
-          "title": "Put the right people on the right tasks",
-          "body": "Skills, availability and workload in one place, with the right tasks assigned to the right people and conflicts made visible."
+          "title": "Organise the workshop",
+          "body": "Profiles, availability, shifts and absences in one place, so the right people are in the right place."
         },
         "margins": {
           "title": "See which products make money",
-          "body": "Compare products by profitability, volume and loss rate, and decide whether to adjust a price, a recipe or a supplier."
+          "body": "Compare the cost and margin of each product, and refresh them when prices change."
         },
         "mobile": {
           "title": "Use it in the workshop, not just the office",
-          "body": "Fast on computer, tablet or mobile, with progressive integration into checkout, scales and label printers."
+          "body": "Fast on computer, tablet or mobile, in the office or in the workshop."
         }
       }
     },
@@ -858,6 +858,16 @@
         "title": "Equipment",
         "body": "Ovens, mixers and their power draw, used for energy costing.",
         "action": "Manage equipment"
+      },
+      "events": {
+        "title": "Local events",
+        "body": "Holidays, school breaks and local events that shift demand.",
+        "action": "Manage events"
+      },
+      "skills": {
+        "title": "Skills",
+        "body": "The skills the workshop needs, assigned to employees with a level.",
+        "action": "Manage skills"
       }
     },
     "organization": {
@@ -1485,6 +1495,9 @@
       "lotTooLong": "The lot number is too long."
     }
   },
+  "Print": {
+    "action": "Print / Save as PDF"
+  },
   "Stock": {
     "metadataTitle": "Stock · Emma & Éléa",
     "title": "Stock",
@@ -1495,6 +1508,24 @@
       "title": "Replenishment alerts",
       "body": "{count, plural, one {# item is below its minimum stock.} other {# items are below their minimum stock.}}",
       "none": "Every item is above its minimum."
+    },
+    "replenishment": {
+      "title": "Suggested purchases",
+      "intro": "Par level (or minimum) minus stock on hand and open draft receipts. Create a draft receipt in one click.",
+      "emptyTitle": "Nothing to order",
+      "emptyBody": "Every item with a par level or minimum is covered.",
+      "noSupplier": "No supplier price",
+      "create": "Create draft receipt",
+      "errorTitle": "Could not create the receipt",
+      "columns": {
+        "item": "Item",
+        "site": "Site",
+        "onHand": "On hand",
+        "open": "On order",
+        "suggested": "Suggested",
+        "supplier": "Supplier",
+        "price": "Unit price"
+      }
     },
     "levelsTitle": "Stock levels",
     "levelsIntro": "Only available lots with a remaining quantity are counted.",
@@ -1546,6 +1577,7 @@
     },
     "lot": {
       "backToLots": "Back to lots",
+      "inspection": "Inspection sheet",
       "movementsTitle": "Movements",
       "movementsIntro": "The append-only ledger for this lot. Corrections are new movements, never edits.",
       "fields": {
@@ -1578,12 +1610,29 @@
     },
     "trace": {
       "title": "Traceability",
-      "intro": "Where this lot came from and which batches consumed it.",
+      "intro": "Where this lot came from, which batches consumed it and where it was dispatched or wasted.",
       "source": "Source",
       "sourceLots": "Source lots",
       "consumedBy": "Consumed by",
+      "dispatchedTo": "Dispatched to",
+      "waste": "Waste",
       "none": "None recorded",
       "unknownSource": "Unknown source"
+    },
+    "inspection": {
+      "metadataTitle": "Inspection sheet · Emma & Éléa",
+      "title": "Inspection sheet",
+      "back": "Back to lot",
+      "movementsTitle": "Movements",
+      "movementsIntro": "The ledger reprinted for an inspection.",
+      "fields": {
+        "item": "Item",
+        "site": "Site",
+        "received": "Received",
+        "expires": "Best before",
+        "quantityReceived": "Received quantity",
+        "quantityRemaining": "Remaining"
+      }
     },
     "countsLink": "Stock counts",
     "counts": {
@@ -1660,6 +1709,113 @@
         "note": "Note",
         "noNote": "No note"
       }
+    }
+  },
+  "Skills": {
+    "title": "Skills",
+    "intro": "The skills the workshop needs. Assign them to employees with a level and an optional certification date.",
+    "createTitle": "Add a skill",
+    "createIntro": "A short code keeps the list readable.",
+    "submit": "Add skill",
+    "listTitle": "Skills",
+    "active": "Active",
+    "archived": "Archived",
+    "archive": "Archive",
+    "errorTitle": "Could not save the skill",
+    "emptyTitle": "No skills yet",
+    "emptyBody": "Add the skills used in the workshop, then assign them to employees.",
+    "fields": {
+      "code": "Code",
+      "name": "Name",
+      "description": "Description"
+    },
+    "columns": {
+      "name": "Skill",
+      "code": "Code",
+      "description": "Description",
+      "status": "Status"
+    },
+    "validation": {
+      "codeInvalid": "Use 2 to 32 letters, digits or hyphens.",
+      "nameRequired": "Enter a name.",
+      "nameTooLong": "Use at most 80 characters.",
+      "descriptionTooLong": "Use at most 500 characters.",
+      "levelInvalid": "Choose a level.",
+      "certifiedInvalid": "Choose a date or leave it empty."
+    },
+    "employee": {
+      "title": "Skills",
+      "intro": "Skills this employee can use, with a level used for task suggestions.",
+      "errorTitle": "Could not update the skills",
+      "submit": "Add skill",
+      "remove": "Remove",
+      "fields": {
+        "skill": "Skill",
+        "level": "Level",
+        "certifiedOn": "Certified on"
+      },
+      "columns": {
+        "skill": "Skill",
+        "level": "Level",
+        "certifiedOn": "Certified on"
+      },
+      "emptyTitle": "No skills assigned",
+      "emptyBody": "Add a skill to help assign the right tasks.",
+      "levels": {
+        "BEGINNER": "Beginner",
+        "INTERMEDIATE": "Intermediate",
+        "ADVANCED": "Advanced",
+        "EXPERT": "Expert"
+      }
+    }
+  },
+  "Events": {
+    "title": "Local events",
+    "intro": "Holidays, school breaks and local events that shift demand. The uplift is applied to the planning forecast.",
+    "createTitle": "Add an event",
+    "createIntro": "Only the date range and uplift affect the forecast.",
+    "submit": "Add event",
+    "listTitle": "Events",
+    "shared": "All sites",
+    "active": "Active",
+    "archived": "Archived",
+    "archive": "Archive",
+    "errorTitle": "Could not save the event",
+    "emptyTitle": "No events yet",
+    "emptyBody": "Add a holiday, a school break or a local event to adjust the forecast.",
+    "fields": {
+      "name": "Name",
+      "kind": "Kind",
+      "site": "Site",
+      "startsOn": "Starts on",
+      "endsOn": "Ends on",
+      "expectedUpliftPct": "Expected uplift",
+      "expectedUpliftPctHint": "Percentage added to the forecast. A negative value reduces it.",
+      "note": "Note"
+    },
+    "columns": {
+      "name": "Event",
+      "kind": "Kind",
+      "site": "Site",
+      "dates": "Dates",
+      "uplift": "Uplift",
+      "status": "Status"
+    },
+    "kinds": {
+      "LOCAL_EVENT": "Local event",
+      "HOLIDAY": "Holiday",
+      "SCHOOL_BREAK": "School break",
+      "WEATHER": "Weather",
+      "OTHER": "Other"
+    },
+    "validation": {
+      "nameRequired": "Enter a name.",
+      "nameTooLong": "Use at most 120 characters.",
+      "kindInvalid": "Choose a kind.",
+      "dateInvalid": "Choose a date.",
+      "datesInvalid": "The end date must be on or after the start date.",
+      "upliftInvalid": "Enter a percentage between -100 and 200.",
+      "noteTooLong": "Use at most 500 characters."
     }
   },
   "Recipes": {
@@ -1794,10 +1950,53 @@
       "cancel": "Cancel",
       "errorTitle": "Could not publish the version"
     },
+    "simulation": {
+      "title": "Simulate a cost or price change",
+      "intro": "Scale current prices, rates and tariffs to see the impact before changing anything. Nothing is saved.",
+      "errorTitle": "Could not run the simulation",
+      "warningsTitle": "Some references are missing",
+      "warnings": {
+        "MISSING_PRICE": "No supplier or receipt price for {subject}.",
+        "MISSING_RATE": "No labour rate for {subject}.",
+        "MISSING_TARIFF": "No energy tariff for {subject}."
+      },
+      "fields": {
+        "materialPct": "Ingredients variation (%)",
+        "packagingPct": "Packaging variation (%)",
+        "labourPct": "Labour variation (%)",
+        "energyPct": "Energy variation (%)",
+        "salePrice": "Proposed sale price",
+        "salePriceHint": "Leave as is to keep the current sale price."
+      },
+      "submit": "Run simulation",
+      "results": {
+        "baseCost": "Current cost / unit",
+        "simulatedCost": "Simulated cost / unit",
+        "costDelta": "Cost change",
+        "baseMargin": "Current margin",
+        "simulatedMargin": "Simulated margin",
+        "marginDelta": "Margin change",
+        "materials": "Ingredients",
+        "packaging": "Packaging",
+        "labour": "Labour",
+        "energy": "Energy",
+        "overhead": "Overhead",
+        "total": "Total cost"
+      },
+      "validation": {
+        "percentInvalid": "Enter a percentage between -100 and 300.",
+        "priceInvalid": "Enter a positive sale price, or leave it empty."
+      }
+    },
     "cost": {
       "title": "Cost breakdown",
       "snapshotAt": "Stored snapshot from {date}.",
       "livePreview": "Live preview from current supplier prices, rates and tariffs.",
+      "staleTitle": "This cost is out of date",
+      "staleBody": "A price, rate or tariff changed since this snapshot. Recalculate to refresh the margin.",
+      "refresh": "Recalculate cost",
+      "refreshTitle": "Could not recalculate the cost",
+      "refreshError": "Check that every price, rate and tariff is available, then try again.",
       "material": "Material",
       "packaging": "Packaging",
       "labour": "Labour",
@@ -1977,6 +2176,7 @@
       "title": "Production planning",
       "intro": "Forecast counter sales and confirmed orders, then turn them into a production plan.",
       "back": "Back to production",
+      "manageEvents": "Manage events",
       "detailTitle": "Production plan",
       "noSiteTitle": "No site yet",
       "noSiteBody": "Create a site in settings before planning production.",
@@ -2422,6 +2622,10 @@
     "metadataTitle": "Reports · Emma & Éléa",
     "title": "Reports",
     "intro": "Performance from {from} to {to}: margins, yields, waste and stock alerts.",
+    "period": {
+      "label": "Period",
+      "days": "{days} days"
+    },
     "summaryTitle": "Summary",
     "summaryIntro": "Waste compared with the cost of completed production in the period.",
     "wasteCost": "Waste cost",
@@ -2429,13 +2633,58 @@
     "wasteRate": "Waste rate",
     "alertsCount": "Stock alerts",
     "marginsTitle": "Product margins",
-    "marginsIntro": "Latest published cost snapshot compared with the output item sale price.",
+    "marginsIntro": "Latest published cost snapshot compared with the current output item sale price.",
+    "costs": {
+      "refresh": "Recalculate all costs",
+      "refreshed": "Costs refreshed: {refreshed}. Skipped for missing prices: {skipped}.",
+      "error": "Could not recalculate the costs. A price, rate or tariff is probably missing."
+    },
     "margins": {
       "columns": {
         "product": "Product",
         "cost": "Cost / unit",
         "price": "Sale price",
-        "margin": "Margin"
+        "margin": "Margin",
+        "computedAt": "Costed on"
+      }
+    },
+    "profitabilityTitle": "Product profitability",
+    "profitabilityIntro": "Produced, sold, unsold and wasted quantities with the contribution each product leaves over the period. Unsold is an estimate: produced − sold − waste.",
+    "categoriesTitle": "By category",
+    "emptyProfitabilityTitle": "No activity yet",
+    "emptyProfitabilityBody": "Record sales, complete a batch or record waste to build the profitability view.",
+    "profitability": {
+      "missingRevenue": "revenue incomplete",
+      "sort": {
+        "label": "Sort by",
+        "contribution": "Contribution",
+        "margin": "Margin",
+        "volume": "Volume",
+        "unsold": "Unsold rate",
+        "loss": "Loss rate"
+      },
+      "columns": {
+        "product": "Product",
+        "produced": "Produced",
+        "sold": "Sold",
+        "unsold": "Unsold",
+        "waste": "Waste",
+        "revenue": "Revenue",
+        "contribution": "Contribution",
+        "margin": "Margin",
+        "loss": "Loss rate",
+        "unsoldRate": "Unsold rate"
+      }
+    },
+    "categories": {
+      "columns": {
+        "category": "Category",
+        "sold": "Sold",
+        "unsold": "Unsold",
+        "revenue": "Revenue",
+        "contribution": "Contribution",
+        "margin": "Margin",
+        "loss": "Loss rate"
       }
     },
     "emptyMarginsTitle": "No published costs yet",

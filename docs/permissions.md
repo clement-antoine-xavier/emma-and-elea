@@ -1,7 +1,7 @@
 # Roles and permissions
 
 - Status: Implemented
-- Last updated: 2026-10-26
+- Last updated: 2026-10-29
 - Decision: [ADR-0011](adr/0011-model-organization-roles-and-permissions.md)
 - Source of truth: [`src/lib/permissions.ts`](../src/lib/permissions.ts)
 
@@ -84,6 +84,7 @@ caller's own records or work.
 | Daily sales | W | W | R | — | W | — | R | — |
 | Team, skills, shifts | W | W | W | R | own | own | — | — |
 | Absences | decide | decide | decide own team | request own | request own | request own | — | — |
+| Local events | W | W | W | R | W | R | R | R |
 | Reports | all | all | ops + finance | stock | own sales | — | finance | traceability |
 
 \* Reserved role, hidden from the UI until its screens exist.
@@ -126,6 +127,7 @@ Additional rules:
 | `sales` | `read`, `write` |
 | `team` | `read`, `write`, `self` |
 | `absence` | `read`, `request`, `decide` |
+| `event` | `read`, `write` |
 | `report` | `read`, `finance`, `traceability` |
 
 `member:create`, `member:update`, `member:delete`, `invitation:create`,

@@ -5,16 +5,29 @@ import {
   isGranted,
 } from "@/server/auth/guards";
 import type {Actor, OrganizationActor} from "@/server/auth/types";
+import {Decimal} from "@prisma/client/runtime/client";
 import {DomainError} from "@/server/domain/errors";
-import {computeCosting} from "@/server/domain/costing";
+import {
+  computeCosting,
+  costInputHash,
+  type CostingInput,
+  type CostingResult,
+} from "@/server/domain/costing";
 import type {ConvertibleUnit} from "@/server/domain/units";
 import type {
   RecipeCostRecord,
   RecipeDetailRecord,
   RecipeListRecord,
   RecipeOptions,
+  RecipeSimulationRecord,
   RecipeVersionDetailRecord,
+  SimulationCostRecord,
 } from "@/lib/dto";
+import {
+  simulateCosting,
+  type CostAssumptions,
+  type SimulationResult,
+} from "@/server/domain/simulation";
 import {isUniqueConstraintError} from "@/server/repositories/errors";
 import type {
   CostSnapshotInput,
@@ -71,6 +84,11 @@ export interface RecipeService {
     actor: Actor | null,
     versionId: string,
   ): Promise<RecipeVersionView | null>;
+  simulateVersion(
+    actor: Actor | null,
+    versionId: string,
+    assumptions: CostAssumptions,
+  ): Promise<RecipeSimulationRecord>;
   getOptions(actor: Actor | null): Promise<RecipeOptions>;
   createRecipe(
     actor: Actor | null,
@@ -107,6 +125,10 @@ export interface RecipeService {
     operationId: string,
   ): Promise<void>;
   publishVersion(actor: Actor | null, versionId: string): Promise<void>;
+  refreshCost(actor: Actor | null, versionId: string): Promise<void>;
+  refreshAllCosts(
+    actor: Actor | null,
+  ): Promise<{refreshed: number; skipped: number}>;
   archiveRecipe(actor: Actor | null, id: string): Promise<void>;
 }
 
@@ -142,6 +164,8 @@ function costView(
     marginPct: result.marginPct?.toString() ?? null,
     currency: result.currency,
     computedAt,
+    isStale: false,
+    inputHash: null,
     lines: result.lines.map((line) => ({
       id: `${line.kind}-${line.position}`,
       kind: line.kind,
@@ -155,6 +179,30 @@ function costView(
       amount: line.amount.toString(),
     })),
     warnings: result.warnings,
+  };
+}
+
+function simulationCost(result: CostingResult): SimulationCostRecord {
+  return {
+    materialCost: result.materialCost.toString(),
+    packagingCost: result.packagingCost.toString(),
+    labourCost: result.labourCost.toString(),
+    energyCost: result.energyCost.toString(),
+    overheadCost: result.overheadCost.toString(),
+    totalCost: result.totalCost.toString(),
+    costPerUnit: result.costPerUnit.toString(),
+    marginPct: result.marginPct?.toString() ?? null,
+    currency: result.currency,
+  };
+}
+
+function simulationRecord(result: SimulationResult): RecipeSimulationRecord {
+  return {
+    base: simulationCost(result.base),
+    simulated: simulationCost(result.simulated),
+    costDeltaPct: result.costDeltaPct,
+    marginDeltaPp: result.marginDeltaPp,
+    warnings: result.simulated.warnings,
   };
 }
 
@@ -289,16 +337,71 @@ export function createRecipeService(deps: {
       ];
     });
 
-    const result = computeCosting({
+    const input: CostingInput = {
       yieldQuantity: version.yieldQuantity,
       overheadPct: settings.overheadPct,
       salePrice: version.salePrice,
       currency: settings.currency,
       lines,
       operations,
-    });
+    };
+    const result = computeCosting(input);
 
-    return {result, settings};
+    return {result, settings, input, hash: costInputHash(input)};
+  }
+
+  function snapshotFrom(
+    version: RecipeVersionDetailRecord,
+    result: CostingResult,
+    inputHash: string,
+  ): CostSnapshotInput {
+    return {
+      currency: result.currency,
+      materialCost: result.materialCost.toString(),
+      packagingCost: result.packagingCost.toString(),
+      labourCost: result.labourCost.toString(),
+      energyCost: result.energyCost.toString(),
+      overheadCost: result.overheadCost.toString(),
+      totalCost: result.totalCost.toString(),
+      yieldQuantity: version.yieldQuantity,
+      yieldUnitId: version.yieldUnitId,
+      costPerUnit: result.costPerUnit.toString(),
+      salePrice: version.salePrice,
+      marginPct: result.marginPct?.toString() ?? null,
+      inputHash,
+      lines: result.lines.map((line) => ({
+        kind: line.kind,
+        itemId: line.itemId,
+        lotId: line.lotId,
+        recipeOperationId: line.recipeOperationId,
+        label: line.label,
+        quantity: line.quantity?.toString() ?? null,
+        unitId: line.unitId,
+        unitCost: line.unitCost?.toString() ?? null,
+        amount: line.amount.toString(),
+        position: line.position,
+      })),
+    };
+  }
+
+  /**
+   * The stored snapshot keeps the margin computed at publish time. Recompute
+   * it from the current sale price so a price edit is visible immediately.
+   */
+  function currentMargin(
+    costPerUnit: string,
+    salePrice: string | null,
+  ): string | null {
+    if (!salePrice) return null;
+    const price = new Decimal(salePrice);
+    if (price.lessThanOrEqualTo(0)) return null;
+
+    return price
+      .minus(costPerUnit)
+      .div(price)
+      .mul(100)
+      .toDecimalPlaces(2, Decimal.ROUND_HALF_UP)
+      .toString();
   }
 
   async function requireVersion(
@@ -389,9 +492,19 @@ export function createRecipeService(deps: {
 
       const canReadCost = isGranted(actor, "cost:read");
 
-      if (canReadCost && version.status === "DRAFT") {
-        const {result} = await computeVersion(actor.organizationId, version);
-        version.cost = costView(result, version, null);
+      if (canReadCost) {
+        if (version.status === "DRAFT") {
+          const {result} = await computeVersion(actor.organizationId, version);
+          version.cost = costView(result, version, null);
+        } else if (version.cost) {
+          const {hash} = await computeVersion(actor.organizationId, version);
+          version.cost.isStale =
+            version.cost.inputHash === null || version.cost.inputHash !== hash;
+          version.cost.marginPct = currentMargin(
+            version.cost.costPerUnit,
+            version.salePrice,
+          );
+        }
       }
 
       return {
@@ -400,6 +513,16 @@ export function createRecipeService(deps: {
         canPublish: canPublish(actor),
         canReadCost,
       };
+    },
+
+    async simulateVersion(actorInput, versionId, assumptions) {
+      const actor = assertOrganizationActor(actorInput);
+      assertPermission(actor, "cost:read");
+
+      const version = await requireVersion(actor.organizationId, versionId);
+      const {input} = await computeVersion(actor.organizationId, version);
+
+      return simulationRecord(simulateCosting(input, assumptions));
     },
 
     async getOptions(actorInput) {
@@ -587,7 +710,10 @@ export function createRecipeService(deps: {
         await deps.recipeRepository.listGraph(actor.organizationId),
       );
 
-      const {result} = await computeVersion(actor.organizationId, version);
+      const {result, hash} = await computeVersion(
+        actor.organizationId,
+        version,
+      );
 
       if (result.warnings.length > 0) {
         throw new DomainError(
@@ -598,39 +724,86 @@ export function createRecipeService(deps: {
         );
       }
 
-      const snapshot: CostSnapshotInput = {
-        currency: result.currency,
-        materialCost: result.materialCost.toString(),
-        packagingCost: result.packagingCost.toString(),
-        labourCost: result.labourCost.toString(),
-        energyCost: result.energyCost.toString(),
-        overheadCost: result.overheadCost.toString(),
-        totalCost: result.totalCost.toString(),
-        yieldQuantity: version.yieldQuantity,
-        yieldUnitId: version.yieldUnitId,
-        costPerUnit: result.costPerUnit.toString(),
-        salePrice: version.salePrice,
-        marginPct: result.marginPct?.toString() ?? null,
-        inputHash: null,
-        lines: result.lines.map((line) => ({
-          kind: line.kind,
-          itemId: line.itemId,
-          lotId: line.lotId,
-          recipeOperationId: line.recipeOperationId,
-          label: line.label,
-          quantity: line.quantity?.toString() ?? null,
-          unitId: line.unitId,
-          unitCost: line.unitCost?.toString() ?? null,
-          amount: line.amount.toString(),
-          position: line.position,
-        })),
-      };
-
       await deps.recipeRepository.publish(
         actor.organizationId,
         versionId,
-        snapshot,
+        snapshotFrom(version, result, hash),
       );
+    },
+
+    async refreshCost(actorInput, versionId) {
+      const actor = assertOrganizationActor(actorInput);
+      assertPermission(actor, "cost:read");
+
+      const version = await requireVersion(actor.organizationId, versionId);
+      if (version.status === "DRAFT") {
+        throw new DomainError("INVALID_STATE_TRANSITION");
+      }
+
+      const {result, hash} = await computeVersion(
+        actor.organizationId,
+        version,
+      );
+
+      if (result.warnings.length > 0) {
+        throw new DomainError(
+          "MISSING_PRICE",
+          result.warnings
+            .map((warning) => `${warning.code}: ${warning.subject}`)
+            .join(", "),
+        );
+      }
+
+      await deps.recipeRepository.addCostSnapshot(
+        actor.organizationId,
+        versionId,
+        snapshotFrom(version, result, hash),
+        actor.userId,
+      );
+    },
+
+    async refreshAllCosts(actorInput) {
+      const actor = assertOrganizationActor(actorInput);
+      assertPermission(actor, "cost:read");
+
+      const ids = await deps.recipeRepository.listPublishedVersionIds(
+        actor.organizationId,
+      );
+
+      let refreshed = 0;
+      let skipped = 0;
+
+      for (const id of ids) {
+        const version = await deps.recipeRepository.findVersion(
+          actor.organizationId,
+          id,
+        );
+        if (!version) {
+          skipped += 1;
+          continue;
+        }
+
+        const {result, hash} = await computeVersion(
+          actor.organizationId,
+          version,
+        );
+
+        // Never replace a good snapshot with zeroed costs.
+        if (result.warnings.length > 0) {
+          skipped += 1;
+          continue;
+        }
+
+        await deps.recipeRepository.addCostSnapshot(
+          actor.organizationId,
+          id,
+          snapshotFrom(version, result, hash),
+          actor.userId,
+        );
+        refreshed += 1;
+      }
+
+      return {refreshed, skipped};
     },
 
     async archiveRecipe(actorInput, id) {

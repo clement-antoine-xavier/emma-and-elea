@@ -21,3 +21,30 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+/**
+ * Inspection sheets are printed with the browser's print-to-PDF. Chrome
+ * (navigation, rails, actions) is removed so the sheet stands alone on A4.
+ */
+@media print {
+  body {
+    background: #fff;
+  }
+
+  nav,
+  aside,
+  header,
+  footer,
+  [data-print-hide] {
+    display: none !important;
+  }
+
+  main {
+    max-width: none !important;
+    padding: 0 !important;
+  }
+
+  [data-print-sheet] {
+    break-inside: avoid;
+  }
+}

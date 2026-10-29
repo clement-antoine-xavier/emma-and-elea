@@ -46,6 +46,7 @@ export const reportRepository: ReportRepository = {
                 costPerUnit: true,
                 marginPct: true,
                 currency: true,
+                computedAt: true,
               },
             },
           },
@@ -78,6 +79,7 @@ export const reportRepository: ReportRepository = {
           salePrice: salePrice?.toString() ?? null,
           marginPct,
           currency: snapshot.currency,
+          computedAt: snapshot.computedAt,
         },
       ];
     });

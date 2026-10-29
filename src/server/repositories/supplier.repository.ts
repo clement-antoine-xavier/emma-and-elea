@@ -5,6 +5,7 @@ import type {
   SupplierListRecord,
   SupplierRecord,
 } from "@/lib/dto";
+import {packPricePerStockUnit} from "@/server/domain/costing";
 
 export type SupplierInput = {
   code: string;
@@ -29,8 +30,20 @@ export type SupplierItemInput = {
   validFrom: Date;
 };
 
+export type PreferredSupplierPrice = {
+  supplierId: string;
+  supplierName: string;
+  unitCostPerStockUnit: string;
+  currency: string;
+};
+
 export interface SupplierRepository {
   list(organizationId: string): Promise<SupplierListRecord[]>;
+  preferredPrices(
+    organizationId: string,
+    itemIds: readonly string[],
+    date: Date,
+  ): Promise<Record<string, PreferredSupplierPrice>>;
   findById(
     organizationId: string,
     id: string,
@@ -173,6 +186,67 @@ export const supplierRepository: SupplierRepository = {
       ...toRecord(supplier),
       activeItemCount: supplier.items.length,
     }));
+  },
+
+  async preferredPrices(organizationId, itemIds, date) {
+    if (itemIds.length === 0) return {};
+
+    const rows = await prisma.supplierItem.findMany({
+      where: {
+        organizationId,
+        itemId: {in: [...itemIds]},
+        archivedAt: null,
+        validFrom: {lte: date},
+        OR: [{validTo: null}, {validTo: {gt: date}}],
+      },
+      orderBy: [{isPreferred: "desc"}, {validFrom: "desc"}],
+      select: {
+        itemId: true,
+        price: true,
+        packQuantity: true,
+        currency: true,
+        packUnit: {select: {code: true, kind: true, factorToBase: true}},
+        supplier: {select: {id: true, name: true}},
+        item: {
+          select: {
+            stockUnit: {select: {code: true, kind: true, factorToBase: true}},
+          },
+        },
+      },
+    });
+
+    const prices: Record<string, PreferredSupplierPrice> = {};
+
+    for (const row of rows) {
+      if (prices[row.itemId]) continue;
+
+      try {
+        prices[row.itemId] = {
+          supplierId: row.supplier.id,
+          supplierName: row.supplier.name,
+          unitCostPerStockUnit: packPricePerStockUnit(
+            row.price.toString(),
+            row.packQuantity.toString(),
+            {
+              code: row.packUnit.code,
+              kind: row.packUnit.kind as "MASS" | "VOLUME" | "COUNT" | "LENGTH",
+              factorToBase: row.packUnit.factorToBase.toString(),
+            },
+            {
+              code: row.item.stockUnit.code,
+              kind: row.item.stockUnit
+                .kind as "MASS" | "VOLUME" | "COUNT" | "LENGTH",
+              factorToBase: row.item.stockUnit.factorToBase.toString(),
+            },
+          ).toString(),
+          currency: row.currency,
+        };
+      } catch {
+        // An incompatible pack unit cannot price the stock unit.
+      }
+    }
+
+    return prices;
   },
 
   async findById(organizationId, id) {

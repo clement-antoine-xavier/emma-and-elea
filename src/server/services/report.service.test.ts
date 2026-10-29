@@ -1,4 +1,5 @@
 import {createReportService} from "@/server/services/report.service";
+import type {ProfitabilityRepository} from "@/server/repositories/profitability.repository";
 import type {ReportRepository} from "@/server/repositories/report.repository";
 import type {StockRepository} from "@/server/repositories/stock.repository";
 import type {StockLevelRecord} from "@/lib/dto";
@@ -10,6 +11,7 @@ const lowStock: StockLevelRecord = {
   itemName: "Flour",
   siteId: "site_1",
   siteName: "Atelier",
+  unitId: "unit_kg",
   unitCode: "kg",
   quantity: "5",
   minStockQuantity: "10",
@@ -35,6 +37,7 @@ function dependencies() {
         salePrice: "2",
         marginPct: "50",
         currency: "EUR",
+        computedAt: new Date("2026-10-26T00:00:00.000Z"),
       },
     ]),
     batchYields: jest.fn().mockResolvedValue([
@@ -65,11 +68,23 @@ function dependencies() {
   const stockRepository = {
     listLevels: jest.fn().mockResolvedValue([lowStock, healthyStock]),
   } as unknown as StockRepository;
+  const profitabilityRepository = {
+    getData: jest.fn().mockResolvedValue({
+      items: [],
+      metrics: {},
+      currency: "EUR",
+    }),
+  } as unknown as ProfitabilityRepository;
 
   return {
     reportRepository,
     stockRepository,
-    service: createReportService({reportRepository, stockRepository}),
+    profitabilityRepository,
+    service: createReportService({
+      reportRepository,
+      stockRepository,
+      profitabilityRepository,
+    }),
   };
 }
 

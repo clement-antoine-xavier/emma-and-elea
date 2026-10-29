@@ -1,4 +1,8 @@
-import {computeCosting, packPricePerStockUnit} from "@/server/domain/costing";
+import {
+  computeCosting,
+  costInputHash,
+  packPricePerStockUnit,
+} from "@/server/domain/costing";
 
 const kg = {
   code: "kg",
@@ -193,5 +197,75 @@ describe("computeCosting", () => {
       {code: "MISSING_RATE", subject: "Mixing"},
       {code: "MISSING_TARIFF", subject: "Baking"},
     ]);
+  });
+});
+
+describe("costInputHash", () => {
+  const input = (): Parameters<typeof costInputHash>[0] => ({
+    yieldQuantity: "20",
+    overheadPct: "10",
+    salePrice: "1.60",
+    currency: "EUR",
+    lines: [
+      {
+        kind: "MATERIAL",
+        itemId: "item_flour",
+        label: "Flour",
+        quantity: "1",
+        unit: kg,
+        stockUnit: kg,
+        stockUnitId: "unit_kg",
+        lossPct: "2",
+        isOptional: false,
+        unitCostPerStockUnit: "10",
+      },
+    ],
+    operations: [
+      {
+        kind: "LABOUR",
+        recipeOperationId: "op_1",
+        label: "Mixing",
+        durationMinutes: 10,
+        activeMinutes: null,
+        labourHourlyCost: "18",
+        equipmentPowerKw: null,
+        energyPricePerKwh: null,
+      },
+    ],
+  });
+
+  it("is deterministic for the same inputs", () => {
+    expect(costInputHash(input())).toBe(costInputHash(input()));
+  });
+
+  it("changes when an ingredient price changes", () => {
+    const changed = input();
+    changed.lines[0].unitCostPerStockUnit = "11";
+    expect(costInputHash(changed)).not.toBe(costInputHash(input()));
+  });
+
+  it("changes when a labour rate changes", () => {
+    const changed = input();
+    changed.operations[0].labourHourlyCost = "20";
+    expect(costInputHash(changed)).not.toBe(costInputHash(input()));
+  });
+
+  it("changes when a loss percentage changes", () => {
+    const changed = input();
+    changed.lines[0].lossPct = "3";
+    expect(costInputHash(changed)).not.toBe(costInputHash(input()));
+  });
+
+  it("ignores the sale price, which only moves the margin", () => {
+    const changed = input();
+    changed.salePrice = "2.50";
+    expect(costInputHash(changed)).toBe(costInputHash(input()));
+  });
+
+  it("ignores display labels", () => {
+    const changed = input();
+    changed.lines[0].label = "Flour T65";
+    changed.operations[0].label = "Mixing bowl";
+    expect(costInputHash(changed)).toBe(costInputHash(input()));
   });
 });

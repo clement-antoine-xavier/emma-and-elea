@@ -1,3 +1,4 @@
+import {createHash} from "node:crypto";
 import {Decimal} from "@prisma/client/runtime/client";
 import {
   convertQuantity,
@@ -96,6 +97,65 @@ export type CostingResult = {
 
 function money(value: Decimal): Decimal {
   return value.toDecimalPlaces(MONEY_SCALE, Decimal.ROUND_HALF_UP);
+}
+
+function decimalString(value: QuantityInput): string {
+  return new Decimal(value).toFixed();
+}
+
+function unitSignature(unit: ConvertibleUnit): readonly string[] {
+  return [unit.code, unit.kind, decimalString(unit.factorToBase)];
+}
+
+/**
+ * Fingerprint of every input that can move a stored cost: resolved prices,
+ * quantities, units, losses, rates, tariffs and overhead. The sale price is
+ * deliberately excluded: a price change moves the margin, not the cost, and
+ * the reports recompute the margin from the current sale price.
+ *
+ * Snapshots written before this helper existed have a null hash and are
+ * treated as stale until refreshed.
+ */
+export function costInputHash(input: CostingInput): string {
+  const payload = {
+    currency: input.currency,
+    yieldQuantity: decimalString(input.yieldQuantity),
+    overheadPct: decimalString(input.overheadPct),
+    lines: input.lines.map((line) => ({
+      kind: line.kind,
+      itemId: line.itemId,
+      quantity: decimalString(line.quantity),
+      unit: unitSignature(line.unit),
+      stockUnit: unitSignature(line.stockUnit),
+      stockUnitId: line.stockUnitId,
+      lossPct: decimalString(line.lossPct),
+      isOptional: line.isOptional,
+      unitCost:
+        line.unitCostPerStockUnit === null
+          ? null
+          : decimalString(line.unitCostPerStockUnit),
+      lotId: line.lotId ?? null,
+    })),
+    operations: input.operations.map((operation) => ({
+      kind: operation.kind,
+      durationMinutes: operation.durationMinutes,
+      activeMinutes: operation.activeMinutes,
+      labourHourlyCost:
+        operation.labourHourlyCost === null
+          ? null
+          : decimalString(operation.labourHourlyCost),
+      equipmentPowerKw:
+        operation.equipmentPowerKw === null
+          ? null
+          : decimalString(operation.equipmentPowerKw),
+      energyPricePerKwh:
+        operation.energyPricePerKwh === null
+          ? null
+          : decimalString(operation.energyPricePerKwh),
+    })),
+  };
+
+  return createHash("sha256").update(JSON.stringify(payload)).digest("hex");
 }
 
 /**

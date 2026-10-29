@@ -311,7 +311,7 @@ describe("recipe read views", () => {
     expect(costingRepository.getSettings).not.toHaveBeenCalled();
   });
 
-  it("keeps a published snapshot untouched", async () => {
+  it("keeps the published cost snapshot and checks it for staleness", async () => {
     const published = {
       ...version,
       status: "PUBLISHED" as const,
@@ -326,6 +326,8 @@ describe("recipe read views", () => {
         marginPct: "95",
         currency: "EUR",
         computedAt: new Date("2026-10-27T00:00:00.000Z"),
+        isStale: false,
+        inputHash: null,
         lines: [],
         warnings: [],
       },
@@ -337,7 +339,9 @@ describe("recipe read views", () => {
     const view = await service.getVersion(actorFor("owner"), "version_1");
 
     expect(view?.version.cost).toBe(published.cost);
-    expect(costingRepository.getSettings).not.toHaveBeenCalled();
+    expect(view?.version.cost?.costPerUnit).toBe("0.1");
+    expect(view?.version.cost?.isStale).toBe(true);
+    expect(costingRepository.getSettings).toHaveBeenCalledWith("org_1");
   });
 
   it("builds options from output items, active equipment and rates", async () => {

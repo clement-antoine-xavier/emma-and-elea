@@ -18,6 +18,7 @@ import {
   PlanTable,
 } from "@/components/production/planning-tables";
 import {formatBusinessDate, formatPercent} from "@/lib/format";
+import {can} from "@/lib/permissions";
 import {requirePermission} from "@/server/auth/actor";
 import {planningService} from "@/server/services/container";
 
@@ -78,11 +79,20 @@ export default async function PlanningPage({
       title={t("title")}
       intro={t("intro")}
       actions={
-        <Button
-          label={t("back")}
-          variant="secondary"
-          href="/dashboard/production"
-        />
+        <HStack gap={2} wrap="wrap">
+          {can(actor.role, "event:read") ? (
+            <Button
+              label={t("manageEvents")}
+              variant="secondary"
+              href="/dashboard/settings?section=events"
+            />
+          ) : null}
+          <Button
+            label={t("back")}
+            variant="secondary"
+            href="/dashboard/production"
+          />
+        </HStack>
       }
     >
       <Card padding={5}>

@@ -10,6 +10,7 @@ import {Heading, Text} from "@astryxdesign/core/Text";
 import {getLocale, getTranslations} from "next-intl/server";
 import {PageShell} from "@/components/layout/page-shell";
 import {DetailShell} from "@/components/layout/detail-shell";
+import {ReplenishmentTable} from "@/components/stock/replenishment-table";
 import {StockLevelsTable} from "@/components/stock/stock-levels-table";
 import {formatQuantity} from "@/lib/format";
 import {requirePermission} from "@/server/auth/actor";
@@ -30,7 +31,10 @@ export default async function StockPage() {
     getTranslations("Stock"),
     getLocale(),
   ]);
-  const {levels, alerts} = await stockService.getLevels(actor);
+  const [{levels, alerts}, replenishment] = await Promise.all([
+    stockService.getLevels(actor),
+    stockService.getReplenishment(actor),
+  ]);
 
   return (
     <PageShell
@@ -89,22 +93,45 @@ export default async function StockPage() {
           )
         }
       >
-        <Stack gap={3}>
-          <Stack gap={1}>
-            <Heading level={2}>{t("levelsTitle")}</Heading>
-            <Text type="supporting">{t("levelsIntro")}</Text>
+        <Stack gap={6}>
+          <Stack gap={3}>
+            <Stack gap={1}>
+              <Heading level={2}>{t("levelsTitle")}</Heading>
+              <Text type="supporting">{t("levelsIntro")}</Text>
+            </Stack>
+
+            {levels.length === 0 ? (
+              <Card padding={4}>
+                <EmptyState
+                  title={t("emptyTitle")}
+                  description={t("emptyBody")}
+                />
+              </Card>
+            ) : (
+              <StockLevelsTable levels={levels} />
+            )}
           </Stack>
 
-          {levels.length === 0 ? (
-            <Card padding={4}>
-              <EmptyState
-                title={t("emptyTitle")}
-                description={t("emptyBody")}
+          <Stack gap={3}>
+            <Stack gap={1}>
+              <Heading level={2}>{t("replenishment.title")}</Heading>
+              <Text type="supporting">{t("replenishment.intro")}</Text>
+            </Stack>
+
+            {replenishment.suggestions.length === 0 ? (
+              <Card padding={4}>
+                <EmptyState
+                  title={t("replenishment.emptyTitle")}
+                  description={t("replenishment.emptyBody")}
+                />
+              </Card>
+            ) : (
+              <ReplenishmentTable
+                suggestions={replenishment.suggestions}
+                canWrite={replenishment.canWrite}
               />
-            </Card>
-          ) : (
-            <StockLevelsTable levels={levels} />
-          )}
+            )}
+          </Stack>
         </Stack>
       </DetailShell>
     </PageShell>
