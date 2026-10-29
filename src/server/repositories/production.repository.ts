@@ -314,6 +314,8 @@ const batchOperationsSelect = {
     equipment: {select: {name: true, powerKw: true, siteId: true}},
     labourRateId: true,
     labourRate: {select: {label: true}},
+    requiredSkillId: true,
+    requiredSkill: {select: {name: true}},
   },
 } as const;
 
@@ -381,6 +383,8 @@ export const productionRepository: ProductionRepository = {
         equipmentSiteId: operation.equipment?.siteId ?? null,
         labourRateId: operation.labourRateId,
         labourRateLabel: operation.labourRate?.label ?? null,
+        requiredSkillId: operation.requiredSkillId,
+        requiredSkillName: operation.requiredSkill?.name ?? null,
       }));
 
     const inputs: ProductionBatchInputRecord[] = batch.inputs.map((input) => ({

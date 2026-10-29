@@ -6,9 +6,13 @@ import {getLocale, getTranslations} from "next-intl/server";
 import {PageShell} from "@/components/layout/page-shell";
 import {ScheduleFilters} from "@/components/team/schedule-filters";
 import {ScheduleManager} from "@/components/team/schedule-manager";
+import {WorkloadTable} from "@/components/team/workload-table";
 import {formatBusinessDate} from "@/lib/format";
 import {requirePermission} from "@/server/auth/actor";
-import {scheduleService} from "@/server/services/container";
+import {
+  scheduleService,
+  workloadService,
+} from "@/server/services/container";
 
 // Session data keeps this route blocking until it is moved to a streamed shell.
 export const instant = false;
@@ -32,7 +36,10 @@ export default async function SchedulePage({
     getLocale(),
     searchParams,
   ]);
-  const view = await scheduleService.getSchedule(actor, params);
+  const [view, workload] = await Promise.all([
+    scheduleService.getSchedule(actor, params),
+    workloadService.getWeek(actor, params),
+  ]);
   const week = view.weekStart.toISOString().slice(0, 10);
 
   return (
@@ -82,6 +89,8 @@ export default async function SchedulePage({
         sites={view.sites}
         canWrite={view.canWrite}
       />
+
+      <WorkloadTable rows={workload.rows} />
     </PageShell>
   );
 }

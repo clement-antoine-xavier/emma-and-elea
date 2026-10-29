@@ -163,6 +163,7 @@ export default async function RecipeVersionPage({params}: VersionParams) {
             operations={view.version.operations}
             equipment={options.equipment}
             labourRates={options.labourRates}
+            skills={options.skills}
             canWrite={canEdit}
           />
 

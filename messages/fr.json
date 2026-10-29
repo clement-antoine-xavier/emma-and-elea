@@ -384,6 +384,7 @@
       "label": "Navigation de l’espace",
       "assistant": "Assistant",
       "overview": "Vue d’ensemble",
+      "myWork": "Mon travail",
       "production": "Production",
       "recipes": "Recettes",
       "stock": "Stock",
@@ -699,6 +700,20 @@
       "DELIVERY": "Livraison",
       "CLEANING": "Nettoyage",
       "OTHER": "Autre"
+    },
+    "workload": {
+      "title": "Charge hebdomadaire",
+      "intro": "Heures de service planifiées et temps de tâches affecté par rapport au contrat. Les conflits combinent absences et tâches qui se chevauchent.",
+      "overloaded": "Au-delà du contrat",
+      "ok": "OK",
+      "columns": {
+        "employee": "Employé",
+        "contract": "Contrat",
+        "shifts": "Services",
+        "tasks": "Tâches",
+        "conflicts": "Conflits",
+        "status": "Statut"
+      }
     },
     "schedule": {
       "metadataTitle": "Planning · Équipe · Emma & Éléa",
@@ -1920,6 +1935,7 @@
       "intro": "Les étapes fournissent le temps de main-d’œuvre, l’énergie et les instructions de production.",
       "errorTitle": "Impossible de mettre à jour les opérations",
       "noEquipment": "Aucun équipement",
+      "noSkill": "Aucune compétence requise",
       "defaultRate": "Taux par défaut de l’organisation",
       "submit": "Ajouter l’opération",
       "emptyTitle": "Aucune opération",
@@ -1933,6 +1949,7 @@
         "activeHint": "Temps de main-d’œuvre. Par défaut, la durée complète.",
         "equipment": "Équipement",
         "labourRate": "Taux de main-d’œuvre",
+        "requiredSkill": "Compétence requise",
         "description": "Description"
       },
       "columns": {
@@ -2047,6 +2064,42 @@
       "durationInvalid": "Saisissez une durée en minutes entières.",
       "activeMinutesInvalid": "Saisissez des minutes actives entre 0 et la durée."
     }
+  },
+  "Tasks": {
+    "metadataTitle": "Tâches de production · Emma & Éléa",
+    "title": "Tâches de production",
+    "intro": "Tâches générées à partir des opérations des recettes pour les sept prochains jours. Affectez-les aux personnes qui ont la compétence et la disponibilité.",
+    "dateLabel": "À partir du",
+    "myWork": "Mon travail",
+    "unassigned": "Non affecté",
+    "unscheduled": "Non planifié",
+    "suggest": "Suggérer et affecter",
+    "errorTitle": "Impossible de mettre à jour la tâche",
+    "emptyTitle": "Aucune tâche",
+    "emptyBody": "Créez un lot de production à partir d’une recette avec des opérations pour générer des tâches.",
+    "columns": {
+      "task": "Tâche",
+      "batch": "Lot",
+      "when": "Planifié",
+      "skill": "Compétence",
+      "employee": "Employé",
+      "status": "Statut"
+    },
+    "statuses": {
+      "TODO": "À faire",
+      "IN_PROGRESS": "En cours",
+      "DONE": "Terminée",
+      "BLOCKED": "Bloquée"
+    }
+  },
+  "MyWork": {
+    "metadataTitle": "Mon travail · Emma & Éléa",
+    "title": "Mon travail",
+    "intro": "Tâches affectées à {name} pour les sept prochains jours.",
+    "introGeneric": "Tâches qui vous sont affectées pour les sept prochains jours.",
+    "allTasks": "Toutes les tâches",
+    "noProfileTitle": "Aucun profil employé",
+    "noProfileBody": "Demandez à un responsable de relier votre compte à un profil employé pour recevoir des tâches."
   },
   "Production": {
     "metadataTitle": "Production · Emma & Éléa",
@@ -2171,6 +2224,7 @@
       "itemRequired": "Choisissez un article."
     },
     "planningLink": "Planification",
+    "tasksLink": "Tâches",
     "planning": {
       "metadataTitle": "Planification · Emma & Éléa",
       "title": "Planification de la production",

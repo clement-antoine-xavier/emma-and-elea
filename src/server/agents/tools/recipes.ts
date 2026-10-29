@@ -137,6 +137,7 @@ export const recipeTools = {
         activeMinutes: input.activeMinutes ?? null,
         equipmentId: input.equipmentId ?? null,
         labourRateId: input.labourRateId ?? null,
+        requiredSkillId: null,
       }),
   }),
 

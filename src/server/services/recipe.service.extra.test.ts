@@ -4,6 +4,7 @@ import type {CostingRepository} from "@/server/repositories/costing.repository";
 import type {CatalogRepository} from "@/server/repositories/catalog.repository";
 import type {EquipmentRepository} from "@/server/repositories/equipment.repository";
 import type {RateRepository} from "@/server/repositories/rate.repository";
+import type {SkillRepository} from "@/server/repositories/skill.repository";
 import type {
   RecipeDetailRecord,
   RecipeVersionDetailRecord,
@@ -223,6 +224,9 @@ function dependencies(overrides: {
       catalogRepository,
       equipmentRepository,
       rateRepository,
+      skillRepository: {
+        list: jest.fn().mockResolvedValue([]),
+      } as unknown as SkillRepository,
     }),
   };
 }
@@ -545,6 +549,7 @@ describe("recipe identity and versions", () => {
         activeMinutes: null,
         equipmentId: null,
         labourRateId: null,
+        requiredSkillId: null,
       }),
     ).rejects.toMatchObject({code: "NOT_FOUND"});
   });
@@ -609,6 +614,7 @@ describe("recipe lines and operations", () => {
         activeMinutes: 5,
         equipmentId: null,
         labourRateId: "rate_1",
+        requiredSkillId: null,
       }),
     ).resolves.toBeUndefined();
     await expect(
@@ -641,6 +647,7 @@ describe("recipe lines and operations", () => {
         activeMinutes: null,
         equipmentId: null,
         labourRateId: null,
+        requiredSkillId: null,
       }),
     ).rejects.toMatchObject({code: "INVALID_INPUT"});
   });

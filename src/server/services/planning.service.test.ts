@@ -6,6 +6,7 @@ import type {ProductionRepository} from "@/server/repositories/production.reposi
 import type {StockRepository} from "@/server/repositories/stock.repository";
 import type {OrganizationSettingsRepository} from "@/server/repositories/organization-settings.repository";
 import type {SiteRepository} from "@/server/repositories/site.repository";
+import type {TaskRepository} from "@/server/repositories/task.repository";
 import {createPlanningService} from "./planning.service";
 
 function actorFor(role: OrgRole): OrganizationActor {
@@ -178,7 +179,14 @@ function service(
     productionRepository: productionRepository(overrides.production),
     settingsRepository: settingsRepository(),
     siteRepository: siteRepository(),
+    taskRepository: taskRepository(),
   });
+}
+
+function taskRepository(): TaskRepository {
+  return {
+    generateForBatch: jest.fn().mockResolvedValue(undefined),
+  } as unknown as TaskRepository;
 }
 
 describe("planning service", () => {
@@ -458,6 +466,7 @@ describe("plan lines and state", () => {
       productionRepository: productionRepository(),
       settingsRepository: settingsRepository(),
       siteRepository: siteRepository(),
+      taskRepository: taskRepository(),
     });
 
     await expect(

@@ -31,12 +31,14 @@ export function RecipeOperationsManager({
   operations,
   equipment,
   labourRates,
+  skills,
   canWrite,
 }: {
   versionId: string;
   operations: RecipeOperationRecord[];
   equipment: RecipeOptions["equipment"];
   labourRates: RecipeOptions["labourRates"];
+  skills: RecipeOptions["skills"];
   canWrite: boolean;
 }) {
   const t = useTranslations("Recipes.operations");
@@ -66,6 +68,7 @@ export function RecipeOperationsManager({
       activeMinutes: "",
       equipmentId: "",
       labourRateId: "",
+      requiredSkillId: "",
     },
     mode: "onSubmit",
     reValidateMode: "onChange",
@@ -166,6 +169,18 @@ export function RecipeOperationsManager({
                     ...labourRates.map((rate) => ({
                       value: rate.id,
                       label: `${rate.label} · ${rate.hourlyCost} ${rate.currency}/h`,
+                    })),
+                  ]}
+                />
+                <FormSelector
+                  control={control}
+                  name="requiredSkillId"
+                  label={t("fields.requiredSkill")}
+                  options={[
+                    {value: "", label: t("noSkill")},
+                    ...skills.map((skill) => ({
+                      value: skill.id,
+                      label: `${skill.name} (${skill.code})`,
                     })),
                   ]}
                 />

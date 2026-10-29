@@ -26,6 +26,7 @@ import type {
 } from "@/server/repositories/production.repository";
 import type {CostingRepository} from "@/server/repositories/costing.repository";
 import type {CostSnapshotInput} from "@/server/repositories/recipe.repository";
+import type {TaskRepository} from "@/server/repositories/task.repository";
 
 export type CreateBatchValues = {
   siteId: string;
@@ -88,6 +89,7 @@ function executeAllowed(actor: OrganizationActor): boolean {
 export function createProductionService(deps: {
   productionRepository: ProductionRepository;
   costingRepository: CostingRepository;
+  taskRepository: TaskRepository;
 }): ProductionService {
   async function requireBatch(
     organizationId: string,
@@ -158,19 +160,21 @@ export function createProductionService(deps: {
       );
       if (!recipe || !site) throw new DomainError("NOT_FOUND");
 
-      return {
-        id: await deps.productionRepository.createBatch(
-          actor.organizationId,
-          {
-            siteId: input.siteId,
-            recipeVersionId: input.recipeVersionId,
-            plannedQuantity: input.plannedQuantity,
-            unitId: recipe.yieldUnitId,
-            plannedStartAt: input.plannedStartAt,
-            note: input.note,
-          },
-        ),
-      };
+      const id = await deps.productionRepository.createBatch(
+        actor.organizationId,
+        {
+          siteId: input.siteId,
+          recipeVersionId: input.recipeVersionId,
+          plannedQuantity: input.plannedQuantity,
+          unitId: recipe.yieldUnitId,
+          plannedStartAt: input.plannedStartAt,
+          note: input.note,
+        },
+      );
+
+      await deps.taskRepository.generateForBatch(actor.organizationId, id);
+
+      return {id};
     },
 
     async startBatch(actorInput, id) {

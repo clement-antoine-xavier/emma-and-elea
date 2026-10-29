@@ -39,6 +39,7 @@ import type {CostingRepository} from "@/server/repositories/costing.repository";
 import type {CatalogRepository} from "@/server/repositories/catalog.repository";
 import type {EquipmentRepository} from "@/server/repositories/equipment.repository";
 import type {RateRepository} from "@/server/repositories/rate.repository";
+import type {SkillRepository} from "@/server/repositories/skill.repository";
 
 export type RecipeView = {
   recipes: RecipeListRecord[];
@@ -75,6 +76,7 @@ export type RecipeOperationValues = {
   activeMinutes: number | null;
   equipmentId: string | null;
   labourRateId: string | null;
+  requiredSkillId: string | null;
 };
 
 export interface RecipeService {
@@ -212,13 +214,15 @@ export function createRecipeService(deps: {
   catalogRepository: CatalogRepository;
   equipmentRepository: EquipmentRepository;
   rateRepository: RateRepository;
+  skillRepository: SkillRepository;
 }): RecipeService {
   async function options(organizationId: string): Promise<RecipeOptions> {
-    const [items, units, equipment, rates] = await Promise.all([
+    const [items, units, equipment, rates, skills] = await Promise.all([
       deps.catalogRepository.listItemOptions(organizationId),
       deps.catalogRepository.listUnits(),
       deps.equipmentRepository.list(organizationId),
       deps.rateRepository.listLabourRates(organizationId),
+      deps.skillRepository.list(organizationId),
     ]);
 
     return {
@@ -246,6 +250,13 @@ export function createRecipeService(deps: {
           currency: rate.currency,
           siteId: rate.siteId,
           siteName: rate.siteName,
+        })),
+      skills: skills
+        .filter((skill) => !skill.archivedAt)
+        .map((skill) => ({
+          id: skill.id,
+          code: skill.code,
+          name: skill.name,
         })),
     };
   }

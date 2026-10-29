@@ -46,6 +46,7 @@ export type RecipeOperationInput = {
   activeMinutes: number | null;
   equipmentId: string | null;
   labourRateId: string | null;
+  requiredSkillId: string | null;
 };
 
 export type CostSnapshotLineInput = {
@@ -674,6 +675,8 @@ export const recipeRepository: RecipeRepository = {
             equipment: {select: {name: true, powerKw: true, siteId: true}},
             labourRateId: true,
             labourRate: {select: {label: true}},
+            requiredSkillId: true,
+            requiredSkill: {select: {name: true}},
           },
         },
         costSnapshots: {
@@ -751,6 +754,8 @@ export const recipeRepository: RecipeRepository = {
         equipmentSiteId: operation.equipment?.siteId ?? null,
         labourRateId: operation.labourRateId,
         labourRateLabel: operation.labourRate?.label ?? null,
+        requiredSkillId: operation.requiredSkillId,
+        requiredSkillName: operation.requiredSkill?.name ?? null,
       }),
     );
 

@@ -34,6 +34,7 @@ decision.
 | [0023](0023-add-in-app-assistants.md) | Add in-app assistants with the OpenAI Agents SDK | Accepted | 2026-10-28 |
 | [0024](0024-refresh-stored-costs-on-demand.md) | Refresh stored costs on demand with an input fingerprint | Accepted | 2026-10-29 |
 | [0025](0025-define-product-profitability.md) | Define product profitability as produced minus sold minus waste | Accepted | 2026-10-29 |
+| [0026](0026-generate-production-tasks-from-recipe-operations.md) | Generate production tasks from recipe operations | Accepted | 2026-10-29 |
 
 ## Creating a new ADR
 

@@ -384,6 +384,7 @@
       "label": "Workspace navigation",
       "assistant": "Assistant",
       "overview": "Overview",
+      "myWork": "My work",
       "production": "Production",
       "recipes": "Recipes",
       "stock": "Stock",
@@ -699,6 +700,20 @@
       "DELIVERY": "Delivery",
       "CLEANING": "Cleaning",
       "OTHER": "Other"
+    },
+    "workload": {
+      "title": "Weekly workload",
+      "intro": "Scheduled shift hours and assigned task time against the contract. Conflicts combine absences and overlapping tasks.",
+      "overloaded": "Over contract",
+      "ok": "OK",
+      "columns": {
+        "employee": "Employee",
+        "contract": "Contract",
+        "shifts": "Shifts",
+        "tasks": "Tasks",
+        "conflicts": "Conflicts",
+        "status": "Status"
+      }
     },
     "schedule": {
       "metadataTitle": "Schedule · Team · Emma & Éléa",
@@ -1920,6 +1935,7 @@
       "intro": "Steps supply labour time, energy and the instructions shown on the shop floor.",
       "errorTitle": "Could not update the operations",
       "noEquipment": "No equipment",
+      "noSkill": "No required skill",
       "defaultRate": "Organization default rate",
       "submit": "Add operation",
       "emptyTitle": "No operations yet",
@@ -1933,6 +1949,7 @@
         "activeHint": "Labour time. Defaults to the full duration.",
         "equipment": "Equipment",
         "labourRate": "Labour rate",
+        "requiredSkill": "Required skill",
         "description": "Description"
       },
       "columns": {
@@ -2047,6 +2064,42 @@
       "durationInvalid": "Enter a duration in whole minutes.",
       "activeMinutesInvalid": "Enter active minutes between 0 and the duration."
     }
+  },
+  "Tasks": {
+    "metadataTitle": "Production tasks · Emma & Éléa",
+    "title": "Production tasks",
+    "intro": "Tasks generated from recipe operations for the next seven days. Assign them to people with the right skill and availability.",
+    "dateLabel": "From",
+    "myWork": "My work",
+    "unassigned": "Unassigned",
+    "unscheduled": "Unscheduled",
+    "suggest": "Suggest & assign",
+    "errorTitle": "Could not update the task",
+    "emptyTitle": "No tasks",
+    "emptyBody": "Create a production batch from a recipe with operations to generate tasks.",
+    "columns": {
+      "task": "Task",
+      "batch": "Batch",
+      "when": "Planned",
+      "skill": "Skill",
+      "employee": "Employee",
+      "status": "Status"
+    },
+    "statuses": {
+      "TODO": "To do",
+      "IN_PROGRESS": "In progress",
+      "DONE": "Done",
+      "BLOCKED": "Blocked"
+    }
+  },
+  "MyWork": {
+    "metadataTitle": "My work · Emma & Éléa",
+    "title": "My work",
+    "intro": "Tasks assigned to {name} for the next seven days.",
+    "introGeneric": "Tasks assigned to you for the next seven days.",
+    "allTasks": "All tasks",
+    "noProfileTitle": "No employee profile",
+    "noProfileBody": "Ask a manager to link your membership to an employee profile to receive tasks."
   },
   "Production": {
     "metadataTitle": "Production · Emma & Éléa",
@@ -2171,6 +2224,7 @@
       "itemRequired": "Choose an item."
     },
     "planningLink": "Planning",
+    "tasksLink": "Tasks",
     "planning": {
       "metadataTitle": "Production planning · Emma & Éléa",
       "title": "Production planning",

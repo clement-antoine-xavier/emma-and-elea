@@ -178,6 +178,7 @@ export async function addRecipeOperationAction(
           : Number(parsed.data.activeMinutes),
       equipmentId: parsed.data.equipmentId || null,
       labourRateId: parsed.data.labourRateId || null,
+      requiredSkillId: parsed.data.requiredSkillId || null,
     });
     return {ok: true};
   } catch (error) {

@@ -4,6 +4,7 @@ import {HStack} from "@astryxdesign/core/HStack";
 import {getTranslations} from "next-intl/server";
 import {PageShell} from "@/components/layout/page-shell";
 import {ProductionManager} from "@/components/production/production-manager";
+import {can} from "@/lib/permissions";
 import {requirePermission} from "@/server/auth/actor";
 import {productionService} from "@/server/services/container";
 
@@ -35,6 +36,13 @@ export default async function ProductionPage() {
             variant="primary"
             href="/dashboard/production/planning"
           />
+          {can(actor.role, "task:read") ? (
+            <Button
+              label={t("tasksLink")}
+              variant="secondary"
+              href="/dashboard/production/tasks"
+            />
+          ) : null}
           <Button
             label={t("wasteLink")}
             variant="secondary"

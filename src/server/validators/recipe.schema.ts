@@ -137,6 +137,7 @@ export function recipeOperationInputSchema(t: TranslateRecipeValidation) {
     activeMinutes: optionalInteger(t("activeMinutesInvalid"), 0, 100000),
     equipmentId: z.string().trim(),
     labourRateId: z.string().trim(),
+    requiredSkillId: z.string().trim(),
   });
 }
 

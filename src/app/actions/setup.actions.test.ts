@@ -362,6 +362,7 @@ describe("recipe actions", () => {
         activeMinutes: "",
         equipmentId: "",
         labourRateId: "",
+        requiredSkillId: "",
       }),
     ).resolves.toEqual({ok: true});
     expect(recipe.addOperation).toHaveBeenCalledWith(
@@ -374,6 +375,7 @@ describe("recipe actions", () => {
         activeMinutes: null,
         equipmentId: null,
         labourRateId: null,
+        requiredSkillId: null,
       },
     );
 

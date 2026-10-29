@@ -786,6 +786,8 @@ model RecipeOperation {
   equipment         Equipment?    @relation(fields: [equipmentId], references: [id], onDelete: SetNull)
   labourRateId      String?
   labourRate        LabourRate?   @relation(fields: [labourRateId], references: [id], onDelete: SetNull)
+  requiredSkillId   String?
+  requiredSkill     Skill?        @relation(fields: [requiredSkillId], references: [id], onDelete: SetNull)
   position          Int           @default(0)
   name              String
   description       String?
@@ -800,6 +802,7 @@ model RecipeOperation {
 
   @@unique([recipeVersionId, position])
   @@index([organizationId])
+  @@index([requiredSkillId])
   @@map("recipe_operation")
 }
 
@@ -1279,6 +1282,7 @@ model ProductionTask {
   createdAt          DateTime         @default(now())
   updatedAt          DateTime         @updatedAt
 
+  @@unique([productionBatchId, position])
   @@index([organizationId, plannedStartAt])
   @@index([assignedEmployeeId, status])
   @@index([requiredSkillId])
@@ -1471,8 +1475,9 @@ model Skill {
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
 
-  employeeSkills EmployeeSkill[]
-  tasks          ProductionTask[]
+  employeeSkills   EmployeeSkill[]
+  tasks            ProductionTask[]
+  recipeOperations RecipeOperation[]
 
   @@unique([organizationId, code])
   @@map("skill")

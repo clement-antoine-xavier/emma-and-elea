@@ -400,6 +400,8 @@ export type RecipeOperationRecord = {
   equipmentSiteId: string | null;
   labourRateId: string | null;
   labourRateLabel: string | null;
+  requiredSkillId: string | null;
+  requiredSkillName: string | null;
 };
 
 export type RecipeCostLineRecord = {
@@ -504,6 +506,7 @@ export type RecipeOptions = {
     siteId: string | null;
     siteName: string | null;
   }[];
+  skills: {id: string; code: string; name: string}[];
 };
 
 export type BatchStatusName =
@@ -983,6 +986,35 @@ export type EmployeeSkillRecord = {
   certifiedOn: Date | null;
 };
 
+export type TaskStatusName = "TODO" | "IN_PROGRESS" | "DONE" | "BLOCKED";
+
+export type TaskRecord = {
+  id: string;
+  batchId: string | null;
+  batchCode: string | null;
+  recipeName: string | null;
+  title: string;
+  description: string | null;
+  status: TaskStatusName;
+  estimatedMinutes: number | null;
+  plannedStartAt: Date | null;
+  plannedEndAt: Date | null;
+  requiredSkillId: string | null;
+  requiredSkillName: string | null;
+  employeeId: string | null;
+  employeeName: string | null;
+  siteId: string | null;
+  siteName: string | null;
+  position: number;
+};
+
+export type TaskEmployeeOption = {
+  id: string;
+  name: string;
+  jobTitle: string | null;
+  skillIds: string[];
+};
+
 export type EmployeeAvailabilityRecord = {
   id: string;
   weekday: number;
@@ -1056,6 +1088,17 @@ export type ShiftAssignmentRecord = {
   employeeName: string;
   role: string | null;
   status: AssignmentStatusName;
+};
+
+export type WorkloadRowRecord = {
+  employeeId: string;
+  employeeName: string;
+  jobTitle: string | null;
+  contractHours: string | null;
+  shiftMinutes: number;
+  taskMinutes: number;
+  conflictCount: number;
+  isOverloaded: boolean;
 };
 
 export type ShiftRecord = {

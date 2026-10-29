@@ -6,6 +6,7 @@ import type {CostingRepository} from "@/server/repositories/costing.repository";
 import type {CatalogRepository} from "@/server/repositories/catalog.repository";
 import type {EquipmentRepository} from "@/server/repositories/equipment.repository";
 import type {RateRepository} from "@/server/repositories/rate.repository";
+import type {SkillRepository} from "@/server/repositories/skill.repository";
 import type {RecipeVersionDetailRecord} from "@/lib/dto";
 
 function actorFor(role: OrgRole): OrganizationActor {
@@ -138,6 +139,9 @@ function service(
       } as unknown as CatalogRepository,
       equipmentRepository: {} as EquipmentRepository,
       rateRepository: {} as RateRepository,
+      skillRepository: {
+        list: jest.fn().mockResolvedValue([]),
+      } as unknown as SkillRepository,
     }),
   };
 }

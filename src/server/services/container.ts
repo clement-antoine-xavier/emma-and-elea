@@ -24,6 +24,7 @@ import {skillRepository} from "@/server/repositories/skill.repository";
 import {stockCountRepository} from "@/server/repositories/stock-count.repository";
 import {stockRepository} from "@/server/repositories/stock.repository";
 import {supplierRepository} from "@/server/repositories/supplier.repository";
+import {taskRepository} from "@/server/repositories/task.repository";
 import {createDashboardService} from "./dashboard.service";
 import {createAssistantService} from "./assistant.service";
 import {createHomeService} from "./home.service";
@@ -50,6 +51,8 @@ import {createSkillService} from "./skill.service";
 import {createStockCountService} from "./stock-count.service";
 import {createStockService} from "./stock.service";
 import {createSupplierService} from "./supplier.service";
+import {createTaskService} from "./task.service";
+import {createWorkloadService} from "./workload.service";
 import {createTeamService} from "./team.service";
 
 export const organizationService = createOrganizationService({
@@ -109,11 +112,13 @@ export const recipeService = createRecipeService({
   catalogRepository,
   equipmentRepository,
   rateRepository,
+  skillRepository,
 });
 
 export const productionService = createProductionService({
   productionRepository,
   costingRepository,
+  taskRepository,
 });
 
 export const planningService = createPlanningService({
@@ -123,6 +128,7 @@ export const planningService = createPlanningService({
   productionRepository,
   settingsRepository: organizationSettingsRepository,
   siteRepository,
+  taskRepository,
 });
 
 export const customerService = createCustomerService({customerRepository});
@@ -156,6 +162,13 @@ export const reportService = createReportService({
 });
 
 export const skillService = createSkillService({skillRepository});
+
+export const taskService = createTaskService({taskRepository});
+
+export const workloadService = createWorkloadService({
+  scheduleRepository,
+  taskRepository,
+});
 
 export const scheduleService = createScheduleService({
   scheduleRepository,

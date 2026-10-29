@@ -1,6 +1,7 @@
 import {createProductionService} from "@/server/services/production.service";
 import type {ProductionRepository} from "@/server/repositories/production.repository";
 import type {CostingRepository} from "@/server/repositories/costing.repository";
+import type {TaskRepository} from "@/server/repositories/task.repository";
 import type {BatchCompletionInput} from "@/server/repositories/production.repository";
 import type {AvailableLot} from "@/server/domain/production";
 import type {
@@ -58,6 +59,8 @@ const operation: RecipeOperationRecord = {
   equipmentSiteId: null,
   labourRateId: "rate_1",
   labourRateLabel: "Baker",
+  requiredSkillId: null,
+  requiredSkillName: null,
 };
 
 const batch: ProductionBatchDetailRecord = {
@@ -158,12 +161,18 @@ function dependencies(overrides: {
     ...overrides.costingRepository,
   } as unknown as CostingRepository;
 
+  const taskRepository = {
+    generateForBatch: jest.fn().mockResolvedValue(undefined),
+  } as unknown as TaskRepository;
+
   return {
     productionRepository,
     costingRepository,
+    taskRepository,
     service: createProductionService({
       productionRepository,
       costingRepository,
+      taskRepository,
     }),
   };
 }

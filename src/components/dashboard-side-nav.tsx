@@ -16,6 +16,7 @@ import {
   BookOpen,
   Boxes,
   ChefHat,
+  ClipboardList,
   Factory,
   LayoutDashboard,
   Package,
@@ -37,6 +38,7 @@ import {
 
 const navIcons = {
   overview: LayoutDashboard,
+  "my-work": ClipboardList,
   production: Factory,
   recipes: BookOpen,
   stock: Boxes,
@@ -58,7 +60,7 @@ const navSections: ReadonlyArray<{
 }> = [
   {
     titleKey: "operations",
-    items: ["production", "recipes", "stock"],
+    items: ["my-work", "production", "recipes", "stock"],
   },
   {
     titleKey: "supply",
@@ -128,7 +130,7 @@ export function DashboardSideNav({
   const renderItem = (item: DashboardNavItem) => (
     <SideNavItem
       key={item}
-      label={t(item)}
+      label={item === "my-work" ? t("myWork") : t(item)}
       icon={navIcons[item]}
       href={dashboardHref(item)}
       isSelected={isSelected(pathname, item)}

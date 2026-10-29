@@ -24,6 +24,7 @@ describe("dashboard service", () => {
   it("gives an owner every workspace route", () => {
     expect(service.getNavigation(actorFor("owner")).items).toEqual([
       "overview",
+      "my-work",
       "production",
       "recipes",
       "stock",
@@ -39,6 +40,7 @@ describe("dashboard service", () => {
   it("filters the rail by permission for staff", () => {
     expect(service.getNavigation(actorFor("staff")).items).toEqual([
       "overview",
+      "my-work",
       "production",
       "recipes",
       "stock",

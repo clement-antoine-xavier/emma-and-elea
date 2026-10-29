@@ -18,6 +18,7 @@ export function safeNextPath(
  */
 export type DashboardNavItem =
   | "overview"
+  | "my-work"
   | "production"
   | "recipes"
   | "stock"

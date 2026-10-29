@@ -59,6 +59,7 @@ function validOperation(overrides: Record<string, unknown> = {}) {
     activeMinutes: "",
     equipmentId: "",
     labourRateId: "",
+    requiredSkillId: "",
     ...overrides,
   };
 }

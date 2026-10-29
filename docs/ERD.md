@@ -595,6 +595,7 @@ shop floor, and the shape of a `ProductionTask`.
 | `recipeVersionId` | `String` | no | | → `RecipeVersion`, cascade |
 | `equipmentId` | `String?` | yes | | → `Equipment`; null = no equipment |
 | `labourRateId` | `String?` | yes | | → `LabourRate`; null = organization default |
+| `requiredSkillId` | `String?` | yes | | → `Skill`, `SetNull`; copied to generated tasks |
 | `position` | `Int` | no | `0` | |
 | `name` | `String` | no | | `Pétrissage`, `Cuisson` |
 | `description` | `String?` | yes | | |
@@ -954,10 +955,13 @@ optionally, to an employee.
 | `plannedEndAt` | `DateTime?` | yes | | |
 | `position` | `Int` | no | `0` | |
 
+- Unique: `@@unique([productionBatchId, position])` makes generation from a
+  batch idempotent.
 - Index: `@@index([organizationId, plannedStartAt])`,
-  `@@index([assignedEmployeeId, status])`.
-- Assignment must satisfy `EmployeeSkill` for `requiredSkillId`; enforced in
-  application code so a supervisor can override with a warning.
+  `@@index([assignedEmployeeId, status])`, `@@index([requiredSkillId])`.
+- Assignment must satisfy `EmployeeSkill` for `requiredSkillId`, the employee
+  availability window and approved absences; enforced in application code
+  (`EMPLOYEE_UNAVAILABLE`, `SHIFT_CONFLICT`).
 
 ## Commercial
 

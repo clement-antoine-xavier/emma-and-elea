@@ -28,6 +28,7 @@ import type {ProductionRepository} from "@/server/repositories/production.reposi
 import type {StockRepository} from "@/server/repositories/stock.repository";
 import type {OrganizationSettingsRepository} from "@/server/repositories/organization-settings.repository";
 import type {SiteRepository} from "@/server/repositories/site.repository";
+import type {TaskRepository} from "@/server/repositories/task.repository";
 
 export type PlanningFilters = {
   siteId?: string | string[];
@@ -132,6 +133,7 @@ export function createPlanningService(deps: {
   productionRepository: ProductionRepository;
   settingsRepository: OrganizationSettingsRepository;
   siteRepository: SiteRepository;
+  taskRepository: TaskRepository;
 }): PlanningService {
   async function buildOptions(
     organizationId: string,
@@ -589,6 +591,11 @@ export function createPlanningService(deps: {
           plannedStartAt: null,
           note: line.note,
         },
+      );
+
+      await deps.taskRepository.generateForBatch(
+        actor.organizationId,
+        batchId,
       );
 
       return {batchId};

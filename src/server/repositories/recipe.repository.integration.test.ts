@@ -108,6 +108,7 @@ describe("recipe repository", () => {
       activeMinutes: 15,
       equipmentId: null,
       labourRateId: null,
+      requiredSkillId: null,
     });
 
     const withContent = await recipeRepository.findVersion(
@@ -191,6 +192,7 @@ describe("recipe repository", () => {
       activeMinutes: 5,
       equipmentId: null,
       labourRateId: null,
+      requiredSkillId: null,
     });
     await recipeRepository.updateVersion(fixture.organizationId, versionId, {
       yieldQuantity: "8",
