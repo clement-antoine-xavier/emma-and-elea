@@ -27,6 +27,7 @@ import {
 import {
   recipeInputSchema,
   recipeLineInputSchema,
+  recipeOperationInputSchema,
   recipeVersionInputSchema,
 } from "@/server/validators/recipe.schema";
 import {
@@ -66,6 +67,18 @@ export const recipeVersionUpdateSchema = recipeVersionInputSchema(
 export const recipeLineCreateSchema = z.object({
   versionId: z.string().trim().min(1),
   line: recipeLineInputSchema(apiValidation.recipe),
+});
+export const recipeVersionCreateSchema = z.object({
+  recipeId: z.string().trim().min(1),
+  sourceVersionId: z.string().trim().optional(),
+});
+export const recipeOperationCreateSchema = z.object({
+  versionId: z.string().trim().min(1),
+  line: recipeOperationInputSchema(apiValidation.recipe),
+});
+export const recipeOperationRefSchema = z.object({
+  versionId: z.string().trim().min(1),
+  operationId: z.string().trim().min(1),
 });
 export const categoryCreateSchema = categoryInputSchema(apiValidation.catalog);
 export const catalogItemUpdateSchema = catalogItemSchema.extend({
@@ -183,4 +196,34 @@ export const dailySalesFiltersSchema = listFiltersSchema.extend({
   from: optionalIsoDateString("Date must be YYYY-MM-DD.").optional(),
   to: optionalIsoDateString("Date must be YYYY-MM-DD.").optional(),
   siteId: z.string().trim().optional(),
+});
+
+export const TASK_STATUSES = ["TODO", "IN_PROGRESS", "DONE", "BLOCKED"] as const;
+
+export const taskFiltersSchema = z.object({
+  date: z
+    .string()
+    .trim()
+    .optional()
+    .describe(
+      "First day of the seven-day window (YYYY-MM-DD). Defaults to today.",
+    ),
+});
+
+export const taskAssignSchema = z.object({
+  taskId: z.string().trim().min(1),
+  employeeId: z
+    .string()
+    .trim()
+    .optional()
+    .describe("Employee profile to assign. Send an empty string to unassign."),
+});
+
+export const taskStatusSchema = z.object({
+  taskId: z.string().trim().min(1),
+  status: z.enum(TASK_STATUSES),
+});
+
+export const taskSuggestionSchema = z.object({
+  taskId: z.string().trim().min(1),
 });

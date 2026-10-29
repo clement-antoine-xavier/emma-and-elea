@@ -11,6 +11,7 @@ import {registerReportTools} from "./tools/reports";
 import {registerSalesTools} from "./tools/sales";
 import {registerStockTools} from "./tools/stock";
 import {registerSupplierTools} from "./tools/suppliers";
+import {registerTaskTools} from "./tools/tasks";
 import {registerTeamTools} from "./tools/team";
 import type {McpDeps} from "./deps";
 
@@ -40,6 +41,7 @@ export function registerTools(
   registerSalesTools(server, actor, deps);
   registerDispatchTools(server, actor, deps);
   registerReportTools(server, actor, deps);
+  registerTaskTools(server, actor, deps);
   registerTeamTools(server, actor, deps);
 
   return server;

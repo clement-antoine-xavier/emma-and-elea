@@ -14,6 +14,7 @@ import {
   stockCountService,
   stockService,
   supplierService,
+  taskService,
   teamService,
 } from "@/server/services/container";
 
@@ -38,6 +39,7 @@ export const mcpDeps = {
   stockCount: stockCountService,
   stock: stockService,
   supplier: supplierService,
+  task: taskService,
   team: teamService,
 };
 

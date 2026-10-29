@@ -68,6 +68,7 @@ function fakeDeps() {
     stockCount: service(),
     stock: service(),
     supplier: service(),
+    task: service(),
     team: service(),
   } as unknown as McpDeps;
 }
@@ -98,6 +99,14 @@ describe("createMcpServer", () => {
         "post_dispatch",
         "get_reports",
         "get_team",
+        "list_tasks",
+        "get_my_work",
+        "suggest_task_assignee",
+        "assign_task",
+        "set_task_status",
+        "create_recipe_version",
+        "add_recipe_operation",
+        "remove_recipe_operation",
       ]),
     );
   });
@@ -153,6 +162,43 @@ describe("createMcpServer", () => {
 
     expect(recordWaste.mock.calls[0][1].recordedAt).toBeInstanceOf(Date);
     expect(recordWaste.mock.calls[0][1].reason).toBeNull();
+  });
+
+  it("clears an assignment when the employee id is empty", async () => {
+    const deps = fakeDeps();
+    const assignTask = deps.task.assignTask as unknown as jest.Mock;
+
+    const tools = buildTools(actorFor("owner"), deps);
+
+    await tools.get("assign_task")!.handler({
+      taskId: "task_1",
+      employeeId: "",
+    } as never);
+
+    expect(assignTask).toHaveBeenCalledWith(
+      expect.objectContaining({organizationId: "org_1"}),
+      "task_1",
+      null,
+    );
+  });
+
+  it("forwards a task status change", async () => {
+    const deps = fakeDeps();
+    const setTaskStatus = deps.task.setTaskStatus as unknown as jest.Mock;
+
+    const tools = buildTools(actorFor("owner"), deps);
+
+    const result = await tools.get("set_task_status")!.handler({
+      taskId: "task_1",
+      status: "DONE",
+    } as never);
+
+    expect(setTaskStatus).toHaveBeenCalledWith(
+      expect.objectContaining({organizationId: "org_1"}),
+      "task_1",
+      "DONE",
+    );
+    expect(result.isError).toBeUndefined();
   });
 
   it("returns a tool error for a domain failure", async () => {
