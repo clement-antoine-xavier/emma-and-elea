@@ -2113,7 +2113,20 @@
     "introGeneric": "Tasks assigned to you for the next seven days.",
     "allTasks": "All tasks",
     "noProfileTitle": "No employee profile",
-    "noProfileBody": "Ask a manager to link your membership to an employee profile to receive tasks."
+    "noProfileBody": "Ask a manager to link your membership to an employee profile to receive tasks.",
+    "board": {
+      "actions": "Task actions",
+      "moveTo": "Move to {status}",
+      "planned": "Planned {date} at {time}",
+      "unscheduled": "Unscheduled",
+      "duration": "{minutes}\u00a0min",
+      "empty": {
+        "TODO": "No tasks to do",
+        "IN_PROGRESS": "Nothing in progress",
+        "BLOCKED": "No blocked tasks",
+        "DONE": "Nothing done yet"
+      }
+    }
   },
   "Production": {
     "metadataTitle": "Production · Emma & Éléa",

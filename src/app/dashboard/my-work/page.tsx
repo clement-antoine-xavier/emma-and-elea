@@ -4,8 +4,8 @@ import {Button} from "@astryxdesign/core/Button";
 import {HStack} from "@astryxdesign/core/HStack";
 import {getTranslations} from "next-intl/server";
 import {PageShell} from "@/components/layout/page-shell";
+import {MyWorkBoard} from "@/components/production/my-work-board";
 import {TaskDateFilter} from "@/components/production/task-date-filter";
-import {TaskManager} from "@/components/production/task-manager";
 import {requirePermission} from "@/server/auth/actor";
 import {taskService} from "@/server/services/container";
 
@@ -48,14 +48,10 @@ export default async function MyWorkPage({
           />
         </HStack>
       }
+      contentWidth={1400}
     >
       {view.employee ? (
-        <TaskManager
-          tasks={view.tasks}
-          employees={[]}
-          canWrite={false}
-          canExecute={view.canExecute}
-        />
+        <MyWorkBoard tasks={view.tasks} canExecute={view.canExecute} />
       ) : (
         <Banner
           status="info"

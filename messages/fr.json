@@ -2113,7 +2113,20 @@
     "introGeneric": "Tâches qui vous sont affectées pour les sept prochains jours.",
     "allTasks": "Toutes les tâches",
     "noProfileTitle": "Aucun profil employé",
-    "noProfileBody": "Demandez à un responsable de relier votre compte à un profil employé pour recevoir des tâches."
+    "noProfileBody": "Demandez à un responsable de relier votre compte à un profil employé pour recevoir des tâches.",
+    "board": {
+      "actions": "Actions de la tâche",
+      "moveTo": "Déplacer vers {status}",
+      "planned": "Prévue le {date} à {time}",
+      "unscheduled": "Non planifiée",
+      "duration": "{minutes}\u00a0min",
+      "empty": {
+        "TODO": "Aucune tâche à faire",
+        "IN_PROGRESS": "Rien en cours",
+        "BLOCKED": "Aucune tâche bloquée",
+        "DONE": "Rien de terminé pour l’instant"
+      }
+    }
   },
   "Production": {
     "metadataTitle": "Production · Emma & Éléa",
