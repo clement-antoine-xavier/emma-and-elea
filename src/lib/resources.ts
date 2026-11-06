@@ -1,6 +1,7 @@
+import {appBaseUrl} from "./app-url";
 import {API_SCOPES, OAUTH_STANDARD_SCOPES} from "./scopes";
 
-const baseURL = process.env.BETTER_AUTH_URL ?? "http://localhost:3000";
+const baseURL = appBaseUrl();
 
 function configuredUrl(value: string | undefined, fallback: string): string {
   const trimmed = value?.trim();

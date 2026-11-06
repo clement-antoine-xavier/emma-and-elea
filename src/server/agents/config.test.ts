@@ -9,64 +9,124 @@ afterEach(() => {
 describe("assistant config", () => {
   it("stays disabled by default", () => {
     delete process.env.ASSISTANT_ENABLED;
-    delete process.env.OPENAI_BASE_URL;
-    delete process.env.ASSISTANT_USE_RESPONSES;
-    process.env.OPENAI_API_KEY = "sk-test";
+    delete process.env.AI_GATEWAY_API_KEY;
+    delete process.env.VERCEL;
+    delete process.env.VERCEL_OIDC_TOKEN;
 
     expect(getAssistantConfig()).toBeNull();
     expect(isAssistantEnabled()).toBe(false);
   });
 
-  it("fails closed when enabled without a key", () => {
+  it("fails closed when enabled without Gateway credentials", () => {
     process.env.ASSISTANT_ENABLED = "true";
-    delete process.env.OPENAI_API_KEY;
+    delete process.env.AI_GATEWAY_API_KEY;
+    delete process.env.VERCEL;
+    delete process.env.VERCEL_OIDC_TOKEN;
+    process.env.ASSISTANT_FAKE_MODEL = "";
 
-    expect(() => getAssistantConfig()).toThrow(/OPENAI_API_KEY/);
+    expect(() => getAssistantConfig()).toThrow(/AI_GATEWAY_API_KEY/);
     expect(isAssistantEnabled()).toBe(false);
   });
 
-  it("reads the model and guardrails", () => {
+  it("allows the fake model without a Gateway key outside production", () => {
     process.env.ASSISTANT_ENABLED = "true";
-    delete process.env.OPENAI_BASE_URL;
-    delete process.env.ASSISTANT_USE_RESPONSES;
-    process.env.OPENAI_API_KEY = "sk-test";
-    process.env.ASSISTANT_MODEL = "test-model";
-    process.env.ASSISTANT_EMMA_MODEL = "emma-model";
+    process.env.ASSISTANT_FAKE_MODEL = "echo";
+    delete process.env.AI_GATEWAY_API_KEY;
+    delete process.env.VERCEL;
+    delete process.env.VERCEL_OIDC_TOKEN;
+
+    expect(getAssistantConfig()).toMatchObject({fakeModel: true});
+  });
+
+  it("allows the scripted approval model in a test build", () => {
+    process.env.ASSISTANT_ENABLED = "true";
+    process.env.ASSISTANT_FAKE_MODEL = "approval";
+    process.env.ALLOW_ASSISTANT_TEST_MODEL = "1";
+    process.env.AI_GATEWAY_API_KEY = "gateway-test";
+    process.env.TOOL_APPROVAL_SECRET = "approval-secret";
+    Object.defineProperty(process.env, "NODE_ENV", {
+      value: "production",
+      configurable: true,
+    });
+
+    expect(getAssistantConfig()).toMatchObject({
+      fakeModel: true,
+      fakeModelMode: "approval",
+    });
+  });
+
+  it("ignores the scripted approval model in a normal production build", () => {
+    process.env.ASSISTANT_ENABLED = "true";
+    process.env.ASSISTANT_FAKE_MODEL = "approval";
+    delete process.env.ALLOW_ASSISTANT_TEST_MODEL;
+    process.env.AI_GATEWAY_API_KEY = "gateway-test";
+    process.env.TOOL_APPROVAL_SECRET = "approval-secret";
+    Object.defineProperty(process.env, "NODE_ENV", {
+      value: "production",
+      configurable: true,
+    });
+
+    expect(getAssistantConfig()).toMatchObject({
+      fakeModel: false,
+      fakeModelMode: null,
+    });
+  });
+
+  it("reads the Gateway model and guardrails", () => {
+    process.env.ASSISTANT_ENABLED = "true";
+    process.env.AI_GATEWAY_API_KEY = "gateway-test";
+    process.env.ASSISTANT_MODEL = "openai/test-model";
+    process.env.ASSISTANT_EMMA_MODEL = "openai/emma-model";
     process.env.ASSISTANT_MAX_TURNS = "4";
-    process.env.OPENAI_AGENTS_TRACING_DISABLED = "1";
+    process.env.ASSISTANT_MAX_OUTPUT_TOKENS = "1024";
+    process.env.ASSISTANT_MAX_RUN_TOKENS = "5000";
+    process.env.ASSISTANT_TIMEOUT_MS = "240000";
+    process.env.ASSISTANT_TELEMETRY_ENABLED = "true";
+    process.env.TOOL_APPROVAL_SECRET = "approval-secret";
 
     const config = getAssistantConfig();
 
     expect(config).toMatchObject({
       enabled: true,
-      model: "test-model",
-      emmaModel: "emma-model",
-      eleaModel: "test-model",
+      model: "openai/test-model",
+      emmaModel: "openai/emma-model",
+      eleaModel: "openai/test-model",
       maxTurns: 4,
-      tracingDisabled: true,
-      useResponses: true,
+      maxOutputTokens: 1024,
+      maxRunTokens: 5000,
+      requestTimeoutMs: 240000,
+      telemetryEnabled: true,
+      toolApprovalSecret: "approval-secret",
+      fakeModel: false,
     });
     expect(isAssistantEnabled()).toBe(true);
   });
 
-  it("defaults to Chat Completions when a custom base URL is set", () => {
+  it("caps the request timeout below the route duration", () => {
     process.env.ASSISTANT_ENABLED = "true";
-    process.env.OPENAI_API_KEY = "sk-test";
-    process.env.OPENAI_BASE_URL = "https://api.deepseek.com";
-    delete process.env.ASSISTANT_USE_RESPONSES;
+    process.env.AI_GATEWAY_API_KEY = "gateway-test";
+    process.env.ASSISTANT_TIMEOUT_MS = "999999";
 
-    expect(getAssistantConfig()).toMatchObject({
-      baseUrl: "https://api.deepseek.com",
-      useResponses: false,
-    });
+    expect(getAssistantConfig()).toMatchObject({requestTimeoutMs: 290_000});
   });
 
-  it("allows an explicit Responses API override", () => {
+  it("accepts Vercel OIDC credentials", () => {
     process.env.ASSISTANT_ENABLED = "true";
-    process.env.OPENAI_API_KEY = "sk-test";
-    process.env.OPENAI_BASE_URL = "https://gateway.example.com/v1";
-    process.env.ASSISTANT_USE_RESPONSES = "true";
+    process.env.VERCEL = "1";
+    delete process.env.AI_GATEWAY_API_KEY;
 
-    expect(getAssistantConfig()).toMatchObject({useResponses: true});
+    expect(getAssistantConfig()).toMatchObject({enabled: true});
+  });
+
+  it("requires an approval secret in production", () => {
+    process.env.ASSISTANT_ENABLED = "true";
+    process.env.AI_GATEWAY_API_KEY = "gateway-test";
+    Object.defineProperty(process.env, "NODE_ENV", {
+      value: "production",
+      configurable: true,
+    });
+    delete process.env.TOOL_APPROVAL_SECRET;
+
+    expect(() => getAssistantConfig()).toThrow(/TOOL_APPROVAL_SECRET/);
   });
 });

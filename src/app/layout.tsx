@@ -19,7 +19,7 @@ const geistMono = Geist_Mono({
 });
 
 // The locale comes from the NEXT_LOCALE cookie, so every route renders per
-// request rather than shipping a prerendered shell.
+// request rather than shipping a prerendered shell. See ADR-0031.
 export const instant = false;
 
 export async function generateMetadata(): Promise<Metadata> {

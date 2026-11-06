@@ -28,7 +28,9 @@ test("catalog manages categories, items and allergens", async ({ page }) => {
   // Categories: a root and one child.
   await page.getByRole("link", { name: "Catalog", exact: true }).click();
   await expect(page).toHaveURL(/\/dashboard\/catalog$/);
-  await expect(page.getByText("No items yet")).toBeVisible();
+  await expect(
+    page.getByRole("heading", {name: "No items yet"}),
+  ).toBeVisible();
 
   await page.getByRole("link", { name: "Categories" }).click();
   await page.getByRole("button", { name: "Add a category" }).click();
@@ -37,14 +39,16 @@ test("catalog manages categories, items and allergens", async ({ page }) => {
     .filter({ has: page.getByRole("button", { name: "Add category" }) });
   await categoryForm.getByLabel("Name").fill("Matières premières");
   await page.getByRole("button", { name: "Add category" }).click();
-  await expect(page.getByText("Matières premières")).toBeVisible();
+  await expect(
+    page.getByRole("cell", { name: "Matières premières" }),
+  ).toBeVisible();
 
   await page.getByRole("button", { name: "Add a category" }).click();
   await categoryForm.getByLabel("Name").fill("Farines");
   await categoryForm.getByRole("combobox", { name: "Parent category" }).click();
   await page.getByRole("option", { name: "Matières premières" }).click();
   await page.getByRole("button", { name: "Add category" }).click();
-  await expect(page.getByText("Farines")).toBeVisible();
+  await expect(page.getByRole("cell", { name: /Farines/ })).toBeVisible();
 
   // A raw material with an allergen.
   await page.getByRole("link", { name: "Back to catalog" }).click();

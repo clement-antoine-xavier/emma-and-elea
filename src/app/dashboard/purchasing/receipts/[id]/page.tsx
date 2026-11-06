@@ -12,8 +12,6 @@ import {formatBusinessDate, formatMoney} from "@/lib/format";
 import {requirePermission} from "@/server/auth/actor";
 import {purchasingService} from "@/server/services/container";
 
-// Session data keeps this route blocking until it is moved to a streamed shell.
-export const instant = false;
 
 type ReceiptParams = {params: Promise<{id: string}>};
 

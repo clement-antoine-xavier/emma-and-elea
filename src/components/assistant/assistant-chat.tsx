@@ -2,6 +2,7 @@
 
 import {
   useCallback,
+  useEffect,
   useImperativeHandle,
   useRef,
   useState,
@@ -300,9 +301,11 @@ function MessageTurn({
         isAssistant ? <Avatar name={personaName} size="md" /> : undefined
       }
       metadata={
-        <ChatMessageMetadata
-          timestamp={<Timestamp value={turn.createdAt} format="time" />}
-        />
+        turn.createdAt ? (
+          <ChatMessageMetadata
+            timestamp={<Timestamp value={turn.createdAt} format="time" />}
+          />
+        ) : undefined
       }
     >
       <ChatMessageBubble variant={isAssistant ? "ghost" : "filled"}>
@@ -362,6 +365,12 @@ export function AssistantChat({
       setIsReviewOpen(true);
     }
   }, []);
+
+  // A gated action needs an answer, so surface the card as soon as it arrives
+  // (including after a reload with a pending approval).
+  useEffect(() => {
+    if (hasApprovals) openReview();
+  }, [hasApprovals, openReview]);
 
   useImperativeHandle(ref, () => ({openReview}), [openReview]);
 

@@ -27,8 +27,6 @@ import {requirePermission} from "@/server/auth/actor";
 import {reportService} from "@/server/services/container";
 import {normalizePeriod} from "@/server/services/home.service";
 
-// Session data keeps this route blocking until it is moved to a streamed shell.
-export const instant = false;
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Reports");

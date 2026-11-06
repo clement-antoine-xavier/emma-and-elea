@@ -21,8 +21,6 @@ import {PeriodFilter} from "@/components/dashboard/period-filter";
 import {ProductionChart} from "@/components/dashboard/production-chart";
 import {RevenueChart} from "@/components/dashboard/revenue-chart";
 
-// Session data keeps this route blocking until it is moved to a streamed shell.
-export const instant = false;
 
 type DashboardPageProps = {
   searchParams: Promise<{period?: string | string[]}>;

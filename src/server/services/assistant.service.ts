@@ -1,6 +1,7 @@
 import type {
   AssistantApprovalPreview,
   AssistantPersona,
+  AssistantUIMessage,
 } from "@/lib/assistant";
 import type {OrganizationActor} from "@/server/auth/types";
 
@@ -14,12 +15,7 @@ export type AssistantConversationDto = {
 
 export type AssistantConversationHistoryDto = {
   conversation: AssistantConversationDto;
-  messages: Array<{
-    id: string;
-    role: "user" | "assistant";
-    text: string;
-    createdAt: string;
-  }>;
+  messages: AssistantUIMessage[];
   pendingApprovals: Array<{
     id: string;
     toolName: string;

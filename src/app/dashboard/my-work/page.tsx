@@ -9,7 +9,6 @@ import {TaskDateFilter} from "@/components/production/task-date-filter";
 import {requirePermission} from "@/server/auth/actor";
 import {taskService} from "@/server/services/container";
 
-export const instant = false;
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("MyWork");

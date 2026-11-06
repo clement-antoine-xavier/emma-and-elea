@@ -12,7 +12,7 @@ describe("agent repository", () => {
     await fixture.cleanup();
   });
 
-  it("stores a conversation and its SDK items", async () => {
+  it("stores a conversation and replaces its UI messages", async () => {
     const conversation = await agentRepository.createConversation({
       organizationId: fixture.organizationId,
       userId: fixture.userId,
@@ -21,17 +21,27 @@ describe("agent repository", () => {
     });
 
     await agentRepository.appendMessages(conversation.id, [
-      {type: "message", role: "user", content: "Hello"},
-      {type: "message", role: "assistant", content: "Hi"},
+      {id: "msg_1", role: "user", parts: [{type: "text", text: "Hello"}]},
+      {id: "msg_2", role: "assistant", parts: [{type: "text", text: "Hi"}]},
     ]);
 
     const messages = await agentRepository.getMessages(conversation.id);
     expect(messages).toHaveLength(2);
     expect(messages[0].item).toMatchObject({role: "user"});
-    expect(await agentRepository.popMessage(conversation.id)).toMatchObject({
-      role: "assistant",
+
+    await agentRepository.replaceMessages(conversation.id, [
+      {
+        id: "msg_1",
+        role: "user",
+        parts: [{type: "text", text: "Hello again"}],
+      },
+    ]);
+
+    const replaced = await agentRepository.getMessages(conversation.id);
+    expect(replaced).toHaveLength(1);
+    expect(replaced[0].item).toMatchObject({
+      parts: [{type: "text", text: "Hello again"}],
     });
-    expect(await agentRepository.getMessages(conversation.id)).toHaveLength(1);
   });
 
   it("stores a run and an approval, then resolves it once", async () => {
@@ -90,9 +100,9 @@ describe("agent repository", () => {
     const stored = await agentRepository.findApproval(
       fixture.organizationId,
       fixture.userId,
-      approval.id,
+      approval.callId,
     );
-    expect(stored).toMatchObject({status: "EXECUTED"});
+    expect(stored).toMatchObject({status: "EXECUTED", id: approval.id});
   });
 
   it("lists conversations per persona and user", async () => {

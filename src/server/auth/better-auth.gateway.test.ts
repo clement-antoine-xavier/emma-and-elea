@@ -42,7 +42,7 @@ describe("createOrganization", () => {
         {name: "Bakery", slug: "bakery"},
         headers,
       ),
-    ).resolves.toEqual({id: "org_1", name: "Bakery", slug: "bakery"});
+    ).resolves.toEqual({id: "org_1", name: "Bakery", slug: "bakery", logo: null});
     expect(auth.api.createOrganization).toHaveBeenCalledWith({
       body: {name: "Bakery", slug: "bakery"},
       headers,

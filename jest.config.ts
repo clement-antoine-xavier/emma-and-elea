@@ -67,6 +67,12 @@ const esmPackages = [
   'intl-messageformat',
   'better-auth',
   '@better-auth',
+  'ai',
+  '@ai-sdk',
+  '@vercel/blob',
+  '@vercel/oidc',
+  '@workflow',
+  'jose',
 ];
 
 const jestConfig = async () => ({

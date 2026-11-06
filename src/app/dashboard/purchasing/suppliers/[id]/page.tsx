@@ -16,8 +16,6 @@ import {can} from "@/lib/permissions";
 import {requirePermission} from "@/server/auth/actor";
 import {supplierService} from "@/server/services/container";
 
-// Session data keeps this route blocking until it is moved to a streamed shell.
-export const instant = false;
 
 type SupplierParams = {params: Promise<{id: string}>};
 

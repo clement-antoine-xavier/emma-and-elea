@@ -11,8 +11,6 @@ import {CustomerEditForm} from "@/components/sales/customer-edit-form";
 import {requirePermission} from "@/server/auth/actor";
 import {customerService} from "@/server/services/container";
 
-// Session data keeps this route blocking until it is moved to a streamed shell.
-export const instant = false;
 
 type CustomerParams = {params: Promise<{id: string}>};
 

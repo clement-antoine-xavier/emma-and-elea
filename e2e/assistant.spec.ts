@@ -2,7 +2,10 @@ import {expect, test} from "@playwright/test";
 import {deleteOrganizationBySlug, deleteUserByEmail} from "./db";
 import {signUpAndCreateWorkspace} from "./helpers";
 
-const enabled = process.env.ASSISTANT_ENABLED === "true";
+const enabled =
+  process.env.ASSISTANT_ENABLED === "true" &&
+  (process.env.ASSISTANT_FAKE_MODEL === "echo" ||
+    process.env.ASSISTANT_LIVE_TEST === "1");
 const unique = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 const email = `e2e-assistant-${unique}@example.com`;
 const password = "password12345";
@@ -15,7 +18,7 @@ test.afterAll(async () => {
   await deleteUserByEmail(email);
 });
 
-test("the assistant pages open for both personas", async ({page}) => {
+test("@slow the assistant pages open for both personas", async ({page}) => {
   await signUpAndCreateWorkspace(page, {
     name: "Assistant Owner",
     email,
@@ -66,12 +69,19 @@ test("the assistant pages open for both personas", async ({page}) => {
 
   await expect(page).toHaveURL(/\/dashboard\/assistant\/[^/]+$/);
 
+  await page.reload();
+  await expect(
+    page.getByText("Test reply from the assistant."),
+  ).toBeVisible({timeout: 20_000});
+
   await page.getByRole("button", {name: "New chat"}).click();
   await expect(
     page.getByRole("heading", {name: "Where should we start?"}),
   ).toBeVisible();
   await expect(page).toHaveURL(/\/dashboard\/assistant$/);
 
-  await page.getByRole("link", {name: prompt}).click();
-  await expect(page.getByRole("log")).toContainText(prompt);
+  await page.getByRole("button", {name: new RegExp(prompt)}).click();
+  await expect(page.getByRole("log")).toContainText(prompt, {
+    timeout: 20_000,
+  });
 });

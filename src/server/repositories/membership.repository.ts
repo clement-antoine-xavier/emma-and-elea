@@ -29,7 +29,7 @@ export const membershipRepository: MembershipRepository = {
         organizationId: true,
         role: true,
         createdAt: true,
-        organization: {select: {id: true, name: true, slug: true}},
+        organization: {select: {id: true, name: true, slug: true, logo: true}},
       },
     });
   },
@@ -42,8 +42,8 @@ export const membershipRepository: MembershipRepository = {
         organizationId: true,
         role: true,
         createdAt: true,
-        organization: {select: {id: true, name: true, slug: true}},
-        user: {select: {name: true, email: true, role: true}},
+        organization: {select: {id: true, name: true, slug: true, logo: true}},
+        user: {select: {name: true, email: true, image: true, role: true}},
       },
     });
   },

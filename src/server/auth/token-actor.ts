@@ -62,6 +62,7 @@ export async function resolveTokenActor(
     userId,
     name: membership.user.name,
     email: membership.user.email,
+    image: membership.user.image ?? null,
     platformRole: membership.user.role ?? null,
     isSupport: isPlatformSupport(membership.user.role),
     sessionId: claimString(claims, "sid") ?? "",

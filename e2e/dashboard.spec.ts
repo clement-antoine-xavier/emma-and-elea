@@ -11,7 +11,7 @@ test.afterAll(async () => {
   await deleteUserByEmail(email);
 });
 
-test("shows the operations dashboard and switches the period", async ({
+test("@smoke @critical shows the operations dashboard and switches the period", async ({
   page,
 }) => {
   await signUpAndCreateWorkspace(page, {

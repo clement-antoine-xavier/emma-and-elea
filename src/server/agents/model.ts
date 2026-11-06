@@ -1,44 +1,153 @@
 import {
-  OpenAIProvider,
-  setDefaultModelProvider,
-  setTracingDisabled,
-} from "@openai/agents";
+  createGateway,
+  gateway,
+  simulateReadableStream,
+  type LanguageModel,
+} from "ai";
+import {MockLanguageModelV4} from "ai/test";
 import type {AssistantConfig} from "./config";
+import type {AssistantPersona} from "./context";
 
-let configuredFor: string | null = null;
+const usage = {
+  inputTokens: {
+    total: 3,
+    noCache: 3,
+    cacheRead: undefined,
+    cacheWrite: undefined,
+  },
+  outputTokens: {
+    total: 12,
+    text: 12,
+    reasoning: undefined,
+  },
+};
 
 /**
- * Installs the OpenAI provider once per process. The key is read from the
- * server environment and never serialized into a run or a response.
+ * Deterministic models used by E2E and component tests when no Gateway
+ * credential is available. They only run in development, or in a production
+ * build that explicitly set `ALLOW_ASSISTANT_TEST_MODEL=1`.
  */
-export async function ensureModelProvider(
-  config: AssistantConfig,
-): Promise<void> {
-  const fingerprint = `${config.apiKey}:${config.baseUrl ?? ""}`;
-  if (configuredFor === fingerprint) return;
+function fakeModel(mode: "echo" | "approval"): LanguageModel {
+  if (mode === "approval") {
+    return new MockLanguageModelV4({
+      doStream: async ({prompt}) => {
+        const hasToolResult = prompt.some(
+          (message) =>
+            message.role === "tool" ||
+            (Array.isArray(message.content) &&
+              message.content.some((part) => part.type === "tool-result")),
+        );
 
-  if (
-    process.env.NODE_ENV !== "production" &&
-    process.env.ASSISTANT_FAKE_MODEL === "echo"
-  ) {
-    const {fakeAssistantProvider} = await import("./testing");
-    setDefaultModelProvider(fakeAssistantProvider);
-    setTracingDisabled(true);
-    configuredFor = fingerprint;
-    return;
+        if (!hasToolResult) {
+          return {
+            stream: simulateReadableStream({
+              chunks: [
+                {type: "stream-start", warnings: []},
+                {
+                  type: "tool-call",
+                  toolCallId: "call_e2e_approval",
+                  toolName: "cancel_order",
+                  input: JSON.stringify({id: "e2e-missing-order"}),
+                },
+                {
+                  type: "finish",
+                  finishReason: {unified: "tool-calls", raw: "tool_calls"},
+                  logprobs: undefined,
+                  usage,
+                },
+              ],
+            }),
+          };
+        }
+
+        return {
+          stream: simulateReadableStream({
+            chunks: [
+              {type: "stream-start", warnings: []},
+              {type: "text-start", id: "text-2"},
+              {
+                type: "text-delta",
+                id: "text-2",
+                delta: "The order was not changed.",
+              },
+              {type: "text-end", id: "text-2"},
+              {
+                type: "finish",
+                finishReason: {unified: "stop", raw: undefined},
+                logprobs: undefined,
+                usage,
+              },
+            ],
+          }),
+        };
+      },
+    });
   }
 
-  setDefaultModelProvider(
-    new OpenAIProvider({
-      apiKey: config.apiKey,
-      useResponses: config.useResponses,
-      ...(config.baseUrl ? {baseURL: config.baseUrl} : {}),
+  return new MockLanguageModelV4({
+    doStream: async () => ({
+      stream: simulateReadableStream({
+        chunks: [
+          {type: "text-start", id: "text-1"},
+          {
+            type: "text-delta",
+            id: "text-1",
+            delta: "Test reply from the assistant. Ask me about today's priorities.",
+          },
+          {type: "text-end", id: "text-1"},
+          {
+            type: "finish",
+            finishReason: {unified: "stop", raw: undefined},
+            logprobs: undefined,
+            usage,
+          },
+        ],
+      }),
     }),
-  );
-  setTracingDisabled(config.tracingDisabled);
-  configuredFor = fingerprint;
+  });
+}
+
+let provider: ReturnType<typeof createGateway> | null = null;
+let providerKey: string | null = null;
+
+function gatewayProvider(
+  config: AssistantConfig,
+): ReturnType<typeof createGateway> | null {
+  if (!config.gatewayApiKey) return null;
+
+  if (provider && providerKey === config.gatewayApiKey) return provider;
+
+  provider = createGateway({apiKey: config.gatewayApiKey});
+  providerKey = config.gatewayApiKey;
+
+  return provider;
+}
+
+export function modelFor(
+  persona: AssistantPersona,
+  config: Pick<AssistantConfig, "emmaModel" | "eleaModel">,
+): string {
+  return persona === "emma" ? config.emmaModel : config.eleaModel;
+}
+
+/**
+ * Resolves the Gateway model for a persona. On Vercel the Gateway provider
+ * authenticates with OIDC; elsewhere `AI_GATEWAY_API_KEY` is required unless the
+ * deterministic test model is enabled.
+ */
+export function resolveModel(
+  persona: AssistantPersona,
+  config: AssistantConfig,
+): LanguageModel {
+  if (config.fakeModel) return fakeModel(config.fakeModelMode ?? "echo");
+
+  const model = modelFor(persona, config);
+  const customProvider = gatewayProvider(config);
+
+  return customProvider ? customProvider(model) : gateway(model);
 }
 
 export function resetModelProviderForTests(): void {
-  configuredFor = null;
+  provider = null;
+  providerKey = null;
 }

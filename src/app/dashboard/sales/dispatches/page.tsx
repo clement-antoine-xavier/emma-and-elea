@@ -8,8 +8,6 @@ import {DispatchManager} from "@/components/sales/dispatch-manager";
 import {requirePermission} from "@/server/auth/actor";
 import {dispatchService} from "@/server/services/container";
 
-// Session data keeps this route blocking until it is moved to a streamed shell.
-export const instant = false;
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Sales.dispatches");

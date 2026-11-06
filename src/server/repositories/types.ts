@@ -29,6 +29,7 @@ export type OrganizationSummary = {
   id: string;
   name: string;
   slug: string;
+  logo?: string | null;
 };
 
 export type MembershipWithOrganization = {
@@ -44,6 +45,7 @@ export type MembershipActorRecord = MembershipWithOrganization & {
   user: {
     name: string;
     email: string;
+    image: string | null;
     role: string | null;
   };
 };

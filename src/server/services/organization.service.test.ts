@@ -37,6 +37,8 @@ function makeService() {
     removeMember: jest.fn(),
     cancelInvitation: jest.fn(),
     acceptInvitation: jest.fn(),
+    updateOrganizationLogo: jest.fn(),
+    updateUserImage: jest.fn(),
   };
 
   const bootstrapService: OrganizationBootstrapService = {

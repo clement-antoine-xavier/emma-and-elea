@@ -380,6 +380,12 @@
   "Dashboard": {
     "metadataTitle": "Workspace · Emma & Éléa",
     "brand": "Emma & Éléa",
+    "profile": {
+      "label": "Profile photo",
+      "action": "Change photo",
+      "error": "The photo could not be uploaded.",
+      "unavailable": "Photo uploads are not configured."
+    },
     "nav": {
       "label": "Workspace navigation",
       "assistant": "Assistant",
@@ -889,6 +895,14 @@
     "organization": {
       "title": "Organization",
       "intro": "These values drive costing, lot numbers and forecasting. Only owners and admins can change them.",
+      "logo": {
+        "title": "Organization logo",
+        "intro": "Shown in the workspace rail. PNG, JPEG or WebP, up to 2 MB.",
+        "label": "Upload a logo",
+        "hint": "Drag a file here or choose one from your computer.",
+        "error": "The logo could not be uploaded.",
+        "unavailable": "Image uploads are not configured."
+      },
       "saved": "Settings saved.",
       "errorTitle": "Could not save the settings",
       "submit": "Save settings",

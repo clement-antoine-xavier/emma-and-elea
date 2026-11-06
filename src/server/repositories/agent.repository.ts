@@ -2,9 +2,9 @@ import {prisma} from "@/lib/prisma";
 import type {Prisma} from "@/generated/prisma/client";
 
 /**
- * Persistence for the in-app assistants (ADR-0023). The repository stores the
- * SDK conversation items verbatim so a run can be replayed, and keeps a
- * separate approval row for every tool call that needs a human decision.
+ * Persistence for the in-app assistants (ADR-0030). The repository stores the
+ * UI messages verbatim so a conversation can be replayed, and keeps a separate
+ * approval row for every tool call that needs a human decision.
  */
 
 export type AgentPersonaName = "EMMA" | "ELEA";
@@ -175,6 +175,28 @@ export const agentRepository = {
     });
   },
 
+  /**
+   * Replaces the persisted UI-message history. The client sends the complete
+   * message array on every turn, so a single transaction keeps the stored
+   * conversation aligned with what the model just saw.
+   */
+  async replaceMessages(
+    conversationId: string,
+    items: readonly unknown[],
+  ): Promise<void> {
+    await prisma.$transaction(async (tx) => {
+      await tx.agentMessage.deleteMany({where: {conversationId}});
+      if (items.length === 0) return;
+
+      await tx.agentMessage.createMany({
+        data: items.map((item) => ({
+          conversationId,
+          item: asJson(item),
+        })),
+      });
+    });
+  },
+
   async getMessages(
     conversationId: string,
     limit?: number,
@@ -307,10 +329,10 @@ export const agentRepository = {
   async findApproval(
     organizationId: string,
     userId: string,
-    id: string,
+    callId: string,
   ): Promise<AgentApprovalRecord | null> {
     return prisma.agentApproval.findFirst({
-      where: {id, organizationId, userId},
+      where: {callId, organizationId, userId},
       select: approvalSelect,
     });
   },

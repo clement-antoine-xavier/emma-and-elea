@@ -11,8 +11,6 @@ import {can} from "@/lib/permissions";
 import {requirePermission} from "@/server/auth/actor";
 import {orderService} from "@/server/services/container";
 
-// Session data keeps this route blocking until it is moved to a streamed shell.
-export const instant = false;
 
 const ORDER_STATUSES: OrderStatusName[] = [
   "DRAFT",

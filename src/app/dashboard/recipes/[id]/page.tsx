@@ -16,8 +16,6 @@ import {RecipeVersionTable} from "@/components/recipes/recipe-version-table";
 import {requirePermission} from "@/server/auth/actor";
 import {recipeService} from "@/server/services/container";
 
-// Session data keeps this route blocking until it is moved to a streamed shell.
-export const instant = false;
 
 type RecipeParams = {params: Promise<{id: string}>};
 

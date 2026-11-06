@@ -7,8 +7,6 @@ import {SiteEditForm} from "@/components/settings/site-edit-form";
 import {requirePermission} from "@/server/auth/actor";
 import {siteService} from "@/server/services/container";
 
-// Session data keeps this route blocking until it is moved to a streamed shell.
-export const instant = false;
 
 type SiteParams = {params: Promise<{id: string}>};
 

@@ -6,6 +6,7 @@ import {Heading, Text} from "@astryxdesign/core/Text";
 import {getTranslations} from "next-intl/server";
 import {PageShell} from "@/components/layout/page-shell";
 import {PropertyList} from "@/components/layout/property-list";
+import {OrganizationLogoForm} from "@/components/settings/organization-logo-form";
 import {OrganizationSettingsForm} from "@/components/settings/organization-settings-form";
 import {SiteManager} from "@/components/settings/site-manager";
 import {LabourRateManager} from "@/components/settings/labour-rate-manager";
@@ -24,8 +25,6 @@ import {
   siteService,
 } from "@/server/services/container";
 
-// Session data keeps this route blocking until it is moved to a streamed shell.
-export const instant = false;
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Settings");
@@ -172,7 +171,13 @@ export default async function SettingsPage({
 
       {section === "organization" && settingsView ? (
         settingsView.canUpdate ? (
-          <OrganizationSettingsForm settings={settingsView.settings} />
+          <Stack gap={6}>
+            <OrganizationLogoForm
+              logo={actor.organization.logo ?? null}
+              organizationName={actor.organization.name}
+            />
+            <OrganizationSettingsForm settings={settingsView.settings} />
+          </Stack>
         ) : (
           <Card padding={5}>
             <PropertyList

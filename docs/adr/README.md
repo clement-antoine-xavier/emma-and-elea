@@ -31,11 +31,15 @@ decision.
 | [0020](0020-expose-mcp-through-better-auth-oauth.md) | Expose MCP through Better Auth OAuth | Accepted | 2026-10-27 |
 | [0021](0021-expose-a-rest-api-as-a-second-oauth-resource.md) | Expose a REST API as a second OAuth resource | Accepted | 2026-10-27 |
 | [0022](0022-consolidate-settings-into-one-route.md) | Consolidate settings into one route with a section rail | Accepted | 2026-10-28 |
-| [0023](0023-add-in-app-assistants.md) | Add in-app assistants with the OpenAI Agents SDK | Accepted | 2026-10-28 |
+| [0023](0023-add-in-app-assistants.md) | Add in-app assistants with the OpenAI Agents SDK | Superseded by [0030](0030-replace-openai-agents-with-vercel-ai-sdk.md) | 2026-10-28 |
 | [0024](0024-refresh-stored-costs-on-demand.md) | Refresh stored costs on demand with an input fingerprint | Accepted | 2026-10-29 |
 | [0025](0025-define-product-profitability.md) | Define product profitability as produced minus sold minus waste | Accepted | 2026-10-29 |
 | [0026](0026-generate-production-tasks-from-recipe-operations.md) | Generate production tasks from recipe operations | Accepted | 2026-10-29 |
 | [0027](0027-compute-in-app-alerts-on-read.md) | Compute in-app alerts on read, without a notification store | Accepted | 2026-10-29 |
+| [0028](0028-deploy-on-vercel-with-prisma-postgres.md) | Deploy on Vercel with Prisma Postgres and AI Gateway | Accepted | 2026-11-06 |
+| [0029](0029-store-profile-images-in-vercel-blob.md) | Store profile images in Vercel Blob | Accepted | 2026-11-06 |
+| [0030](0030-replace-openai-agents-with-vercel-ai-sdk.md) | Replace the OpenAI Agents SDK with the Vercel AI SDK | Accepted | 2026-11-06 |
+| [0031](0031-keep-the-root-layout-request-scoped-for-locale.md) | Keep the root layout request-scoped for the locale cookie | Accepted | 2026-11-06 |
 
 ## Creating a new ADR
 
