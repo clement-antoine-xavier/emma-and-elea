@@ -5,15 +5,14 @@ const isCI = !!process.env.CI;
 
 export default defineConfig({
   testDir: "./e2e",
+  testIgnore: ["instant/**"],
   globalSetup: "./e2e/global-setup.ts",
   fullyParallel: true,
   forbidOnly: isCI,
   retries: isCI ? 2 : 0,
-  // Local runs use `next dev`, which compiles each new route on demand. Even a
-  // few workers queue behind that compilation, so the suite runs sequentially
-  // like CI and only the timeout needs headroom.
+  // Tests create isolated users and organizations, so two workers are safe.
   timeout: 60_000,
-  workers: 1,
+  workers: 2,
   // Keep the reporter and stop the run before the job timeout.
   globalTimeout: 15 * 60 * 1000,
   expect: {timeout: isCI ? 10_000 : 5_000},
@@ -33,13 +32,22 @@ export default defineConfig({
     },
   ],
   webServer: {
-    // CI already ran `npm run build`; use the production server so the first
-    // sign-up does not wait for Next.js to compile routes on demand.
-    command: isCI ? "npm run start:standalone" : "npm run dev",
+    // Always run a production build so tests never wait for on-demand route
+    // compilation. CI builds once before the job; locally the server command
+    // builds the bundle first.
+    command: isCI
+      ? "npm run start:standalone"
+      : "npm run build && npm run start:standalone",
     // The suite creates several accounts in one run, so the server it starts
     // must not rate-limit auth. A server you started yourself keeps its own
     // settings; restart it with the same variable to reproduce CI locally.
-    env: {E2E_DISABLE_AUTH_RATE_LIMIT: "true"},
+    env: {
+      E2E_DISABLE_AUTH_RATE_LIMIT: "true",
+      ASSISTANT_ENABLED: process.env.ASSISTANT_ENABLED ?? "",
+      ASSISTANT_FAKE_MODEL: process.env.ASSISTANT_FAKE_MODEL ?? "",
+      ALLOW_ASSISTANT_TEST_MODEL:
+        process.env.ALLOW_ASSISTANT_TEST_MODEL ?? "",
+    },
     url: "http://localhost:3000",
     reuseExistingServer: !isCI,
     timeout: 120_000,

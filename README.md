@@ -303,10 +303,14 @@ is maintained in-repo and should be reviewed by a French speaker.
 ## Testing
 
 ```bash
-npm test                  # Jest unit and component tests
-npm run test:coverage     # Unit tests with the coverage report and thresholds
-npm run test:integration  # Repository tests against the real PostgreSQL
-npm run test:e2e          # Playwright E2E against PostgreSQL
+npm test                     # Jest unit and component tests
+npm run test:coverage        # Unit tests with the coverage report and thresholds
+npm run test:integration     # Repository tests against the real PostgreSQL
+npm run test:e2e             # Playwright E2E against PostgreSQL
+npm run test:e2e:instant     # Instant Navigation suite (production test build)
+npm run test:e2e:approval    # Assistant approval flow (scripted approval model)
+npm run test:e2e -- --grep @smoke       # Fast critical-path subset
+npm run test:e2e -- --grep @critical    # Security and tenant boundaries
 ```
 
 Install the Playwright browser once:
@@ -321,7 +325,29 @@ rows. They never truncate the database, so they are safe against a development
 database. Start PostgreSQL with `docker compose up -d postgres` and apply
 migrations with `npm run db:deploy` before running them.
 
-E2E tests use the `DATABASE_URL` from `.env`, run against the dev server at `http://localhost:3000`, create unique `e2e-*@example.com` users, verify them in PostgreSQL, and delete them afterward. The suite covers full feature flows plus catalog/settings editing and archiving, team edits, tenant isolation, signed-out redirects, 404s and the translated dashboard.
+E2E tests use the `DATABASE_URL` from `.env` and run against a production build
+at `http://localhost:3000` (`npm run test:e2e` builds locally and reuses a
+running server). They create unique `e2e-*@example.com` users, verify them in
+PostgreSQL, and delete them afterward. Tests carry `@smoke`, `@critical` and
+`@slow` tags. The suite covers full feature flows plus catalog/settings editing
+and archiving, team edits, tenant isolation, signed-out redirects, 404s and the
+translated dashboard.
+
+The Instant Navigation suite needs a test-only build:
+
+```bash
+npm run build:test
+npm run test:e2e:instant
+```
+
+`build:test` sets `EXPOSE_TESTING_API=1` and `ALLOW_ASSISTANT_TEST_MODEL=1`; a
+normal deployment never exposes those APIs or the scripted model. The approval
+suite likewise runs only with `ASSISTANT_FAKE_MODEL=approval`:
+
+```bash
+ASSISTANT_ENABLED=true ASSISTANT_FAKE_MODEL=approval \
+  ALLOW_ASSISTANT_TEST_MODEL=1 npm run test:e2e:approval
+```
 
 ## Vercel
 

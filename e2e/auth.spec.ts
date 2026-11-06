@@ -19,7 +19,7 @@ test.afterAll(async () => {
   await deleteUserByEmail(email);
 });
 
-test("signs up, creates a workspace, signs out, and signs back in", async ({
+test("@smoke signs up, creates a workspace, signs out, and signs back in", async ({
   page,
 }) => {
   await deleteUserByEmail(email);

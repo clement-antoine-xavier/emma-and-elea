@@ -16,7 +16,7 @@ test.afterAll(async () => {
   await deleteUserByEmail(ownerEmail);
 });
 
-test("guards routes, invitations and tenant boundaries", async ({page}) => {
+test("@critical guards routes, invitations and tenant boundaries", async ({page}) => {
   // A signed-out visitor is sent to sign-in.
   await page.goto("/dashboard");
   await expect(page).toHaveURL(/\/sign-in$/);

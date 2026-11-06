@@ -86,7 +86,8 @@ Use Astryx before writing custom UI. Discover, then compose; don't hand-roll lay
 - Routing config: `src/i18n/routing.ts` (`locales`, `defaultLocale`). Add a locale there and in `messages/`.
 - Locale: `src/i18n/locale.ts` defines the `NEXT_LOCALE` cookie (`path=/`, one year, `lax`) and `resolveLocale`, which falls back to `en` for unknown values.
 - Request config: `src/i18n/request.ts` reads `cookies()` and supplies the locale plus messages. There is no Proxy and no `[locale]` segment.
-- Rendering: the cookie is request data, so every route is dynamic. `src/app/layout.tsx` sets `export const instant = false` to allow the block under `cacheComponents`; do not add `generateStaticParams` for locales.
+- Rendering: the cookie is request data, so every route is dynamic. `src/app/layout.tsx` sets `export const instant = false` to allow the block under `cacheComponents`; do not add `generateStaticParams` for locales. See ADR-0031.
+- Cache Components: dashboard routes rely on `src/app/dashboard/loading.tsx`; keep each page's data access behind that boundary or a route-level `<Suspense>`. `/onboarding`, `/consent` and `/accept-invitation/[id]` stay blocking because their first render needs the session or a signed query.
 - Switching: `setLocaleAction` in `src/app/actions/locale.actions.ts` writes the cookie; `LocaleSwitcher` calls it and then `router.refresh()`. The URL must not change.
 - Messages: `messages/en.json` and `messages/fr.json`. A Jest test asserts both catalogs have the same key paths; add keys to both.
 - Server Components: `getTranslations` from `next-intl/server`; Client Components: `useTranslations` from `next-intl`.
@@ -257,6 +258,8 @@ Next.js 16.4.3 has breaking changes — APIs, conventions, and file structure ma
 
 - Load `next-cache-components-adoption` before changing `cacheComponents`, `instant`, or blocking-route behavior.
 - Load `next-partial-prefetching-adoption` before changing `partialPrefetching`, prefetch hints, or `instant()` coverage.
+- The Instant Navigation baseline lives in `e2e/instant/` and runs from `playwright.instant.config.ts` after `npm run build:test`; do not run it from the default Playwright project.
+- Prefetch decisions are recorded in `docs/prefetching.md`.
 - Load `next-dev-loop` when verifying runtime behavior in a running dev server.
 - Load `vercel-react-best-practices` for React/Next performance, bundle or data-fetching work.
 

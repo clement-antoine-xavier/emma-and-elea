@@ -81,11 +81,24 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Build the Instant Navigation test bundle
+        run: npm run build:test
+
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 
+      - name: Instant navigation tests
+        run: npm run test:e2e:instant
+
       - name: E2E tests
         run: npm run test:e2e
+
+      - name: Assistant approval E2E
+        run: npm run test:e2e:approval
+        env:
+          ASSISTANT_ENABLED: "true"
+          ASSISTANT_FAKE_MODEL: "approval"
+          ALLOW_ASSISTANT_TEST_MODEL: "1"
 
       - name: Upload Playwright report
         if: ${{ !cancelled() }}
