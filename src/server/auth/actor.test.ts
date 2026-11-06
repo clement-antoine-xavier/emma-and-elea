@@ -87,6 +87,7 @@ describe("getActorContext", () => {
       userId: "user_1",
       name: "Ada",
       email: "ada@example.com",
+      image: null,
       platformRole: "user",
       isSupport: false,
       sessionId: "session_1",

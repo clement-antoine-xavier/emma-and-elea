@@ -1,39 +1,30 @@
+import {TypeValidationError} from "ai";
 import {cookies} from "next/headers";
 import {z} from "zod";
 import {localeCookieName, resolveLocale} from "@/i18n/locale";
+import {appBaseUrl} from "@/lib/app-url";
 import {parsePersona} from "@/server/agents/context";
 import {getAssistantConfig} from "@/server/agents/config";
-import {allowAssistantRequest} from "@/server/agents/rate-limit";
 import {
   getConversationHistory,
   listConversations,
-  streamAssistant,
+  streamAssistantResponse,
 } from "@/server/agents/runner";
 import {getActorContext} from "@/server/auth/actor";
 import {assertOrganizationActor} from "@/server/auth/guards";
 import type {OrganizationActor} from "@/server/auth/types";
-import {isDomainError} from "@/server/domain/errors";
-import type {AssistantStreamEvent} from "@/lib/assistant";
+import {DomainError, isDomainError} from "@/server/domain/errors";
+import type {AssistantUIMessage} from "@/lib/assistant";
 
-const messageSchema = z.object({
-  type: z.literal("message"),
+// Fluid compute allows long streaming runs; the platform clamps this to the
+// plan's maximum.
+export const maxDuration = 300;
+
+const bodySchema = z.object({
+  messages: z.array(z.unknown()).min(1).max(120),
   persona: z.enum(["emma", "elea"]),
   conversationId: z.string().trim().min(1).optional(),
-  text: z.string().trim().min(1).max(4000),
 });
-
-const approvalSchema = z.object({
-  type: z.literal("approval"),
-  persona: z.enum(["emma", "elea"]),
-  conversationId: z.string().trim().min(1),
-  approvalId: z.string().trim().min(1),
-  decision: z.enum(["approve", "reject"]),
-});
-
-const requestSchema = z.discriminatedUnion("type", [
-  messageSchema,
-  approvalSchema,
-]);
 
 function json(status: number, body: unknown): Response {
   return Response.json(body, {status});
@@ -56,13 +47,30 @@ function sameOrigin(request: Request): boolean {
   const origin = request.headers.get("origin");
   if (!origin) return true;
 
-  const configured = process.env.BETTER_AUTH_URL;
-  if (!configured) return true;
+  const configured = appBaseUrl();
 
   try {
     return new URL(origin).origin === new URL(configured).origin;
   } catch {
     return false;
+  }
+}
+
+function errorStatus(error: DomainError): number {
+  if (error.message === "ASSISTANT_RATE_LIMITED") return 429;
+  if (error.message === "ASSISTANT_BUDGET_EXCEEDED") return 429;
+
+  switch (error.code) {
+    case "NOT_FOUND":
+      return 404;
+    case "INVALID_INPUT":
+      return 400;
+    case "FORBIDDEN":
+      return 403;
+    case "CONFLICT":
+      return 409;
+    default:
+      return 500;
   }
 }
 
@@ -95,19 +103,12 @@ export async function POST(request: Request): Promise<Response> {
   const actor = await resolveActor();
   if (actor instanceof Response) return actor;
 
-  if (!allowAssistantRequest(actor.userId)) {
-    return json(429, {error: "ASSISTANT_RATE_LIMITED"});
-  }
-
-  let config: ReturnType<typeof getAssistantConfig> = null;
   try {
-    config = getAssistantConfig();
+    if (!getAssistantConfig()) {
+      return json(404, {error: "ASSISTANT_DISABLED"});
+    }
   } catch {
     return json(503, {error: "ASSISTANT_NOT_CONFIGURED"});
-  }
-
-  if (!config) {
-    return json(404, {error: "ASSISTANT_DISABLED"});
   }
 
   let payload: unknown;
@@ -117,59 +118,33 @@ export async function POST(request: Request): Promise<Response> {
     return json(400, {error: "INVALID_JSON"});
   }
 
-  const parsed = requestSchema.safeParse(payload);
+  const parsed = bodySchema.safeParse(payload);
   if (!parsed.success) {
     return json(400, {error: "INVALID_REQUEST"});
   }
 
-  const locale = resolveLocale(
-    (await cookies()).get(localeCookieName)?.value,
-  );
-  const encoder = new TextEncoder();
+  const locale = resolveLocale((await cookies()).get(localeCookieName)?.value);
 
-  const stream = new ReadableStream<Uint8Array>({
-    async start(controller) {
-      const send = (event: AssistantStreamEvent) => {
-        controller.enqueue(
-          encoder.encode(
-            `event: ${event.type}\ndata: ${JSON.stringify(event)}\n\n`,
-          ),
-        );
-      };
+  try {
+    return await streamAssistantResponse({
+      actor,
+      locale,
+      request: {
+        ...parsed.data,
+        messages: parsed.data.messages as AssistantUIMessage[],
+      },
+      abortSignal: request.signal,
+    });
+  } catch (error) {
+    if (error instanceof TypeValidationError) {
+      return json(400, {error: "INVALID_MESSAGES"});
+    }
 
-      try {
-        for await (const event of streamAssistant({
-          actor,
-          locale,
-          request: parsed.data,
-        })) {
-          send(event);
-        }
-      } catch (error) {
-        send({
-          type: "error",
-          code: isDomainError(error)
-            ? error.code
-            : error instanceof Error
-              ? error.message
-              : "UNEXPECTED",
-          message:
-            locale === "fr"
-              ? "L’assistant n’a pas pu terminer cette demande."
-              : "The assistant could not complete this request.",
-        });
-      } finally {
-        controller.close();
-      }
-    },
-  });
+    if (isDomainError(error)) {
+      return json(errorStatus(error), {error: error.message});
+    }
 
-  return new Response(stream, {
-    headers: {
-      "content-type": "text/event-stream; charset=utf-8",
-      "cache-control": "no-cache, no-transform",
-      connection: "keep-alive",
-      "x-accel-buffering": "no",
-    },
-  });
+    console.error("Assistant request failed", error);
+    return json(500, {error: "UNEXPECTED"});
+  }
 }

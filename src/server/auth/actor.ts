@@ -39,6 +39,7 @@ export const getActorContext = cache(async (): Promise<Actor | null> => {
     userId: session.user.id,
     name: session.user.name,
     email: session.user.email,
+    image: session.user.image ?? null,
     platformRole: session.user.role ?? null,
     isSupport: isPlatformSupport(session.user.role),
     sessionId: session.session.id,

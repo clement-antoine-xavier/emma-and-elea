@@ -300,9 +300,11 @@ function MessageTurn({
         isAssistant ? <Avatar name={personaName} size="md" /> : undefined
       }
       metadata={
-        <ChatMessageMetadata
-          timestamp={<Timestamp value={turn.createdAt} format="time" />}
-        />
+        turn.createdAt ? (
+          <ChatMessageMetadata
+            timestamp={<Timestamp value={turn.createdAt} format="time" />}
+          />
+        ) : undefined
       }
     >
       <ChatMessageBubble variant={isAssistant ? "ghost" : "filled"}>

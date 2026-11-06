@@ -6,9 +6,9 @@ Next.js 16 App Router app with Astryx UI, Prisma ORM 7, and Better Auth.
 
 - Next.js 16.4.3 + React 19.3 + TypeScript
 - Astryx 0.7.4 (Butter theme) + Recharts 3.10 for the dashboard charts
-- Prisma ORM 7.10.1 + PostgreSQL 18
+- Prisma ORM 7.10.1 + PostgreSQL 18 (Prisma Postgres on Vercel)
 - Better Auth 1.7.14 (email/password, admin, organization, MCP OAuth)
-- OpenAI Agents SDK 0.21 for the in-app assistants
+- Vercel AI SDK 7 + AI Gateway for the in-app assistants
 - next-intl 4.14.9 (English and French, locale from the `NEXT_LOCALE` cookie)
 - Zod 4 + React Hook Form 7 for forms
 
@@ -16,7 +16,7 @@ Architecture decisions are recorded in [`docs/adr/`](docs/adr/README.md) using M
 
 ## Prerequisites
 
-- Node.js 26+
+- Node.js 24+ (CI and the Docker image currently use Node 26; Vercel uses Node 24)
 - Docker + Docker Compose
 
 ## Local setup
@@ -63,20 +63,24 @@ batches, allocates lots FEFO, records waste and exposes lot traceability.
 
 | Variable | Purpose |
 |---|---|
-| `DATABASE_URL` | PostgreSQL connection string used by Prisma |
+| `DATABASE_URL` | Direct PostgreSQL/Prisma Postgres connection string used by migrations |
+| `DATABASE_URL_POOLED` | Pooled Prisma Postgres URL used by the app at runtime (set by the Vercel integration) |
+| `PRISMA_DATABASE_URL` | Optional fallback for the pooled URL |
+| `DIRECT_URL` | Optional migration endpoint override for other hosts |
 | `BETTER_AUTH_SECRET` | Signing/encryption secret (32+ bytes) |
 | `BETTER_AUTH_URL` | Public app URL used by Better Auth |
 | `MCP_RESOURCE_URL` | Public URL of the MCP endpoint (defaults to `$BETTER_AUTH_URL/mcp`) |
 | `API_RESOURCE_URL` | Public base URL of the REST API (defaults to `$BETTER_AUTH_URL/api`) |
-| `OPENAI_API_KEY` | Server-only key for the in-app assistants; leave empty to disable them |
+| `AI_GATEWAY_API_KEY` | Server-only AI Gateway key; optional on Vercel where OIDC is used |
 | `ASSISTANT_ENABLED` | Set to `true` to show Emma and Éléa in the dashboard |
-| `ASSISTANT_MODEL` | Model used by both personas (defaults to `gpt-5.4`) |
-| `ASSISTANT_EMMA_MODEL` / `ASSISTANT_ELEA_MODEL` | Optional per-persona model overrides |
-| `OPENAI_BASE_URL` | Optional OpenAI-compatible gateway base URL |
-| `ASSISTANT_USE_RESPONSES` | `true` for the Responses API, `false` for Chat Completions; defaults to Responses only on api.openai.com |
-| `OPENAI_AGENTS_TRACING_DISABLED` | Set to `1` to keep prompts and tool results out of OpenAI tracing |
+| `ASSISTANT_MODEL` | AI Gateway model id, for example `openai/gpt-5.4` |
+| `ASSISTANT_EMMA_MODEL` / `ASSISTANT_ELEA_MODEL` | Optional per-persona Gateway model overrides |
+| `TOOL_APPROVAL_SECRET` | Signs human approval requests; required in production |
+| `ASSISTANT_TELEMETRY_ENABLED` | Set to `true` to opt into AI SDK telemetry (defaults to false) |
 | `ASSISTANT_MAX_TURNS` / `ASSISTANT_DAILY_TOKEN_BUDGET` | Guardrails for a run |
 | `ASSISTANT_RETENTION_DAYS` | Conversation retention window (defaults to 30) |
+| `BLOB_READ_WRITE_TOKEN` | Local Vercel Blob read-write token |
+| `BLOB_STORE_ID` | Vercel Blob store id (paired with OIDC on Vercel) |
 
 Real values belong in `.env` (gitignored). `.env.example` contains placeholders
 only; never put a real key in a committed file, a Docker build argument or a
@@ -236,7 +240,7 @@ prompts; a conversation lives at `/dashboard/assistant/<id>` with the transcript
 and a resizable approval panel (a full-screen dialog on mobile). The dashboard
 side nav links to the zero state.
 
-They use the OpenAI Agents SDK with in-process tools that call the same services
+They use the Vercel AI SDK with AI Gateway models. Tools call the same services
 as the pages and Server Actions. The authenticated session actor supplies the
 organization; no tool accepts an organization id. A capability is registered only
 when the member holds every required permission, and the service still runs
@@ -244,12 +248,14 @@ when the member holds every required permission, and the service still runs
 
 Drafts are created immediately. Posting a receipt, dispatch or stock count,
 starting or completing a batch, publishing a recipe and deciding an absence
-pause the run for an approval card. Approvals expire after ten minutes and are
-recorded in `agent_approval`.
+pause the run for an approval card. Approvals are signed with
+`TOOL_APPROVAL_SECRET`, expire after ten minutes and are recorded in
+`agent_approval`.
 
-The stream endpoint is `POST /dashboard/assistant/stream` (SSE). It is outside
-`/api/**` on purpose: it uses the session cookie, not an OAuth bearer token. See
-[ADR-0023](docs/adr/0023-add-in-app-assistants.md).
+`POST /dashboard/assistant/stream` returns an AI SDK UI message stream consumed
+by `useChat`. It is outside `/api/**` on purpose: it uses the session cookie, not
+an OAuth bearer token. See
+[ADR-0030](docs/adr/0030-replace-openai-agents-with-vercel-ai-sdk.md).
 
 
 
@@ -315,6 +321,32 @@ migrations with `npm run db:deploy` before running them.
 
 E2E tests use the `DATABASE_URL` from `.env`, run against the dev server at `http://localhost:3000`, create unique `e2e-*@example.com` users, verify them in PostgreSQL, and delete them afterward. The suite covers full feature flows plus catalog/settings editing and archiving, team edits, tenant isolation, signed-out redirects, 404s and the translated dashboard.
 
+## Vercel
+
+Vercel is the primary deployment target; the Docker path below remains supported.
+
+1. Link the project and pull development secrets:
+
+   ```bash
+   vercel link
+   vercel env pull
+   ```
+
+2. Add the Prisma Postgres integration from the Vercel Marketplace. It sets
+   `DATABASE_URL` (direct, for migrations), `DATABASE_URL_POOLED` (runtime) and
+   `POSTGRES_URL`. The app prefers `DATABASE_URL_POOLED`.
+3. Create a public Blob store and connect it to the project. Vercel provides
+   `BLOB_STORE_ID` and OIDC automatically.
+4. Set `BETTER_AUTH_URL` to the production custom domain,
+   `BETTER_AUTH_SECRET`, `TOOL_APPROVAL_SECRET`, and the assistant/Gateway values
+   for Production. Preview deployments derive their origin from `VERCEL_URL`.
+5. Deploy. `vercel.json` runs `npm run vercel-build`, which applies migrations
+   only in Production. Preview deployments share the database unless you connect
+   a separate Prisma Postgres resource to the Preview environment.
+
+The assistant route exports `maxDuration = 300`; Vercel clamps it to the plan's
+limit.
+
 ## Docker
 
 Build and run the app, migrations, and PostgreSQL together:
@@ -358,6 +390,7 @@ npm run lint
 npm run test:coverage
 npm run test:integration
 npm run test:e2e
+VERCEL=1 npm run build
 npm run astryx -- doctor
 docker compose config
 ```
@@ -365,4 +398,5 @@ docker compose config
 ## Notes
 
 - Prisma is pinned to 7.x. Prisma 8 RC uses a different ORM API that Better Auth's Prisma adapter does not support yet.
-- The production image uses Next.js `output: "standalone"` and runs as the unprivileged `node` user.
+- The production image uses Next.js `output: "standalone"` outside Vercel and runs as the unprivileged `node` user.
+- Profile images are public Vercel Blob objects; do not use this path for sensitive documents.

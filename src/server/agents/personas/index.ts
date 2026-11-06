@@ -1,6 +1,9 @@
-import {Agent} from "@openai/agents";
+import type {LanguageModel, ToolSet} from "ai";
 import {toolsFor} from "../capabilities";
+import type {AssistantConfig} from "../config";
 import type {AssistantContext, AssistantPersona} from "../context";
+import {resolveModel} from "../model";
+import {buildToolSet, type AssistantTool} from "../tools/shared";
 
 function baseInstructions(
   context: AssistantContext,
@@ -40,23 +43,25 @@ ${
 }`;
 }
 
-function modelFor(
-  persona: AssistantPersona,
-  config: {emmaModel: string; eleaModel: string},
-): string {
-  return persona === "emma" ? config.emmaModel : config.eleaModel;
-}
+export type PersonaAgent = {
+  name: string;
+  model: LanguageModel;
+  instructions: string;
+  tools: ToolSet;
+  definitions: AssistantTool[];
+};
 
 export function buildPersonaAgent(
   context: AssistantContext,
-  config: {emmaModel: string; eleaModel: string},
-): Agent<AssistantContext> {
-  const tools = toolsFor(context.persona, context.can);
+  config: AssistantConfig,
+): PersonaAgent {
+  const definitions = toolsFor(context.persona, context.can);
 
-  return new Agent<AssistantContext>({
+  return {
     name: context.persona === "emma" ? "Emma" : "Éléa",
-    model: modelFor(context.persona, config),
-    instructions: () => baseInstructions(context, context.persona),
-    tools,
-  });
+    model: resolveModel(context.persona, config),
+    instructions: baseInstructions(context, context.persona),
+    tools: buildToolSet(definitions, context),
+    definitions,
+  };
 }

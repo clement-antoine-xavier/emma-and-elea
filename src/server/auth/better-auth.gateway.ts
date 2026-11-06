@@ -30,6 +30,16 @@ export interface BetterAuthGateway {
     invitationId: string,
     headers: Headers,
   ): Promise<{organizationId: string}>;
+
+  updateOrganizationLogo(
+    input: {organizationId: string; logo: string | null},
+    headers: Headers,
+  ): Promise<void>;
+
+  updateUserImage(
+    input: {image: string | null},
+    headers: Headers,
+  ): Promise<void>;
 }
 
 function errorCode(error: unknown): string | undefined {
@@ -100,6 +110,7 @@ export const betterAuthGateway: BetterAuthGateway = {
       id: organization.id,
       name: organization.name,
       slug: organization.slug,
+      logo: organization.logo ?? null,
     };
   },
 
@@ -145,5 +156,26 @@ export const betterAuthGateway: BetterAuthGateway = {
     );
 
     return {organizationId: result.member.organizationId};
+  },
+
+  async updateOrganizationLogo(input, headers) {
+    await run(() =>
+      auth.api.updateOrganization({
+        body: {
+          organizationId: input.organizationId,
+          data: {logo: input.logo},
+        },
+        headers,
+      }),
+    );
+  },
+
+  async updateUserImage(input, headers) {
+    await run(() =>
+      auth.api.updateUser({
+        body: {image: input.image ?? undefined},
+        headers,
+      }),
+    );
   },
 };

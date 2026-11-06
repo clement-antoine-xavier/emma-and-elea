@@ -1,20 +1,26 @@
 "use client";
 
-import {useCallback, useEffect, useRef, useState} from "react";
+import {useCallback, useMemo, useRef, useState} from "react";
+import {useChat} from "@ai-sdk/react";
+import {
+  DefaultChatTransport,
+  isToolUIPart,
+  lastAssistantMessageIsCompleteWithApprovalResponses,
+  type UIMessage,
+} from "ai";
 import {usePathname, useRouter} from "next/navigation";
 import {useLocale, useTranslations} from "next-intl";
 import {AssistantChat, type AssistantChatHandle} from "./assistant-chat";
 import {AssistantLanding} from "./assistant-landing";
-import {readAssistantEventStream} from "@/lib/assistant-stream";
 import {
-  PERSONAS,
   toolLabel,
+  type AssistantApprovalPreview,
   type AssistantConversationSummary,
   type AssistantPendingApproval,
   type AssistantPersona,
-  type AssistantStreamEvent,
   type AssistantToolCall,
   type AssistantTurn,
+  type AssistantUIMessage,
 } from "@/lib/assistant";
 
 const STREAM_PATH = "/dashboard/assistant/stream";
@@ -25,17 +31,76 @@ type AssistantWorkspaceProps = {
   memberName: string;
   initialConversationId?: string;
   initialPersona?: AssistantPersona;
-  initialTurns?: AssistantTurn[];
+  initialMessages?: AssistantUIMessage[];
   initialApprovals?: AssistantPendingApproval[];
   initialRecent?: AssistantConversationSummary[];
 };
 
-function newId(prefix: string): string {
-  return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+type DataPart = UIMessage["parts"][number];
+
+function textFromParts(parts: readonly DataPart[]): string {
+  return parts
+    .map((part) => (part.type === "text" ? part.text : ""))
+    .filter(Boolean)
+    .join("\n");
 }
 
-function isAbortError(error: unknown): boolean {
-  return error instanceof DOMException && error.name === "AbortError";
+function toolCallsFromParts(
+  parts: readonly DataPart[],
+  locale: "en" | "fr",
+): AssistantToolCall[] {
+  const calls: AssistantToolCall[] = [];
+
+  for (const part of parts) {
+    if (!isToolUIPart(part)) continue;
+
+    const name = part.type.replace(/^tool-/, "");
+    const status =
+      part.state === "output-available"
+        ? "complete"
+        : part.state === "output-error" || part.state === "output-denied"
+          ? "error"
+          : "running";
+
+    calls.push({
+      id: part.toolCallId,
+      name,
+      label: toolLabel(name, locale),
+      status,
+      startedAt: 0,
+    });
+  }
+
+  return calls;
+}
+
+function fallbackPreview(
+  toolName: string,
+  input: unknown,
+  locale: "en" | "fr",
+): AssistantApprovalPreview {
+  const facts =
+    typeof input === "object" && input !== null
+      ? Object.entries(input as Record<string, unknown>)
+          .filter(
+            ([, value]) =>
+              value !== null && value !== undefined && value !== "",
+          )
+          .slice(0, 8)
+          .map(([label, value]) => ({
+            label,
+            value: typeof value === "string" ? value : JSON.stringify(value),
+          }))
+      : [];
+
+  return {
+    title: toolLabel(toolName, locale),
+    summary:
+      locale === "fr"
+        ? "L’assistant souhaite exécuter cette action."
+        : "The assistant wants to run this action.",
+    facts,
+  };
 }
 
 export function AssistantWorkspace({
@@ -43,7 +108,7 @@ export function AssistantWorkspace({
   memberName,
   initialConversationId,
   initialPersona,
-  initialTurns,
+  initialMessages,
   initialApprovals,
   initialRecent,
 }: AssistantWorkspaceProps) {
@@ -51,7 +116,6 @@ export function AssistantWorkspace({
   const locale = useLocale() === "fr" ? "fr" : "en";
   const router = useRouter();
   const pathname = usePathname();
-  const abortRef = useRef<AbortController | null>(null);
   const chatRef = useRef<AssistantChatHandle>(null);
 
   const [persona, setPersona] = useState<AssistantPersona>(
@@ -60,359 +124,255 @@ export function AssistantWorkspace({
   const [conversationId, setConversationId] = useState<string | null>(
     initialConversationId ?? null,
   );
-  const [turns, setTurns] = useState<AssistantTurn[]>(initialTurns ?? []);
   const [recent, setRecent] = useState<AssistantConversationSummary[]>(
     initialRecent ?? [],
   );
   const [draft, setDraft] = useState("");
-  const [streamingText, setStreamingText] = useState("");
-  const [toolCalls, setToolCalls] = useState<AssistantToolCall[]>([]);
-  const [approvals, setApprovals] = useState<AssistantPendingApproval[]>(
-    initialApprovals ?? [],
-  );
   const [busyApprovalId, setBusyApprovalId] = useState<string | null>(null);
-  const [isStreaming, setIsStreaming] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [streamError, setStreamError] = useState<string | null>(null);
+  const [serverApprovals, setServerApprovals] =
+    useState<AssistantPendingApproval[]>(initialApprovals ?? []);
 
-  const landingHref = useCallback(
-    (nextPersona: AssistantPersona) =>
-      nextPersona === personas[0]
-        ? LANDING_PATH
-        : `${LANDING_PATH}?persona=${nextPersona}`,
-    [personas],
-  );
 
-  const appendTurn = useCallback(
-    (
-      turn: Pick<AssistantTurn, "role" | "text"> &
-        Partial<Pick<AssistantTurn, "persona" | "toolCalls">>,
-    ) => {
-      setTurns((current) => [
-        ...current,
-        {
-          id: newId(turn.role),
-          createdAt: new Date().toISOString(),
-          ...turn,
-        },
-      ]);
+  const refreshRecent = useCallback(async () => {
+    try {
+      const response = await fetch(
+        `${STREAM_PATH}?persona=${persona}`,
+        {headers: {accept: "application/json"}},
+      );
+      if (!response.ok) return;
+
+      const body = (await response.json()) as {
+        conversations: AssistantConversationSummary[];
+      };
+
+      setRecent(
+        body.conversations
+          .map((conversation) => ({
+            ...conversation,
+            persona: conversation.persona.toLowerCase() as AssistantPersona,
+          }))
+          .slice(0, 5),
+      );
+    } catch {
+      // The landing page stays usable without recent conversations.
+    }
+  }, [persona]);
+
+  const transport = new DefaultChatTransport<AssistantUIMessage>({
+    api: STREAM_PATH,
+    body: {
+      persona,
+      conversationId: conversationId ?? undefined,
     },
-    [],
-  );
+  });
 
-  const resetConversation = useCallback(() => {
-    abortRef.current?.abort();
-    abortRef.current = null;
-    setConversationId(null);
-    setTurns([]);
-    setApprovals([]);
-    setBusyApprovalId(null);
-    setError(null);
-    setDraft("");
-    setStreamingText("");
-    setToolCalls([]);
-    setIsStreaming(false);
-  }, []);
+  const {
+    messages,
+    sendMessage,
+    status,
+    error: chatError,
+    setMessages,
+    stop,
+    addToolApprovalResponse,
+  } = useChat<AssistantUIMessage>({
+    id: initialConversationId,
+    messages: initialMessages ?? [],
+    transport,
+    sendAutomaticallyWhen: lastAssistantMessageIsCompleteWithApprovalResponses,
+    onData: (part) => {
+      if (part.type !== "data-conversation") return;
+      const next = part.data.conversationId;
+      setConversationId(next);
+      window.history.replaceState(
+        null,
+        "",
+        `${LANDING_PATH}/${next}`,
+      );
+    },
+    onFinish: () => {
+      setBusyApprovalId(null);
+      void refreshRecent();
+    },
+    onError: (error) => {
+      setBusyApprovalId(null);
+      setStreamError(error.message);
+    },
+  });
 
-  useEffect(() => {
-    if (conversationId) return;
+  const isStreaming = status === "submitted" || status === "streaming";
 
-    let cancelled = false;
+  const turns = useMemo<AssistantTurn[]>(() => {
+    return messages.map((message) => ({
+      id: message.id,
+      role: message.role,
+      text: textFromParts(message.parts),
+      createdAt: message.metadata?.createdAt,
+      persona,
+      toolCalls:
+        message.role === "assistant"
+          ? toolCallsFromParts(message.parts, locale)
+          : undefined,
+    }));
+  }, [locale, messages, persona]);
 
-    void (async () => {
-      try {
-        const response = await fetch(`${STREAM_PATH}?persona=${persona}`, {
-          headers: {accept: "application/json"},
-        });
-        if (!response.ok) return;
+  const lastMessage = messages.at(-1);
+  const streamingAssistant =
+    isStreaming && lastMessage?.role === "assistant";
+  const visibleTurns = streamingAssistant ? turns.slice(0, -1) : turns;
+  const streamingText =
+    streamingAssistant && lastMessage ? textFromParts(lastMessage.parts) : "";
+  const streamingCalls =
+    streamingAssistant && lastMessage
+      ? toolCallsFromParts(lastMessage.parts, locale)
+      : [];
 
-        const body = (await response.json()) as {
-          conversations: AssistantConversationSummary[];
-        };
-        if (!cancelled) {
-          setRecent(
-            body.conversations
-              .map((conversation) => ({
-                ...conversation,
-                persona: conversation.persona.toLowerCase() as AssistantPersona,
-              }))
-              .slice(0, 5),
-          );
+  const approvals = useMemo<AssistantPendingApproval[]>(() => {
+    const previews = new Map<string, AssistantApprovalPreview>();
+    const names = new Map<string, string>();
+
+    for (const approval of serverApprovals) {
+      previews.set(approval.id, approval.preview);
+      names.set(approval.id, approval.toolName);
+    }
+
+    for (const message of messages) {
+      for (const part of message.parts) {
+        if (part.type === "data-approval" && part.id) {
+          previews.set(part.id, part.data);
         }
-      } catch {
-        // The landing page stays usable without recent conversations.
       }
-    })();
+    }
 
-    return () => {
-      cancelled = true;
-    };
-  }, [conversationId, persona]);
+    const pending = new Map<string, string>();
+    for (const message of messages) {
+      for (const part of message.parts) {
+        if (!isToolUIPart(part)) continue;
+        if (part.state !== "approval-requested") continue;
+        if (part.approval.isAutomatic) continue;
+
+        const id = part.approval.id;
+        const toolName = part.type.replace(/^tool-/, "");
+        pending.set(id, toolName);
+        names.set(id, toolName);
+      }
+    }
+
+    return [...pending.entries()].map(([id, toolName]) => ({
+      id,
+      toolName,
+      preview:
+        previews.get(id) ?? fallbackPreview(toolName, undefined, locale),
+    }));
+  }, [locale, messages, serverApprovals]);
 
   const handlePersonaChange = useCallback(
     (nextPersona: AssistantPersona) => {
       if (nextPersona === persona) return;
       setPersona(nextPersona);
 
-      if (conversationId || turns.length > 0 || isStreaming) {
-        resetConversation();
-        if (pathname !== LANDING_PATH) router.push(landingHref(nextPersona));
+      if (
+        conversationId ||
+        messages.length > 0 ||
+        isStreaming
+      ) {
+        stop();
+        setMessages([]);
+        setConversationId(null);
+        setServerApprovals([]);
+        setBusyApprovalId(null);
+        setStreamError(null);
+        setDraft("");
+        if (pathname !== LANDING_PATH) {
+          router.push(
+            nextPersona === personas[0]
+              ? LANDING_PATH
+              : `${LANDING_PATH}?persona=${nextPersona}`,
+          );
+        }
       }
     },
     [
       conversationId,
       isStreaming,
-      landingHref,
+      messages.length,
       pathname,
+      personas,
       persona,
-      resetConversation,
       router,
-      turns.length,
+      setMessages,
+      stop,
     ],
   );
 
   const handleNewChat = useCallback(() => {
-    resetConversation();
-    if (pathname !== LANDING_PATH) router.push(landingHref(persona));
-  }, [landingHref, pathname, persona, resetConversation, router]);
+    stop();
+    setMessages([]);
+    setConversationId(null);
+    setServerApprovals([]);
+    setBusyApprovalId(null);
+    setStreamError(null);
+    setDraft("");
+    void refreshRecent();
 
-  const handleEvent = useCallback(
-    (
-      event: AssistantStreamEvent,
-      state: {
-        assistantText: string;
-        calls: AssistantToolCall[];
-        persona: AssistantPersona;
-      },
-    ) => {
-      switch (event.type) {
-        case "start": {
-          setConversationId(event.conversationId);
-          const nextPath = `${LANDING_PATH}/${event.conversationId}`;
-          if (window.location.pathname !== nextPath) {
-            window.history.replaceState(null, "", nextPath);
-          }
-          break;
-        }
-        case "text": {
-          state.assistantText += event.delta;
-          setStreamingText(state.assistantText);
-          break;
-        }
-        case "tool": {
-          if (event.phase === "start") {
-            state.calls = [
-              ...state.calls,
-              {
-                id: newId(event.name),
-                name: event.name,
-                label: event.label || toolLabel(event.name, locale),
-                status: "running",
-                startedAt: Date.now(),
-              },
-            ];
-          } else {
-            state.calls = state.calls.map((call) =>
-              call.name === event.name && call.status === "running"
-                ? {
-                    ...call,
-                    status: event.status === "error" ? "error" : "complete",
-                    durationMs: Date.now() - call.startedAt,
-                  }
-                : call,
-            );
-          }
-          setToolCalls(state.calls);
-          break;
-        }
-        case "approval": {
-          setApprovals((current) => [
-            ...current.filter((item) => item.id !== event.approvalId),
-            {
-              id: event.approvalId,
-              toolName: event.toolName,
-              preview: event.preview,
-            },
-          ]);
-          chatRef.current?.openReview();
-          break;
-        }
-        case "handoff": {
-          state.persona = event.persona;
-          setPersona(event.persona);
-          appendTurn({
-            role: "system",
-            text: t("handoff", {name: PERSONAS[event.persona].name}),
-          });
-          break;
-        }
-        case "done": {
-          if (state.assistantText.trim()) {
-            appendTurn({
-              role: "assistant",
-              text: state.assistantText,
-              persona: state.persona,
-              toolCalls: state.calls,
-            });
-          }
-          setStreamingText("");
-          setToolCalls([]);
-          break;
-        }
-        case "error": {
-          setError(event.message);
-          break;
-        }
-      }
-    },
-    [appendTurn, locale, t],
-  );
-
-  const consumeStream = useCallback(
-    async (
-      body: Record<string, unknown>,
-      state: {
-        assistantText: string;
-        calls: AssistantToolCall[];
-        persona: AssistantPersona;
-      },
-    ) => {
-      abortRef.current?.abort();
-      const controller = new AbortController();
-      abortRef.current = controller;
-
-      const response = await fetch(STREAM_PATH, {
-        method: "POST",
-        headers: {"content-type": "application/json"},
-        body: JSON.stringify(body),
-        signal: controller.signal,
-      });
-
-      await readAssistantEventStream(response, (event) =>
-        handleEvent(event, state),
+    if (pathname !== LANDING_PATH) {
+      router.push(
+        persona === personas[0]
+          ? LANDING_PATH
+          : `${LANDING_PATH}?persona=${persona}`,
       );
-    },
-    [handleEvent],
-  );
+    }
+  }, [
+    pathname,
+    persona,
+    personas,
+    refreshRecent,
+    router,
+    setMessages,
+    stop,
+  ]);
 
-  const sendMessage = useCallback(
-    async (value: string) => {
+  const submit = useCallback(
+    (value: string) => {
       const text = value.trim();
-      if (!text || isStreaming) return;
+      if (!text || isStreaming || approvals.length > 0) return;
 
       setDraft("");
-      setError(null);
-      setStreamingText("");
-      setToolCalls([]);
-      setIsStreaming(true);
-      appendTurn({role: "user", text});
-
-      const state = {
-        assistantText: "",
-        calls: [] as AssistantToolCall[],
-        persona,
-      };
-
-      try {
-        await consumeStream(
-          {
-            type: "message",
-            persona,
-            conversationId: conversationId ?? undefined,
-            text,
-          },
-          state,
-        );
-      } catch (sendError) {
-        if (!isAbortError(sendError)) {
-          setError(
-            sendError instanceof Error ? sendError.message : t("errors.send"),
-          );
-        }
-      } finally {
-        setIsStreaming(false);
-        setStreamingText("");
-        setToolCalls([]);
-      }
+      setStreamError(null);
+      void sendMessage({
+        text,
+        metadata: {createdAt: new Date().toISOString()},
+      });
     },
-    [
-      appendTurn,
-      consumeStream,
-      conversationId,
-      isStreaming,
-      persona,
-      t,
-    ],
+    [approvals.length, isStreaming, sendMessage],
   );
 
   const decide = useCallback(
-    async (
-      approval: AssistantPendingApproval,
-      decision: "approve" | "reject",
-    ) => {
-      if (!conversationId || busyApprovalId) return;
+    (approval: AssistantPendingApproval, decision: "approve" | "reject") => {
+      if (busyApprovalId) return;
 
       setBusyApprovalId(approval.id);
-      setError(null);
-      setStreamingText("");
-      setToolCalls([]);
-      setIsStreaming(true);
-
-      const state = {
-        assistantText: "",
-        calls: [] as AssistantToolCall[],
-        persona,
-      };
-
-      try {
-        await consumeStream(
-          {
-            type: "approval",
-            persona,
-            conversationId,
-            approvalId: approval.id,
-            decision,
-          },
-          state,
-        );
-        setApprovals((current) =>
-          current.filter((item) => item.id !== approval.id),
-        );
-      } catch (decisionError) {
-        if (!isAbortError(decisionError)) {
-          const message =
-            decisionError instanceof Error
-              ? decisionError.message
-              : t("errors.approval");
-          setError(message);
-          if (
-            message.includes("APPROVAL_EXPIRED") ||
-            message.includes("APPROVAL_NOT_PENDING")
-          ) {
-            setApprovals((current) =>
-              current.filter((item) => item.id !== approval.id),
-            );
-          }
-        }
-      } finally {
+      setStreamError(null);
+      void Promise.resolve(
+        addToolApprovalResponse({
+          id: approval.id,
+          approved: decision === "approve",
+        }),
+      ).catch((error: unknown) => {
         setBusyApprovalId(null);
-        setIsStreaming(false);
-        setStreamingText("");
-        setToolCalls([]);
-      }
+        setStreamError(
+          error instanceof Error ? error.message : t("errors.approval"),
+        );
+      });
     },
-    [
-      busyApprovalId,
-      consumeStream,
-      conversationId,
-      persona,
-      t,
-    ],
+    [addToolApprovalResponse, busyApprovalId, t],
   );
 
+  const error = streamError ?? chatError?.message ?? null;
   const showChat =
-    initialConversationId != null ||
+    (initialMessages?.length ?? 0) > 0 ||
+    messages.length > 0 ||
     conversationId !== null ||
-    turns.length > 0 ||
     isStreaming;
 
   if (!showChat) {
@@ -424,7 +384,7 @@ export function AssistantWorkspace({
         memberName={memberName}
         draft={draft}
         onDraftChange={setDraft}
-        onSubmit={(value) => void sendMessage(value)}
+        onSubmit={submit}
         recent={recent}
         isSending={isStreaming}
         error={error}
@@ -438,18 +398,18 @@ export function AssistantWorkspace({
       personas={personas}
       persona={persona}
       onPersonaChange={handlePersonaChange}
-      turns={turns}
+      turns={visibleTurns}
       streamingText={streamingText}
-      toolCalls={toolCalls}
+      toolCalls={streamingCalls}
       approvals={approvals}
       busyApprovalId={busyApprovalId}
       isStreaming={isStreaming}
       error={error}
       draft={draft}
       onDraftChange={setDraft}
-      onSubmit={(value) => void sendMessage(value)}
+      onSubmit={submit}
       onNewChat={handleNewChat}
-      onDecide={(approval, decision) => void decide(approval, decision)}
+      onDecide={decide}
     />
   );
 }

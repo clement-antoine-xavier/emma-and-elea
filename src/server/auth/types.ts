@@ -5,6 +5,7 @@ export type Actor = {
   userId: string;
   name: string;
   email: string;
+  image?: string | null;
   platformRole: string | null;
   isSupport: boolean;
   sessionId: string;

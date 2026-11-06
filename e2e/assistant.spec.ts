@@ -66,12 +66,19 @@ test("the assistant pages open for both personas", async ({page}) => {
 
   await expect(page).toHaveURL(/\/dashboard\/assistant\/[^/]+$/);
 
+  await page.reload();
+  await expect(
+    page.getByText("Test reply from the assistant."),
+  ).toBeVisible({timeout: 20_000});
+
   await page.getByRole("button", {name: "New chat"}).click();
   await expect(
     page.getByRole("heading", {name: "Where should we start?"}),
   ).toBeVisible();
   await expect(page).toHaveURL(/\/dashboard\/assistant$/);
 
-  await page.getByRole("link", {name: prompt}).click();
-  await expect(page.getByRole("log")).toContainText(prompt);
+  await page.getByText(prompt, {exact: true}).click();
+  await expect(page.getByRole("log")).toContainText(prompt, {
+    timeout: 20_000,
+  });
 });

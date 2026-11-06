@@ -45,6 +45,8 @@ function makeDeps(overrides?: Partial<InvitationDetailRecord>) {
     removeMember: jest.fn(),
     cancelInvitation: jest.fn(),
     acceptInvitation: jest.fn(async () => ({organizationId: "org_1"})),
+    updateOrganizationLogo: jest.fn(),
+    updateUserImage: jest.fn(),
   };
 
   return {

@@ -1,6 +1,6 @@
 # 0023. Add in-app assistants with the OpenAI Agents SDK
 
-- Status: Accepted
+- Status: Superseded by [0030](0030-replace-openai-agents-with-vercel-ai-sdk.md)
 - Deciders: Clement Antoine-Xavier
 - Date: 2026-10-28
 

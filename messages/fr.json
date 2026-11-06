@@ -380,6 +380,12 @@
   "Dashboard": {
     "metadataTitle": "Espace · Emma & Éléa",
     "brand": "Emma & Éléa",
+    "profile": {
+      "label": "Photo de profil",
+      "action": "Changer la photo",
+      "error": "La photo n’a pas pu être envoyée.",
+      "unavailable": "L’envoi de photos n’est pas configuré."
+    },
     "nav": {
       "label": "Navigation de l’espace",
       "assistant": "Assistant",
@@ -889,6 +895,14 @@
     "organization": {
       "title": "Organisation",
       "intro": "Ces valeurs pilotent le coût de revient, les numéros de lot et les prévisions. Seuls les propriétaires et les admins peuvent les modifier.",
+      "logo": {
+        "title": "Logo de l’organisation",
+        "intro": "Affiché dans la navigation de l’espace. PNG, JPEG ou WebP, jusqu’à 2 Mo.",
+        "label": "Envoyer un logo",
+        "hint": "Déposez un fichier ici ou choisissez-en un sur votre ordinateur.",
+        "error": "Le logo n’a pas pu être envoyé.",
+        "unavailable": "L’envoi d’images n’est pas configuré."
+      },
       "saved": "Paramètres enregistrés.",
       "errorTitle": "Impossible d’enregistrer les paramètres",
       "submit": "Enregistrer les paramètres",

@@ -25,6 +25,7 @@ import {stockCountRepository} from "@/server/repositories/stock-count.repository
 import {stockRepository} from "@/server/repositories/stock.repository";
 import {supplierRepository} from "@/server/repositories/supplier.repository";
 import {taskRepository} from "@/server/repositories/task.repository";
+import {blobStorage} from "@/server/storage/blob-storage";
 import {createAlertService} from "./alert.service";
 import {createDashboardService} from "./dashboard.service";
 import {createAssistantService} from "./assistant.service";
@@ -41,6 +42,7 @@ import {organizationBootstrapService} from "./organization-bootstrap.container";
 import {createOrganizationService} from "./organization.service";
 import {createPlanningService} from "./planning.service";
 import {createProductionService} from "./production.service";
+import {createProfileImageService} from "./profile-image.service";
 import {createPurchasingService} from "./purchasing.service";
 import {createRateService} from "./rate.service";
 import {createRecipeService} from "./recipe.service";
@@ -75,6 +77,11 @@ export const invitationService = createInvitationService({
 export const dashboardService = createDashboardService();
 
 export const assistantService = createAssistantService();
+
+export const profileImageService = createProfileImageService({
+  blobStorage,
+  authGateway: betterAuthGateway,
+});
 
 export const siteService = createSiteService({siteRepository});
 

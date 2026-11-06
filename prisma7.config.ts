@@ -10,7 +10,10 @@ export default defineConfig({
   },
   datasource: {
     // `prisma generate` works without a database, so this must not throw when
-    // DATABASE_URL is absent (for example during npm's postinstall in Docker).
-    url: process.env["DATABASE_URL"],
+    // the URL is absent (for example during npm's postinstall in Docker).
+    // Prisma Postgres sets DATABASE_URL to the direct endpoint, which is what
+    // `prisma migrate deploy` needs. DIRECT_URL is an escape hatch for other
+    // providers that expose a separate migration endpoint.
+    url: process.env["DIRECT_URL"] ?? process.env["DATABASE_URL"],
   },
 });

@@ -43,6 +43,7 @@ export default async function AssistantPage({
 
   return (
     <AssistantWorkspace
+      key="assistant-new"
       personas={personas}
       memberName={actor.name.trim().split(/\s+/)[0] || actor.name}
       initialPersona={initialPersona}

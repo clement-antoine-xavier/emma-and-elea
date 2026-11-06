@@ -143,7 +143,14 @@ export function AssistantLanding({
                           format="relative"
                         />
                       }
-                      href={`/dashboard/assistant/${conversation.id}`}
+                      onClick={() => {
+                        // Full navigation avoids a stale prefetched RSC shell
+                        // after the first assistant response is persisted.
+                        // eslint-disable-next-line @next/next/no-location-assign-relative-destination
+                        window.location.assign(
+                          `/dashboard/assistant/${conversation.id}`,
+                        );
+                      }}
                       endContent={
                         <Icon
                           icon={ChevronRight}

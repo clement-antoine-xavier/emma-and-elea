@@ -37,14 +37,12 @@ export default async function AssistantConversationPage({
 
   return (
     <AssistantWorkspace
+      key={history.conversation.id}
       personas={personas}
       memberName={actor.name.trim().split(/\s+/)[0] || actor.name}
       initialConversationId={history.conversation.id}
       initialPersona={history.conversation.persona}
-      initialTurns={history.messages.map((message) => ({
-        ...message,
-        persona: history.conversation.persona,
-      }))}
+      initialMessages={history.messages}
       initialApprovals={history.pendingApprovals}
     />
   );

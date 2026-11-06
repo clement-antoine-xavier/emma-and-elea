@@ -1,5 +1,6 @@
 "use client";
 
+import {Avatar} from "@astryxdesign/core/Avatar";
 import {Badge} from "@astryxdesign/core/Badge";
 import {Icon} from "@astryxdesign/core/Icon";
 import {NavIcon} from "@astryxdesign/core/NavIcon";
@@ -31,6 +32,7 @@ import {useTranslations} from "next-intl";
 import {usePathname} from "next/navigation";
 import {AuthStatus} from "@/components/auth-status";
 import {LocaleSwitcher} from "@/components/locale-switcher";
+import {ProfileAvatarForm} from "@/components/profile-avatar-form";
 import {ThemeSwitcher} from "@/components/theme-switcher";
 import {
   dashboardHref,
@@ -92,8 +94,12 @@ function isSelected(pathname: string, item: DashboardNavItem): boolean {
  */
 function SideNavAccount({
   roleLabel,
+  userImage,
+  userName,
 }: {
   roleLabel: string;
+  userImage: string | null;
+  userName: string;
 }) {
   const t = useTranslations("Dashboard.nav");
   const {isCollapsed} = useSideNavCollapse();
@@ -105,6 +111,7 @@ function SideNavAccount({
   return (
     <SideNavSection title={t("account")} isHeaderHidden>
       <Stack gap={3} align="start">
+        <ProfileAvatarForm image={userImage} name={userName} />
         <Badge label={roleLabel} variant="purple" />
         <LocaleSwitcher />
         <ThemeSwitcher />
@@ -119,11 +126,19 @@ export function DashboardSideNav({
   roleLabel,
   brand,
   assistantEnabled,
+  organizationLogo,
+  organizationName,
+  userImage,
+  userName,
 }: {
   items: DashboardNavItem[];
   roleLabel: string;
   brand: string;
   assistantEnabled: boolean;
+  organizationLogo: string | null;
+  organizationName: string;
+  userImage: string | null;
+  userName: string;
 }) {
   const t = useTranslations("Dashboard.nav");
   const pathname = usePathname();
@@ -151,11 +166,29 @@ export function DashboardSideNav({
       header={
         <SideNavHeading
           heading={brand}
-          icon={<NavIcon icon={<Icon icon={ChefHat} size="sm" />} />}
+          icon={
+            organizationLogo ? (
+              <Avatar
+                src={organizationLogo}
+                name={organizationName}
+                size="sm"
+                shape="rounded"
+                tooltip={false}
+              />
+            ) : (
+              <NavIcon icon={<Icon icon={ChefHat} size="sm" />} />
+            )
+          }
           headingHref="/dashboard"
         />
       }
-      footer={<SideNavAccount roleLabel={roleLabel} />}
+      footer={
+        <SideNavAccount
+          roleLabel={roleLabel}
+          userImage={userImage}
+          userName={userName}
+        />
+      }
     >
       {visible.has("overview") || assistantEnabled ? (
         <SideNavSection title={t("label")} isHeaderHidden>

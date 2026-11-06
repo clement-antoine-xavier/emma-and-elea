@@ -2,10 +2,14 @@
   "name": "emma-and-elea",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": "24.x"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "vercel-build": "tsx scripts/vercel-build.ts",
     "lint": "eslint",
     "typecheck": "next typegen && tsc --noEmit",
     "test": "jest",
@@ -30,6 +34,7 @@
     "start:standalone": "mkdir -p .next/standalone/.next/static .next/standalone/public && cp -R .next/static/. .next/standalone/.next/static/ && cp -R public/. .next/standalone/public/ && node .next/standalone/server.js"
   },
   "dependencies": {
+    "@ai-sdk/react": "^4.0.167",
     "@astryxdesign/core": "^0.7.4",
     "@astryxdesign/theme-butter": "^0.7.4",
     "@astryxdesign/theme-neutral": "^0.7.4",
@@ -39,10 +44,11 @@
     "@better-auth/prisma-adapter": "^1.7.14",
     "@hookform/resolvers": "^5.9.2",
     "@modelcontextprotocol/server": "^2.4.0",
-    "@openai/agents": "^0.21.0",
     "@prisma/adapter-pg": "^7.10.1",
     "@prisma/client": "^7.10.1",
     "@stylexjs/stylex": "^0.19.1",
+    "@vercel/blob": "^2.8.2",
+    "ai": "^7.0.163",
     "better-auth": "^1.7.14",
     "dotenv": "^18.0.9",
     "lucide-react": "^1.61.0",

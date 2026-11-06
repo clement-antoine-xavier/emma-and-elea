@@ -66,8 +66,7 @@ test("maps the stored history and keeps the approval preview", async () => {
       {
         id: "msg_1",
         role: "user",
-        text: "Confirm the order",
-        createdAt: "2026-10-01T08:00:01.000Z",
+        parts: [{type: "text", text: "Confirm the order"}],
       },
     ],
     pendingApprovals: [
@@ -87,8 +86,7 @@ test("maps the stored history and keeps the approval preview", async () => {
       {
         id: "msg_1",
         role: "user",
-        text: "Confirm the order",
-        createdAt: "2026-10-01T08:00:01.000Z",
+        parts: [{type: "text", text: "Confirm the order"}],
       },
     ],
     pendingApprovals: [

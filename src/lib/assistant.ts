@@ -3,6 +3,8 @@
  * drawer and the route handler both consume it.
  */
 
+import type {UIMessage} from "ai";
+
 export type AssistantPersona = "emma" | "elea";
 
 export type PersonaDefinition = {
@@ -174,26 +176,6 @@ export function toolLabel(
   return TOOL_LABELS[name]?.[locale] ?? name.replaceAll("_", " ");
 }
 
-export type AssistantStreamEvent =
-  | {type: "start"; runId: string; conversationId: string}
-  | {type: "text"; delta: string}
-  | {
-      type: "tool";
-      phase: "start" | "end";
-      name: string;
-      label: string;
-      status?: "ok" | "error";
-    }
-  | {
-      type: "approval";
-      approvalId: string;
-      toolName: string;
-      preview: AssistantApprovalPreview;
-    }
-  | {type: "handoff"; persona: AssistantPersona; reason: string}
-  | {type: "done"; conversationId: string; runId: string}
-  | {type: "error"; code: string; message: string};
-
 export type AssistantApprovalPreview = {
   title: string;
   summary: string;
@@ -202,12 +184,21 @@ export type AssistantApprovalPreview = {
   href?: string;
 };
 
-export type AssistantHistoryMessage = {
-  id: string;
-  role: "user" | "assistant";
-  text: string;
-  createdAt: string;
+/**
+ * Extra data parts streamed inside a UI message. `approval` carries the
+ * server-built preview so a reloaded conversation can render the same card;
+ * `conversation` is transient and tells the client which conversation the
+ * server created for the first message.
+ */
+export type AssistantUIData = {
+  approval: AssistantApprovalPreview;
+  conversation: {conversationId: string};
 };
+
+export type AssistantUIMessage = UIMessage<
+  {createdAt?: string},
+  AssistantUIData
+>;
 
 /** Client-side tool activity for the live run. Not persisted by the API. */
 export type AssistantToolCall = {
@@ -223,7 +214,7 @@ export type AssistantTurn = {
   id: string;
   role: "user" | "assistant" | "system";
   text: string;
-  createdAt: string;
+  createdAt?: string;
   persona?: AssistantPersona;
   toolCalls?: AssistantToolCall[];
 };

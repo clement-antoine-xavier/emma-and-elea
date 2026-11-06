@@ -32,6 +32,10 @@ export default async function DashboardLayout({
           roleLabel={tRoles(`${actor.role}.label`)}
           brand={t("brand")}
           assistantEnabled={assistantEnabled}
+          organizationLogo={actor.organization.logo ?? null}
+          organizationName={actor.organization.name}
+          userImage={actor.image ?? null}
+          userName={actor.name}
         />
       }
     >

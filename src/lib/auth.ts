@@ -12,11 +12,12 @@ import {cimd} from "@better-auth/cimd";
 import {fetchClientMetadataResource} from "@better-auth/cimd/node";
 import {organizationBootstrapService} from "@/server/services/organization-bootstrap.container";
 import {ac, roles} from "@/server/auth/permissions";
+import {appBaseUrl, appTrustedOrigins} from "./app-url";
 import {apiResource, mcpResource, providerScopes} from "./resources";
 import {TOKEN_ORG_CLAIM} from "./scopes";
 import {prisma} from "./prisma";
 
-const baseURL = process.env.BETTER_AUTH_URL ?? "http://localhost:3000";
+const baseURL = appBaseUrl();
 
 /**
  * Bootstraps the tenant when an organization is created.
@@ -49,6 +50,7 @@ const createOrganizationDefaults = createAuthMiddleware(async (ctx) => {
 export const auth = betterAuth({
   appName: "Emma & Elea",
   baseURL,
+  trustedOrigins: appTrustedOrigins(),
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),

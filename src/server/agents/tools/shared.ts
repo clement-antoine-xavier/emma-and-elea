@@ -1,22 +1,27 @@
-import {
-  tool,
-  type FunctionTool,
-  type ToolInputParameters,
-} from "@openai/agents";
+import {tool, type ToolSet} from "ai";
 import type {z} from "zod";
 import {isDomainError} from "@/server/domain/errors";
 import type {AssistantContext} from "../context";
 
-export type AssistantTool = FunctionTool<
-  AssistantContext,
-  ToolInputParameters,
-  unknown
->;
+/**
+ * A service call exposed to the model. The definition is independent of the
+ * AI SDK so the catalogue stays pure and easy to test; `buildToolSet` adapts it
+ * to the SDK with the current request context.
+ */
+export type AssistantTool = {
+  name: string;
+  description: string;
+  parameters: z.ZodTypeAny;
+  needsApproval?: boolean;
+  execute: (
+    input: z.infer<z.ZodTypeAny>,
+    context: AssistantContext,
+  ) => Promise<unknown>;
+};
 
 /**
- * Wraps a service call as an SDK function tool. Domain errors become a compact
- * JSON payload the model can explain; unexpected errors propagate so the route
- * can log and fail the run.
+ * Declares a tool. Domain errors become a compact JSON payload the model can
+ * explain; unexpected errors propagate and are surfaced as tool errors.
  */
 export function assistantTool<TSchema extends z.ZodTypeAny>(options: {
   name: string;
@@ -28,31 +33,39 @@ export function assistantTool<TSchema extends z.ZodTypeAny>(options: {
     context: AssistantContext,
   ) => Promise<unknown>;
 }): AssistantTool {
-  return tool({
-    name: options.name,
-    description: options.description,
-    parameters: options.parameters as never,
-    needsApproval: options.needsApproval,
-    execute: async (input, runContext) => {
-      const context = runContext?.context;
-      if (!context) throw new Error("Assistant context is missing.");
+  return options as AssistantTool;
+}
 
-      try {
-        const value = await options.execute(
-          input as z.infer<TSchema>,
-          context,
-        );
-        return value === undefined ? "Done." : JSON.stringify(value);
-      } catch (error) {
-        if (isDomainError(error)) {
-          return JSON.stringify({
-            error: {code: error.code, message: error.message},
-          });
-        }
-        throw error;
-      }
-    },
-  }) as AssistantTool;
+/**
+ * Binds the pure tool definitions to one actor, locale and run. The context is
+ * never sent to the model or accepted from the client.
+ */
+export function buildToolSet(
+  definitions: readonly AssistantTool[],
+  context: AssistantContext,
+): ToolSet {
+  return Object.fromEntries(
+    definitions.map((definition) => [
+      definition.name,
+      tool({
+        description: definition.description,
+        inputSchema: definition.parameters,
+        execute: async (input: unknown) => {
+          try {
+            const value = await definition.execute(input, context);
+            return value === undefined ? "Done." : JSON.stringify(value);
+          } catch (error) {
+            if (isDomainError(error)) {
+              return JSON.stringify({
+                error: {code: error.code, message: error.message},
+              });
+            }
+            throw error;
+          }
+        },
+      }),
+    ]),
+  ) as ToolSet;
 }
 
 export function emptyToNull(value: string | null | undefined): string | null {

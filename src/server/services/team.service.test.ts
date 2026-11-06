@@ -47,6 +47,8 @@ function makeDeps() {
     removeMember: jest.fn(async () => undefined),
     cancelInvitation: jest.fn(async () => undefined),
     acceptInvitation: jest.fn(),
+    updateOrganizationLogo: jest.fn(),
+    updateUserImage: jest.fn(),
   };
 
   return {
