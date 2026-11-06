@@ -1,13 +1,12 @@
 import type {Metadata} from "next";
+import {Suspense} from "react";
 import {notFound} from "next/navigation";
 import {getTranslations} from "next-intl/server";
+import {AssistantLoading} from "@/components/assistant/assistant-loading";
 import {AssistantWorkspace} from "@/components/assistant/assistant-workspace";
 import {availableAssistantPersonas} from "@/server/agents/access";
 import {requireOrganizationActor} from "@/server/auth/actor";
 import {assistantService} from "@/server/services/container";
-
-// Session data keeps this route blocking until it is moved to a streamed shell.
-export const instant = false;
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Dashboard.assistant");
@@ -19,9 +18,15 @@ type AssistantPageProps = {
   searchParams: Promise<{persona?: string | string[]}>;
 };
 
-export default async function AssistantPage({
-  searchParams,
-}: AssistantPageProps) {
+export default function AssistantPage({searchParams}: AssistantPageProps) {
+  return (
+    <Suspense fallback={<AssistantLoading />}>
+      <AssistantLandingData searchParams={searchParams} />
+    </Suspense>
+  );
+}
+
+async function AssistantLandingData({searchParams}: AssistantPageProps) {
   const actor = await requireOrganizationActor();
   const personas = availableAssistantPersonas(actor);
 

@@ -77,7 +77,7 @@ test("the assistant pages open for both personas", async ({page}) => {
   ).toBeVisible();
   await expect(page).toHaveURL(/\/dashboard\/assistant$/);
 
-  await page.getByText(prompt, {exact: true}).click();
+  await page.getByRole("button", {name: new RegExp(prompt)}).click();
   await expect(page.getByRole("log")).toContainText(prompt, {
     timeout: 20_000,
   });

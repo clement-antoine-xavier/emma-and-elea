@@ -18,6 +18,7 @@ import {VStack} from "@astryxdesign/core/VStack";
 import {ChatComposer} from "@astryxdesign/core/Chat";
 import {ChevronRight, Sparkles} from "lucide-react";
 import {useLocale, useTranslations} from "next-intl";
+import {useRouter} from "next/navigation";
 import {
   PERSONAS,
   PERSONA_SUGGESTIONS,
@@ -54,6 +55,7 @@ export function AssistantLanding({
 }: AssistantLandingProps) {
   const t = useTranslations("Dashboard.assistant");
   const locale = useLocale() === "fr" ? "fr" : "en";
+  const router = useRouter();
   const personaDefinition = PERSONAS[persona];
   const suggestions = PERSONA_SUGGESTIONS[persona];
 
@@ -143,14 +145,9 @@ export function AssistantLanding({
                           format="relative"
                         />
                       }
-                      onClick={() => {
-                        // Full navigation avoids a stale prefetched RSC shell
-                        // after the first assistant response is persisted.
-                        // eslint-disable-next-line @next/next/no-location-assign-relative-destination
-                        window.location.assign(
-                          `/dashboard/assistant/${conversation.id}`,
-                        );
-                      }}
+                      onClick={() =>
+                        router.push(`/dashboard/assistant/${conversation.id}`)
+                      }
                       endContent={
                         <Icon
                           icon={ChevronRight}

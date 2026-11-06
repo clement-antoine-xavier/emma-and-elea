@@ -1,6 +1,6 @@
 "use client";
 
-import {useCallback, useMemo, useRef, useState} from "react";
+import {useCallback, useEffect, useMemo, useRef, useState} from "react";
 import {useChat} from "@ai-sdk/react";
 import {
   DefaultChatTransport,
@@ -159,13 +159,17 @@ export function AssistantWorkspace({
     }
   }, [persona]);
 
-  const transport = new DefaultChatTransport<AssistantUIMessage>({
-    api: STREAM_PATH,
-    body: {
-      persona,
-      conversationId: conversationId ?? undefined,
-    },
-  });
+  const transport = useMemo(
+    () =>
+      new DefaultChatTransport<AssistantUIMessage>({
+        api: STREAM_PATH,
+        body: {
+          persona,
+          conversationId: conversationId ?? undefined,
+        },
+      }),
+    [conversationId, persona],
+  );
 
   const {
     messages,
@@ -201,6 +205,19 @@ export function AssistantWorkspace({
   });
 
   const isStreaming = status === "submitted" || status === "streaming";
+
+  // Next can preserve a route's client state when the user leaves and returns
+  // to the same conversation. If the chat was reset in between, restore the
+  // server-provided transcript instead of showing an empty log.
+  const restoredConversation = useRef<string | null>(null);
+  useEffect(() => {
+    if (!initialConversationId || !initialMessages?.length) return;
+    if (messages.length > 0) return;
+    if (restoredConversation.current === initialConversationId) return;
+
+    restoredConversation.current = initialConversationId;
+    setMessages(initialMessages);
+  }, [initialConversationId, initialMessages, messages.length, setMessages]);
 
   const turns = useMemo<AssistantTurn[]>(() => {
     return messages.map((message) => ({
