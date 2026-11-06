@@ -16,7 +16,7 @@ Architecture decisions are recorded in [`docs/adr/`](docs/adr/README.md) using M
 
 ## Prerequisites
 
-- Node.js 24+ (CI and the Docker image currently use Node 26; Vercel uses Node 24)
+- Node.js 24+ (Vercel, CI and the Docker image all use Node 24)
 - Docker + Docker Compose
 
 ## Local setup
@@ -340,9 +340,13 @@ Vercel is the primary deployment target; the Docker path below remains supported
 4. Set `BETTER_AUTH_URL` to the production custom domain,
    `BETTER_AUTH_SECRET`, `TOOL_APPROVAL_SECRET`, and the assistant/Gateway values
    for Production. Preview deployments derive their origin from `VERCEL_URL`.
-5. Deploy. `vercel.json` runs `npm run vercel-build`, which applies migrations
-   only in Production. Preview deployments share the database unless you connect
-   a separate Prisma Postgres resource to the Preview environment.
+5. Deploy. `vercel.json` runs `npm run vercel-build`, which generates the
+   Prisma client, applies migrations only in Production, then builds. Production
+   migrations run under a PostgreSQL advisory lock, so two concurrent builds
+   cannot apply them at the same time; the build logs how many migrations were
+   applied and fails before traffic is assigned if one fails. Preview
+   deployments never run migrations and use a separate Prisma Postgres resource
+   connected to the Preview environment.
 
 The assistant route exports `maxDuration = 300`; Vercel clamps it to the plan's
 limit.

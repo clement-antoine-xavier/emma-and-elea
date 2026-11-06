@@ -133,7 +133,7 @@ All data input uses Zod for validation and React Hook Form for state.
 
 ## CI
 
-- `.github/workflows/next.js.yml` starts a real PostgreSQL 18.6 service, runs `npm run db:deploy`, then runs `npm run typecheck`, `npm run lint`, `npm test`, `npm run build`, and Playwright E2E on pushes and pull requests to `main` with Node 26.12.1.
+- `.github/workflows/next.js.yml` starts a real PostgreSQL 18.6 service, runs `npm run db:deploy`, then runs `npm run typecheck`, `npm run lint`, `npm test`, `npm run build`, and Playwright E2E on pushes and pull requests to `main` with Node 24.
 - `.github/workflows/docker.yml` builds the Docker `runner` target and pushes `ghcr.io/clement-antoine-xavier/emma-and-elea` on `main` and `v*` tags, with GHA layer cache, max provenance and an SBOM attestation.
 - The workflows are independent; Docker does not wait for Next.js checks. The image is `linux/amd64` only, and the `migrator` target is not published.
 - The Docker builder uses placeholder `DATABASE_URL` / `BETTER_AUTH_SECRET` values; CI uses a throwaway PostgreSQL service. Never put real secrets in workflow files.
@@ -145,7 +145,7 @@ All data input uses Zod for validation and React Hook Form for state.
 
 ## Vercel and Blob
 
-- `vercel.json` runs `npm run vercel-build`; `scripts/vercel-build.ts` generates Prisma, applies migrations only on production, then builds.
+- `vercel.json` runs `npm run vercel-build`; `scripts/vercel-build.ts` generates Prisma, applies migrations only on production under a PostgreSQL advisory lock, logs the applied count, and fails the build on error, then builds.
 - `next.config.ts` keeps standalone output only outside Vercel.
 - Prisma Postgres supplies `DATABASE_URL` (direct) and `DATABASE_URL_POOLED` (runtime). `PRISMA_DATABASE_URL` is an optional fallback; the runtime prefers `DATABASE_URL_POOLED`.
 - `BETTER_AUTH_URL` is the production origin; previews derive their origin from `VERCEL_URL`.
