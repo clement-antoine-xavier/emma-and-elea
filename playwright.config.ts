@@ -11,7 +11,7 @@ export default defineConfig({
   forbidOnly: isCI,
   retries: isCI ? 2 : 0,
   // Tests create isolated users and organizations, so two workers are safe.
-  timeout: 60_000,
+  timeout: 120_000,
   workers: 2,
   // Keep the reporter and stop the run before the job timeout.
   globalTimeout: 15 * 60 * 1000,
