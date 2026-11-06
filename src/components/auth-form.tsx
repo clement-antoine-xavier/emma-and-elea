@@ -13,6 +13,7 @@ import {Heading, Text} from '@astryxdesign/core/Text';
 import {useTranslations} from 'next-intl';
 import {useRouter} from 'next/navigation';
 import {authClient} from '@/lib/auth-client';
+import {safeNextPath} from '@/lib/navigation';
 import {FormTextInput} from '@/components/form-text-input';
 import {
   createAuthSchema,
@@ -121,7 +122,13 @@ export function AuthForm({mode, next}: {mode: AuthMode; next?: string}) {
       return;
     }
 
-    router.push(next ?? (isSignUp ? "/onboarding" : "/dashboard"));
+    router.push(
+      next ??
+        safeNextPath(
+          new URLSearchParams(window.location.search).get('next') ?? undefined,
+        ) ??
+        (isSignUp ? "/onboarding" : "/dashboard"),
+    );
     router.refresh();
   }
 
