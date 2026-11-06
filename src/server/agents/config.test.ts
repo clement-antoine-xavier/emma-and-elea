@@ -44,6 +44,9 @@ describe("assistant config", () => {
     process.env.ASSISTANT_MODEL = "openai/test-model";
     process.env.ASSISTANT_EMMA_MODEL = "openai/emma-model";
     process.env.ASSISTANT_MAX_TURNS = "4";
+    process.env.ASSISTANT_MAX_OUTPUT_TOKENS = "1024";
+    process.env.ASSISTANT_MAX_RUN_TOKENS = "5000";
+    process.env.ASSISTANT_TIMEOUT_MS = "240000";
     process.env.ASSISTANT_TELEMETRY_ENABLED = "true";
     process.env.TOOL_APPROVAL_SECRET = "approval-secret";
 
@@ -55,11 +58,22 @@ describe("assistant config", () => {
       emmaModel: "openai/emma-model",
       eleaModel: "openai/test-model",
       maxTurns: 4,
+      maxOutputTokens: 1024,
+      maxRunTokens: 5000,
+      requestTimeoutMs: 240000,
       telemetryEnabled: true,
       toolApprovalSecret: "approval-secret",
       fakeModel: false,
     });
     expect(isAssistantEnabled()).toBe(true);
+  });
+
+  it("caps the request timeout below the route duration", () => {
+    process.env.ASSISTANT_ENABLED = "true";
+    process.env.AI_GATEWAY_API_KEY = "gateway-test";
+    process.env.ASSISTANT_TIMEOUT_MS = "999999";
+
+    expect(getAssistantConfig()).toMatchObject({requestTimeoutMs: 290_000});
   });
 
   it("accepts Vercel OIDC credentials", () => {

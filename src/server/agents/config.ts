@@ -13,6 +13,9 @@ export type AssistantConfig = {
   emmaModel: string;
   eleaModel: string;
   maxTurns: number;
+  maxOutputTokens: number;
+  maxRunTokens: number;
+  requestTimeoutMs: number;
   dailyTokenBudget: number;
   retentionDays: number;
   toolApprovalSecret: string | null;
@@ -75,6 +78,13 @@ export function getAssistantConfig(): AssistantConfig | null {
     emmaModel: process.env.ASSISTANT_EMMA_MODEL?.trim() || model,
     eleaModel: process.env.ASSISTANT_ELEA_MODEL?.trim() || model,
     maxTurns: integer(process.env.ASSISTANT_MAX_TURNS, 8),
+    maxOutputTokens: integer(process.env.ASSISTANT_MAX_OUTPUT_TOKENS, 2048),
+    maxRunTokens: integer(process.env.ASSISTANT_MAX_RUN_TOKENS, 20_000),
+    // The route declares maxDuration = 300; leave room to flush the stream.
+    requestTimeoutMs: Math.min(
+      integer(process.env.ASSISTANT_TIMEOUT_MS, 270_000),
+      290_000,
+    ),
     dailyTokenBudget: integer(process.env.ASSISTANT_DAILY_TOKEN_BUDGET, 50_000),
     retentionDays: integer(process.env.ASSISTANT_RETENTION_DAYS, 30),
     toolApprovalSecret,

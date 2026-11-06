@@ -78,6 +78,8 @@ batches, allocates lots FEFO, records waste and exposes lot traceability.
 | `TOOL_APPROVAL_SECRET` | Signs human approval requests; required in production |
 | `ASSISTANT_TELEMETRY_ENABLED` | Set to `true` to opt into AI SDK telemetry (defaults to false) |
 | `ASSISTANT_MAX_TURNS` / `ASSISTANT_DAILY_TOKEN_BUDGET` | Guardrails for a run |
+| `ASSISTANT_MAX_OUTPUT_TOKENS` / `ASSISTANT_MAX_RUN_TOKENS` | Per-response and per-run output ceilings |
+| `ASSISTANT_TIMEOUT_MS` | Request timeout, capped below the route's 300-second limit |
 | `ASSISTANT_RETENTION_DAYS` | Conversation retention window (defaults to 30) |
 | `BLOB_READ_WRITE_TOKEN` | Local Vercel Blob read-write token |
 | `BLOB_STORE_ID` | Vercel Blob store id (paired with OIDC on Vercel) |

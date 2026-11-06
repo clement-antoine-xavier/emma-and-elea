@@ -420,6 +420,81 @@ async function usageFrom(
   }
 }
 
+/**
+ * A single run may not exhaust the daily budget: the configured output ceiling
+ * is reduced to whatever remains for the user today.
+ */
+export function runOutputTokenCeiling(
+  config: {
+    maxOutputTokens: number;
+    maxRunTokens: number;
+    dailyTokenBudget: number;
+  },
+  usedTokens: number,
+): number {
+  return Math.max(
+    1,
+    Math.min(
+      config.maxOutputTokens,
+      config.maxRunTokens,
+      config.dailyTokenBudget - usedTokens,
+    ),
+  );
+}
+
+export function isTimeoutError(error: unknown): boolean {
+  if (typeof error !== "object" || error === null) return false;
+  const name = "name" in error ? String(error.name) : "";
+  const message = "message" in error ? String(error.message) : "";
+
+  return /timeout|timed out/i.test(`${name} ${message}`);
+}
+
+/**
+ * Attribution metadata for AI Gateway logs. The user id is the Gateway's
+ * end-user field; tags stay non-sensitive so spend can be filtered by persona
+ * and environment without exposing prompts or identifiers.
+ */
+export function gatewayProviderOptions(input: {
+  userId: string;
+  persona: AssistantPersona;
+  environment: string;
+}): {gateway: {user: string; tags: string[]}} {
+  return {
+    gateway: {
+      user: input.userId,
+      tags: ["assistant", input.persona, input.environment],
+    },
+  };
+}
+
+/**
+ * The terminal state of a run. A consumer cancellation (a disconnect or the
+ * stop button) is recorded as ABORTED; a provider failure as FAILED.
+ */
+export function runOutcome(input: {
+  isAborted: boolean;
+  outcomeStatus: string;
+  failureCode: "TIMEOUT" | null;
+  awaitingApproval: boolean;
+}): {status: string; errorCode: string | null} {
+  const failed = input.isAborted || input.outcomeStatus === "failed";
+
+  return {
+    status:
+      input.isAborted && !input.failureCode
+        ? "ABORTED"
+        : failed
+          ? "FAILED"
+          : input.awaitingApproval
+            ? "AWAITING_APPROVAL"
+            : "COMPLETED",
+    errorCode: failed
+      ? input.failureCode ?? (input.isAborted ? "STREAM_ABORTED" : "STREAM_FAILED")
+      : null,
+  };
+}
+
 export async function listConversations(
   actor: OrganizationActor,
   persona: AssistantPersona,
@@ -560,6 +635,7 @@ export async function streamAssistantResponse(input: {
   const previewByCall = new Map<string, AssistantApprovalPreview>();
   let traceId: string | null = null;
   let usage: PromiseLike<LanguageModelUsage> | null = null;
+  let failureCode: "TIMEOUT" | null = null;
 
   const stream = createUIMessageStream<AssistantUIMessage>({
     originalMessages: messages,
@@ -605,6 +681,14 @@ export async function streamAssistantResponse(input: {
         },
         stopWhen: isStepCount(config.maxTurns),
         abortSignal: input.abortSignal,
+        maxOutputTokens: runOutputTokenCeiling(config, usedTokens),
+        timeout: {totalMs: config.requestTimeoutMs},
+        providerOptions: gatewayProviderOptions({
+          userId: actor.userId,
+          persona: request.persona,
+          environment:
+            process.env.VERCEL_ENV ?? process.env.NODE_ENV ?? "unknown",
+        }),
         experimental_toolApprovalSecret: config.toolApprovalSecret ?? undefined,
         telemetry: {isEnabled: config.telemetryEnabled},
         onChunk: ({chunk}) => {
@@ -645,6 +729,7 @@ export async function streamAssistantResponse(input: {
           }
         },
         onError: ({error}) => {
+          if (isTimeoutError(error)) failureCode = "TIMEOUT";
           console.error("Assistant stream failed", error);
         },
       });
@@ -683,18 +768,20 @@ export async function streamAssistantResponse(input: {
         ? await usageFrom(usage)
         : {inputTokens: 0, outputTokens: 0};
       const awaitingApproval = !failed && approvalRequests.length > 0;
+      const terminal = runOutcome({
+        isAborted,
+        outcomeStatus: outcome.status,
+        failureCode,
+        awaitingApproval,
+      });
 
       await agentRepository.updateRun(run.id, {
-        status: failed
-          ? "FAILED"
-          : awaitingApproval
-            ? "AWAITING_APPROVAL"
-            : "COMPLETED",
+        status: terminal.status,
         state: null,
         inputTokens: tokens.inputTokens,
         outputTokens: tokens.outputTokens,
         traceId,
-        errorCode: failed ? "STREAM_FAILED" : null,
+        errorCode: terminal.errorCode,
       });
 
       await agentRepository.touchConversation(
