@@ -18,8 +18,6 @@ import {
   skillService,
 } from "@/server/services/container";
 
-// Session data keeps this route blocking until it is moved to a streamed shell.
-export const instant = false;
 
 type EmployeeParams = {params: Promise<{id: string}>};
 

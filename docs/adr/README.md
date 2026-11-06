@@ -39,6 +39,7 @@ decision.
 | [0028](0028-deploy-on-vercel-with-prisma-postgres.md) | Deploy on Vercel with Prisma Postgres and AI Gateway | Accepted | 2026-11-06 |
 | [0029](0029-store-profile-images-in-vercel-blob.md) | Store profile images in Vercel Blob | Accepted | 2026-11-06 |
 | [0030](0030-replace-openai-agents-with-vercel-ai-sdk.md) | Replace the OpenAI Agents SDK with the Vercel AI SDK | Accepted | 2026-11-06 |
+| [0031](0031-keep-the-root-layout-request-scoped-for-locale.md) | Keep the root layout request-scoped for the locale cookie | Accepted | 2026-11-06 |
 
 ## Creating a new ADR
 

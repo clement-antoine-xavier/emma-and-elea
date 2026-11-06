@@ -20,8 +20,6 @@ import {formatBusinessDate, formatQuantity} from "@/lib/format";
 import {requirePermission} from "@/server/auth/actor";
 import {productionService} from "@/server/services/container";
 
-// Session data keeps this route blocking until it is moved to a streamed shell.
-export const instant = false;
 
 type BatchParams = {params: Promise<{id: string}>};
 

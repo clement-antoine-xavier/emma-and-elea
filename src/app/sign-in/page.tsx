@@ -1,16 +1,8 @@
 import type {Metadata} from "next";
-import {HStack} from "@astryxdesign/core/HStack";
-import {Stack} from "@astryxdesign/core/Stack";
+import {Suspense} from "react";
 import {getTranslations} from "next-intl/server";
-import {AuthForm} from "@/components/auth-form";
-import {AuthSplitLayout} from "@/components/auth-split-layout";
-import {LocaleSwitcher} from "@/components/locale-switcher";
-import {ThemeSwitcher} from "@/components/theme-switcher";
+import {AuthPage} from "@/components/auth-page";
 import {safeNextPath} from "@/lib/navigation";
-
-// Session and search params are request data; keep the route blocking
-// until the dashboard is migrated to a streamed shell.
-export const instant = false;
 
 type SignInPageProps = {
   searchParams: Promise<{next?: string | string[]}>;
@@ -22,18 +14,16 @@ export async function generateMetadata(): Promise<Metadata> {
   return {title: t("metadataTitle")};
 }
 
-export default async function SignInPage({searchParams}: SignInPageProps) {
+export default function SignInPage({searchParams}: SignInPageProps) {
+  return (
+    <Suspense fallback={<AuthPage mode="sign-in" />}>
+      <SignInForm searchParams={searchParams} />
+    </Suspense>
+  );
+}
+
+async function SignInForm({searchParams}: SignInPageProps) {
   const {next} = await searchParams;
 
-  return (
-    <AuthSplitLayout>
-      <Stack gap={4} width="100%" maxWidth={440}>
-        <HStack gap={4} align="center" justify="end" wrap="wrap">
-          <ThemeSwitcher />
-          <LocaleSwitcher />
-        </HStack>
-        <AuthForm mode="sign-in" next={safeNextPath(next)} />
-      </Stack>
-    </AuthSplitLayout>
-  );
+  return <AuthPage mode="sign-in" next={safeNextPath(next)} />;
 }
