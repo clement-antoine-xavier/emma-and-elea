@@ -10,6 +10,8 @@ const nextConfig: NextConfig = {
   agentRules: false,
   experimental: {
     agentFeedback: false,
+    // Only a dedicated E2E build exposes the Instant Navigation testing API.
+    exposeTestingApiInProductionBuild: process.env.EXPOSE_TESTING_API === "1",
   },
   cacheComponents: true,
   partialPrefetching: true,

@@ -2,6 +2,7 @@
 
 import {
   useCallback,
+  useEffect,
   useImperativeHandle,
   useRef,
   useState,
@@ -364,6 +365,12 @@ export function AssistantChat({
       setIsReviewOpen(true);
     }
   }, []);
+
+  // A gated action needs an answer, so surface the card as soon as it arrives
+  // (including after a reload with a pending approval).
+  useEffect(() => {
+    if (hasApprovals) openReview();
+  }, [hasApprovals, openReview]);
 
   useImperativeHandle(ref, () => ({openReview}), [openReview]);
 

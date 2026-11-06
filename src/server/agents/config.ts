@@ -21,6 +21,7 @@ export type AssistantConfig = {
   toolApprovalSecret: string | null;
   telemetryEnabled: boolean;
   fakeModel: boolean;
+  fakeModelMode: "echo" | "approval" | null;
 };
 
 function integer(value: string | undefined, fallback: number): number {
@@ -46,9 +47,15 @@ export function getAssistantConfig(): AssistantConfig | null {
   const enabled = process.env.ASSISTANT_ENABLED === "true";
   if (!enabled) return null;
 
-  const fakeModel =
-    process.env.NODE_ENV !== "production" &&
-    process.env.ASSISTANT_FAKE_MODEL === "echo";
+  const requestedFakeModel = process.env.ASSISTANT_FAKE_MODEL?.trim();
+  const fakeModelMode =
+    process.env.NODE_ENV !== "production" ||
+    process.env.ALLOW_ASSISTANT_TEST_MODEL === "1"
+      ? requestedFakeModel === "echo" || requestedFakeModel === "approval"
+        ? requestedFakeModel
+        : null
+      : null;
+  const fakeModel = fakeModelMode !== null;
 
   if (!fakeModel && !hasGatewayCredentials()) {
     throw new Error(
@@ -90,6 +97,7 @@ export function getAssistantConfig(): AssistantConfig | null {
     toolApprovalSecret,
     telemetryEnabled: process.env.ASSISTANT_TELEMETRY_ENABLED === "true",
     fakeModel,
+    fakeModelMode,
   };
 }
 

@@ -23,10 +23,67 @@ const usage = {
 };
 
 /**
- * Deterministic model used by the E2E smoke test and component tests when no
- * Gateway credential is available. It never runs in a production build.
+ * Deterministic models used by E2E and component tests when no Gateway
+ * credential is available. They only run in development, or in a production
+ * build that explicitly set `ALLOW_ASSISTANT_TEST_MODEL=1`.
  */
-function fakeModel(): LanguageModel {
+function fakeModel(mode: "echo" | "approval"): LanguageModel {
+  if (mode === "approval") {
+    return new MockLanguageModelV4({
+      doStream: async ({prompt}) => {
+        const hasToolResult = prompt.some(
+          (message) =>
+            message.role === "tool" ||
+            (Array.isArray(message.content) &&
+              message.content.some((part) => part.type === "tool-result")),
+        );
+
+        if (!hasToolResult) {
+          return {
+            stream: simulateReadableStream({
+              chunks: [
+                {type: "stream-start", warnings: []},
+                {
+                  type: "tool-call",
+                  toolCallId: "call_e2e_approval",
+                  toolName: "cancel_order",
+                  input: JSON.stringify({id: "e2e-missing-order"}),
+                },
+                {
+                  type: "finish",
+                  finishReason: {unified: "tool-calls", raw: "tool_calls"},
+                  logprobs: undefined,
+                  usage,
+                },
+              ],
+            }),
+          };
+        }
+
+        return {
+          stream: simulateReadableStream({
+            chunks: [
+              {type: "stream-start", warnings: []},
+              {type: "text-start", id: "text-2"},
+              {
+                type: "text-delta",
+                id: "text-2",
+                delta: "The order was not changed.",
+              },
+              {type: "text-end", id: "text-2"},
+              {
+                type: "finish",
+                finishReason: {unified: "stop", raw: undefined},
+                logprobs: undefined,
+                usage,
+              },
+            ],
+          }),
+        };
+      },
+    });
+  }
+
   return new MockLanguageModelV4({
     doStream: async () => ({
       stream: simulateReadableStream({
@@ -82,7 +139,7 @@ export function resolveModel(
   persona: AssistantPersona,
   config: AssistantConfig,
 ): LanguageModel {
-  if (config.fakeModel) return fakeModel();
+  if (config.fakeModel) return fakeModel(config.fakeModelMode ?? "echo");
 
   const model = modelFor(persona, config);
   const customProvider = gatewayProvider(config);

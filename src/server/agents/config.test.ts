@@ -38,6 +38,40 @@ describe("assistant config", () => {
     expect(getAssistantConfig()).toMatchObject({fakeModel: true});
   });
 
+  it("allows the scripted approval model in a test build", () => {
+    process.env.ASSISTANT_ENABLED = "true";
+    process.env.ASSISTANT_FAKE_MODEL = "approval";
+    process.env.ALLOW_ASSISTANT_TEST_MODEL = "1";
+    process.env.AI_GATEWAY_API_KEY = "gateway-test";
+    process.env.TOOL_APPROVAL_SECRET = "approval-secret";
+    Object.defineProperty(process.env, "NODE_ENV", {
+      value: "production",
+      configurable: true,
+    });
+
+    expect(getAssistantConfig()).toMatchObject({
+      fakeModel: true,
+      fakeModelMode: "approval",
+    });
+  });
+
+  it("ignores the scripted approval model in a normal production build", () => {
+    process.env.ASSISTANT_ENABLED = "true";
+    process.env.ASSISTANT_FAKE_MODEL = "approval";
+    delete process.env.ALLOW_ASSISTANT_TEST_MODEL;
+    process.env.AI_GATEWAY_API_KEY = "gateway-test";
+    process.env.TOOL_APPROVAL_SECRET = "approval-secret";
+    Object.defineProperty(process.env, "NODE_ENV", {
+      value: "production",
+      configurable: true,
+    });
+
+    expect(getAssistantConfig()).toMatchObject({
+      fakeModel: false,
+      fakeModelMode: null,
+    });
+  });
+
   it("reads the Gateway model and guardrails", () => {
     process.env.ASSISTANT_ENABLED = "true";
     process.env.AI_GATEWAY_API_KEY = "gateway-test";

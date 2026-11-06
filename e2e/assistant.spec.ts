@@ -2,7 +2,10 @@ import {expect, test} from "@playwright/test";
 import {deleteOrganizationBySlug, deleteUserByEmail} from "./db";
 import {signUpAndCreateWorkspace} from "./helpers";
 
-const enabled = process.env.ASSISTANT_ENABLED === "true";
+const enabled =
+  process.env.ASSISTANT_ENABLED === "true" &&
+  (process.env.ASSISTANT_FAKE_MODEL === "echo" ||
+    process.env.ASSISTANT_LIVE_TEST === "1");
 const unique = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 const email = `e2e-assistant-${unique}@example.com`;
 const password = "password12345";
@@ -15,7 +18,7 @@ test.afterAll(async () => {
   await deleteUserByEmail(email);
 });
 
-test("the assistant pages open for both personas", async ({page}) => {
+test("@slow the assistant pages open for both personas", async ({page}) => {
   await signUpAndCreateWorkspace(page, {
     name: "Assistant Owner",
     email,

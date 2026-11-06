@@ -79,6 +79,22 @@ export async function userExists(email: string) {
   return result.rowCount === 1;
 }
 
+/** Expire every pending approval in a conversation, as if ten minutes passed. */
+export async function expireApprovalsForConversation(
+  conversationId: string,
+): Promise<void> {
+  await withClient((client) =>
+    client.query(
+      `UPDATE "agent_approval"
+          SET "expiresAt" = now() - interval '1 minute'
+        WHERE "runId" IN (
+          SELECT "id" FROM "agent_run" WHERE "conversationId" = $1
+        )`,
+      [conversationId],
+    ),
+  );
+}
+
 export async function deleteOrganizationBySlug(slug: string) {
   await withClient((client) =>
     client.query('DELETE FROM "organization" WHERE slug = $1', [slug]),

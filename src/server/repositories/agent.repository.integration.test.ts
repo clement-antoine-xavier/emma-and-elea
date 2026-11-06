@@ -100,9 +100,9 @@ describe("agent repository", () => {
     const stored = await agentRepository.findApproval(
       fixture.organizationId,
       fixture.userId,
-      approval.id,
+      approval.callId,
     );
-    expect(stored).toMatchObject({status: "EXECUTED"});
+    expect(stored).toMatchObject({status: "EXECUTED", id: approval.id});
   });
 
   it("lists conversations per persona and user", async () => {

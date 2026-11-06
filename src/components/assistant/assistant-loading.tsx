@@ -9,7 +9,9 @@ import {Spinner} from "@astryxdesign/core/Spinner";
 export function AssistantLoading() {
   return (
     <Center minHeight="100%" padding={8}>
-      <Spinner size="lg" />
+      <span data-testid="assistant-loading">
+        <Spinner size="lg" />
+      </span>
     </Center>
   );
 }

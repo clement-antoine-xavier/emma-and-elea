@@ -329,10 +329,10 @@ export const agentRepository = {
   async findApproval(
     organizationId: string,
     userId: string,
-    id: string,
+    callId: string,
   ): Promise<AgentApprovalRecord | null> {
     return prisma.agentApproval.findFirst({
-      where: {id, organizationId, userId},
+      where: {callId, organizationId, userId},
       select: approvalSelect,
     });
   },

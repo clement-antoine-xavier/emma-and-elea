@@ -329,6 +329,8 @@ async function applyIncomingApprovals(
       if (!decided) {
         throw new DomainError("CONFLICT", "APPROVAL_NOT_PENDING");
       }
+    } else if (approval.status === "EXPIRED") {
+      throw new DomainError("CONFLICT", "APPROVAL_EXPIRED");
     } else if (
       !["APPROVED", "REJECTED", "EXECUTED", "FAILED"].includes(approval.status)
     ) {
