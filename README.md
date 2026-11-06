@@ -73,7 +73,7 @@ batches, allocates lots FEFO, records waste and exposes lot traceability.
 | `API_RESOURCE_URL` | Public base URL of the REST API (defaults to `$BETTER_AUTH_URL/api`) |
 | `AI_GATEWAY_API_KEY` | Server-only AI Gateway key; optional on Vercel where OIDC is used |
 | `ASSISTANT_ENABLED` | Set to `true` to show Emma and Éléa in the dashboard |
-| `ASSISTANT_MODEL` | AI Gateway model id, for example `openai/gpt-5.4` |
+| `ASSISTANT_MODEL` | AI Gateway model id, for example `openai/gpt-5.4`; on the free tier use `nvidia/nemotron-3.5-lightning-free` |
 | `ASSISTANT_EMMA_MODEL` / `ASSISTANT_ELEA_MODEL` | Optional per-persona Gateway model overrides |
 | `TOOL_APPROVAL_SECRET` | Signs human approval requests; required in production |
 | `ASSISTANT_TELEMETRY_ENABLED` | Set to `true` to opt into AI SDK telemetry (defaults to false) |
@@ -378,6 +378,25 @@ Vercel is the primary deployment target; the Docker path below remains supported
 
 The assistant route exports `maxDuration = 300`; Vercel clamps it to the plan's
 limit.
+
+### Environment topology
+
+| Resource | Production | Preview |
+| --- | --- | --- |
+| Prisma Postgres | `emma-and-elea-db` | `emma-and-elea-preview-db` |
+| `DATABASE_URL` / `DATABASE_URL_POOLED` / `PRISMA_DATABASE_URL` | Production-scoped | Preview-scoped, pointing at the Preview resource |
+| `BETTER_AUTH_SECRET`, `TOOL_APPROVAL_SECRET` | Shared | Shared |
+| `BLOB_STORE_ID` | Shared (OIDC) | Shared (OIDC) |
+| `BETTER_AUTH_URL` | `https://emma-and-elea.vercel.app` | Not set; derived from `VERCEL_URL` |
+| Migrations | Applied by `vercel-build` under an advisory lock | Never applied by the build; apply manually after a schema change |
+
+Preview deployments cannot read or write Production data. Apply the schema to a
+new Preview database once with:
+
+```bash
+vercel env pull .env.preview --environment preview
+DATABASE_URL="$(grep '^DATABASE_URL=' .env.preview | cut -d= -f2- | tr -d '"')" npm run db:deploy
+```
 
 ## Docker
 
